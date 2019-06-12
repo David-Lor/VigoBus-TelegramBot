@@ -1,0 +1,4 @@
+pytelegrambotapi
+requests
+cryptography
+git+https://github.com/David-Lor/PyBuses.git
