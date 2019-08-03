@@ -21,11 +21,15 @@ class TelegramSettings(BaseBotSettings):
     method = "polling"
     skip_prev_updates = True
     polling_fast = True
-    polling_timeout = 30
+    polling_timeout: float = 30
 
 
 class APISettings(BaseBotSettings):
-    pass
+    url = "http://localhost:5000"
+    timeout: float = 30
+
+    class Config:
+        env_prefix = "API_"
 
 
 class DataManagerSettings(BaseBotSettings):
