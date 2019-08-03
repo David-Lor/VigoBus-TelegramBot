@@ -1,0 +1,37 @@
+"""SETTINGS HANDLER
+Load env settings
+"""
+
+# # Installed # #
+from dotenv_settings_handler import BaseSettingsHandler
+from dotenv import load_dotenv
+
+__all__ = ("telegram_settings", "api_settings", "data_manager_settings")
+
+load_dotenv()
+
+
+class BaseBotSettings(BaseSettingsHandler):
+    class Config:
+        case_insensitive = True
+
+
+class TelegramSettings(BaseBotSettings):
+    token: str
+    method = "polling"
+    skip_prev_updates = True
+    polling_fast = True
+    polling_timeout = 30
+
+
+class APISettings(BaseBotSettings):
+    pass
+
+
+class DataManagerSettings(BaseBotSettings):
+    pass
+
+
+telegram_settings = TelegramSettings()
+api_settings = APISettings()
+data_manager_settings = DataManagerSettings()
