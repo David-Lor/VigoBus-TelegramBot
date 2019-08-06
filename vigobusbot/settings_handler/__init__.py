@@ -1,6 +1,9 @@
 """SETTINGS HANDLER
-Load env settings
+Load settings from dotenv file or environment variables
 """
+
+# # Native # #
+from typing import Optional
 
 # # Installed # #
 from dotenv_settings_handler import BaseSettingsHandler
@@ -22,6 +25,7 @@ class TelegramSettings(BaseBotSettings):
     skip_prev_updates = True
     polling_fast = True
     polling_timeout: float = 30
+    static_path: Optional[str]
 
 
 class APISettings(BaseBotSettings):

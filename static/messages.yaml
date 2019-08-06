@@ -1,0 +1,5 @@
+commands:
+  start:
+    Hi there! This is the /start message.
+  help:
+    Help me! This is the /help message.

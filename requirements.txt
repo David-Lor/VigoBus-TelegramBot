@@ -6,3 +6,6 @@ pymongo  # MongoDB client
 motor  # MongoDB Async client
 dotenv-settings-handler  # Settings Handler
 python-dotenv  # .env file loader
+pyyaml  # YAML file parser
+addict  # better dicts
+watchdog  # watch directories for file changes

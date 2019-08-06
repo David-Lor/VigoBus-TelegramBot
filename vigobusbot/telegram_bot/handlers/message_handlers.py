@@ -7,17 +7,18 @@ import aiogram
 
 # # Project # #
 from ...vigobus_getters import get_stop, get_buses
+from ...static_handler import get_messages
 from ...exceptions import *
 
 __all__ = ("register_handlers",)
 
 
 async def command_start(message: aiogram.types.Message):
-    await message.reply("Hi there!")
+    await message.reply(get_messages().commands.start)
 
 
 async def command_help(message: aiogram.types.Message):
-    await message.reply("Help!")
+    await message.reply(get_messages().commands.help)
 
 
 async def command_stop(message: aiogram.types.Message):
