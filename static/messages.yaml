@@ -1,5 +1,40 @@
-commands:
-  start:
-    Hi there! This is the /start message.
-  help:
-    Help me! This is the /help message.
+# YAML special string format: https://stackoverflow.com/a/21699210
+# |- each line is new line; no new line at the end
+# >- literal strings, escape characters, allow multiline as single line; no new line at the end
+start:
+  - Hi there! This is the /start message.
+  - This is the second /start message.
+help:
+  - Help me! This is the /help message.
+stop:
+  message: |-
+    *Parada #{stop_id} ({stop_name})*
+    {buses}
+    :clock4:Última actualización: {last_update}
+  stop_custom_name: >-
+    {stop_custom_name} - {stop_original_name}
+  bus_line: >-
+    ```  {line} ({route}): {time}```
+  bus_time_remaining: >-
+    {minutes}m
+  bus_time_now:
+    <<<
+  time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+    %d/%m %H:%M:%S
+  no_buses_found:
+    ¡No hay buses!
+  not_exists:
+    La parada solicitada no existe.
+  not_valid:
+    La parada solicitada no es válida.
+  generic_error:
+    Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+saved_stops:
+  message_has_stops:
+    Tienes {n_stops} parada{plural} guardada{plural}
+  message_no_stops:
+    ¡No tienes ninguna parada guardada! Busca una y pulsa en el botón de Guardar para que aparezca aquí.
+  button_stop: >-
+    {stop_name} (#{stop_id})
+  button_remove:
+    X

@@ -2,27 +2,33 @@
 Telegram Bot Message Handlers: functions that handle incoming messages, depending on their command or content.
 """
 
+# # Native # #
+import datetime
+
 # # Installed # #
 import aiogram
 
 # # Project # #
-from ...vigobus_getters import get_stop, get_buses
-from ...static_handler import get_messages
+from ...vigobus_getters import *
+from ...static_handler import *
 from ...exceptions import *
 
 __all__ = ("register_handlers",)
 
 
 async def command_start(message: aiogram.types.Message):
-    await message.reply(get_messages().commands.start)
+    for text in get_messages().start:
+        await message.reply(text, parse_mode="Markdown")
 
 
 async def command_help(message: aiogram.types.Message):
-    await message.reply(get_messages().commands.help)
+    for text in get_messages().help:
+        await message.reply(text, parse_mode="Markdown")
 
 
 async def command_stop(message: aiogram.types.Message):
-    """Temporary handler to prove functionality.
+    """Stop command handler receives forwarded messages from the Global Message Handler
+    after filtering the user intention.
     """
     try:
         stopid = int(message.text.replace("/stop", "").strip())
@@ -30,32 +36,49 @@ async def command_stop(message: aiogram.types.Message):
         buses = await get_buses(stopid, get_all_buses=False)
 
     except ValueError:
-        await message.reply("Invalid Stop ID!")
+        await message.reply(get_messages().stop.not_valid)
 
     except StopNotExist:
-        await message.reply("The Stop does not exist!")
+        await message.reply(get_messages().stop.not_exists)
 
     except GetterException:
-        await message.reply("Error happened, try again later")
+        await message.reply(get_messages().stop.generic_error)
 
     else:
-        stop_text = f"Stop #{stop.stopid}: {stop.name}"
-
         if buses:
-            buses_text = f"{len(buses)} buses found:\n"
-            buses_text += "\n".join([f"```* {bus.line} - {bus.route}: {bus.time}m```" for bus in buses])
+            buses_text_lines = list()
+            for bus in buses:
+                if bus.time == 0:
+                    time_text = get_messages().stop.bus_time_now
+                else:
+                    time_text = get_messages().stop.bus_time_remaining.format(minutes=bus.time)
+                buses_text_lines.append(get_messages().stop.bus_line.format(
+                    line=bus.line,
+                    route=bus.route,
+                    time=time_text
+                ))
+            buses_text = "\n".join(buses_text_lines)
         else:
-            buses_text = "**No buses found!**"
+            buses_text = get_messages().stop.no_buses_found
 
-        text = f"*{stop_text}*\n{buses_text}"
+        last_update_text = datetime.datetime.now().strftime(get_messages().stop.time_format)
+
+        text = get_messages().stop.message.format(
+            stop_id=stopid,
+            stop_name=stop.name,
+            buses=buses_text,
+            last_update=last_update_text
+        )
 
         await message.reply(text, parse_mode="Markdown")
 
 
 async def global_message_handler(message: aiogram.types.Message):
-    """Last Message Handler that handles any text message that does not match any of the other message handlers.
+    """Last Message Handler handles any text message that does not match any of the other message handlers.
+    The message text is filtered to guess what the user wants (most probably get a Stop).
     """
-    await message.reply("Pong! " + message.text)
+    if message.text.strip().isdigit():
+        return await command_stop(message)
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
