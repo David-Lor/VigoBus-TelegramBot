@@ -2,14 +2,11 @@
 Telegram Bot Message Handlers: functions that handle incoming messages, depending on their command or content.
 """
 
-# # Native # #
-import datetime
-
 # # Installed # #
 import aiogram
 
 # # Project # #
-from ...vigobus_getters import *
+from ..message_generators import *
 from ...static_handler import *
 from ...exceptions import *
 
@@ -32,8 +29,19 @@ async def command_stop(message: aiogram.types.Message):
     """
     try:
         stopid = int(message.text.replace("/stop", "").strip())
-        stop = await get_stop(stopid)
-        buses = await get_buses(stopid, get_all_buses=False)
+
+        context = SourceContext(
+            stopid=stopid,
+            source_message=message,
+            get_all_buses=False
+        )
+        text, markup = await generate_stop_message(context)
+
+        await message.reply(
+            text=text,
+            reply_markup=markup,
+            parse_mode="Markdown"
+        )
 
     except ValueError:
         await message.reply(get_messages().stop.not_valid)
@@ -41,36 +49,8 @@ async def command_stop(message: aiogram.types.Message):
     except StopNotExist:
         await message.reply(get_messages().stop.not_exists)
 
-    except GetterException:
+    except (GetterException, AssertionError):
         await message.reply(get_messages().stop.generic_error)
-
-    else:
-        if buses:
-            buses_text_lines = list()
-            for bus in buses:
-                if bus.time == 0:
-                    time_text = get_messages().stop.bus_time_now
-                else:
-                    time_text = get_messages().stop.bus_time_remaining.format(minutes=bus.time)
-                buses_text_lines.append(get_messages().stop.bus_line.format(
-                    line=bus.line,
-                    route=bus.route,
-                    time=time_text
-                ))
-            buses_text = "\n".join(buses_text_lines)
-        else:
-            buses_text = get_messages().stop.no_buses_found
-
-        last_update_text = datetime.datetime.now().strftime(get_messages().stop.time_format)
-
-        text = get_messages().stop.message.format(
-            stop_id=stopid,
-            stop_name=stop.name,
-            buses=buses_text,
-            last_update=last_update_text
-        )
-
-        await message.reply(text, parse_mode="Markdown")
 
 
 async def global_message_handler(message: aiogram.types.Message):

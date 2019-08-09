@@ -2,9 +2,6 @@
 Parsers for files previously opened
 """
 
-# # Native # #
-from typing import TextIO
-
 # # Installed # #
 import yaml
 import addict

@@ -1,8 +1,8 @@
 """ENTITIES
-Custom and imported entities used over all the project.
+Custom and imported entities used all over the project
 """
 
 # # Installed # #
-from pybusent import Stop, Bus
+from pybusent import Stop, Bus, Buses
 
-__all__ = ("Stop", "Bus")
+__all__ = ("Stop", "Bus", "Buses")

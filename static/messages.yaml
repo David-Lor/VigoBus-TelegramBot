@@ -1,6 +1,7 @@
 # YAML special string format: https://stackoverflow.com/a/21699210
 # |- each line is new line; no new line at the end
 # >- literal strings, escape characters, allow multiline as single line; no new line at the end
+# Emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
 start:
   - Hi there! This is the /start message.
   - This is the second /start message.
@@ -10,7 +11,7 @@ stop:
   message: |-
     *Parada #{stop_id} ({stop_name})*
     {buses}
-    :clock4:Última actualización: {last_update}
+    :clock4:_Última actualización: {last_update}_
   stop_custom_name: >-
     {stop_custom_name} - {stop_original_name}
   bus_line: >-
@@ -21,20 +22,30 @@ stop:
     <<<
   time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
     %d/%m %H:%M:%S
-  no_buses_found:
-    ¡No hay buses!
+  no_buses_found: >-
+    *¡No hay buses!*
   not_exists:
-    La parada solicitada no existe.
+    :negative_squared_cross_mark:La parada solicitada no existe.
   not_valid:
-    La parada solicitada no es válida.
+    :negative_squared_cross_mark:La parada solicitada no es válida.
   generic_error:
-    Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+  buttons:
+    update:
+      :repeat:Actualizar
+    save:
+      :floppy_disk:Guardar
+    delete:
+      :negative_squared_cross_mark:Eliminar
+    rename:
+      :pencil2:Renombrar
 saved_stops:
-  message_has_stops:
-    Tienes {n_stops} parada{plural} guardada{plural}
-  message_no_stops:
-    ¡No tienes ninguna parada guardada! Busca una y pulsa en el botón de Guardar para que aparezca aquí.
-  button_stop: >-
-    {stop_name} (#{stop_id})
-  button_remove:
-    X
+  message_has_stops: >-
+    :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*
+  message_no_stops: >-
+    *¡No tienes ninguna parada guardada!* Busca una y pulsa en el botón de Guardar para que aparezca aquí.
+  buttons:
+    stop: >-
+      {stop_name} (#{stop_id})
+    remove:
+      X
