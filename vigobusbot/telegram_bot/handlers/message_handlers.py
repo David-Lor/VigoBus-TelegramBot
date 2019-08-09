@@ -15,12 +15,22 @@ __all__ = ("register_handlers",)
 
 async def command_start(message: aiogram.types.Message):
     for text in get_messages().start:
-        await message.reply(text, parse_mode="Markdown")
+        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown")
 
 
 async def command_help(message: aiogram.types.Message):
     for text in get_messages().help:
-        await message.reply(text, parse_mode="Markdown")
+        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown")
+
+
+async def command_donate(message: aiogram.types.Message):
+    for text in get_messages().donate:
+        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown", disable_web_page_preview=True)
+
+
+async def command_about(message: aiogram.types.Message):
+    for text in get_messages().about:
+        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown", disable_web_page_preview=True)
 
 
 async def command_stop(message: aiogram.types.Message):
@@ -69,6 +79,12 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /help command
     dispatcher.register_message_handler(command_help, commands=("help", "ayuda"))
+
+    # /donate command
+    dispatcher.register_message_handler(command_donate, commands=("donate", "donar", "colaborar", "aportar"))
+
+    # /about command
+    dispatcher.register_message_handler(command_about, commands=("about", "acerca", "acercade"))
 
     # /stop command
     dispatcher.register_message_handler(command_stop, commands=("stop", "parada"))
