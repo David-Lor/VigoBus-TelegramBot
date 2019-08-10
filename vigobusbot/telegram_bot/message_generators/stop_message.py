@@ -6,6 +6,9 @@ Generator of Stop message body. Have responsability to find the Stop and Buses
 import asyncio
 from typing import Tuple
 
+# # Installed # #
+import aiogram
+
 # # Project # #
 from ...entities import *
 from ...vigobus_getters import *
@@ -18,7 +21,7 @@ from .stop_message_buttons import *
 __all__ = ("generate_stop_message",)
 
 
-async def generate_stop_message(context: SourceContext) -> Tuple[str, None]:
+async def generate_stop_message(context: SourceContext) -> Tuple[str, aiogram.types.InlineKeyboardMarkup]:
     """Generate the Text body and Markup buttons to send as a Stop message, given a SourceContext
     """
     results = await asyncio.gather(

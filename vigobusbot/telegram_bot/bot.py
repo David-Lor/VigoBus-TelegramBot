@@ -1,5 +1,5 @@
 """BOT
-Bot class
+Bot class and bot instance getter and generator
 """
 
 # # Native # #
@@ -27,6 +27,8 @@ _bot: Optional[Bot] = None
 
 
 def get_bot() -> Bot:
+    """Get the bot instance or generate and return a new one. Register all the handlers on bot instance generation.
+    """
     global _bot
     if _bot is None:
         _bot = Bot(token=settings.token)
