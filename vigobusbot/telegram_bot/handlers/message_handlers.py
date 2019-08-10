@@ -38,10 +38,10 @@ async def command_stop(message: aiogram.types.Message):
     after filtering the user intention.
     """
     try:
-        stopid = int(message.text.replace("/stop", "").strip())
+        stop_id = int(message.text.replace("/stop", "").strip())
 
         context = SourceContext(
-            stopid=stopid,
+            stop_id=stop_id,
             source_message=message,
             get_all_buses=False
         )

@@ -18,7 +18,7 @@ class SourceType:
 
 
 class SourceContext(pydantic.BaseModel):
-    stopid: int
+    stop_id: int
     source_message: Optional[aiogram.types.Message]
     """Message object if message come from a private chat"""
     source_chat_id: Optional[int]

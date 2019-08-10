@@ -22,7 +22,7 @@ def generate_stop_message_buttons(context: SourceContext) -> aiogram.types.Inlin
     button_refresh = aiogram.types.InlineKeyboardButton(
         text=messages.stop.buttons.refresh,
         callback_data=StopUpdateCallbackData.new(
-            stop_id=context.stopid,
+            stop_id=context.stop_id,
             get_all_buses=int(context.get_all_buses)
         )
     )

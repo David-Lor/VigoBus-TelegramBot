@@ -25,8 +25,8 @@ async def generate_stop_message(context: SourceContext) -> Tuple[str, aiogram.ty
     """Generate the Text body and Markup buttons to send as a Stop message, given a SourceContext
     """
     results = await asyncio.gather(
-        get_stop(context.stopid),
-        get_buses(context.stopid)
+        get_stop(context.stop_id),
+        get_buses(context.stop_id)
     )  # TODO Set Timeout?
 
     stop = None
