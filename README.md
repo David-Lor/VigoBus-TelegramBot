@@ -19,7 +19,7 @@ Como principales mejoras, cuenta con algunos cambios estéticos y la posibilidad
 
 #### Bot alpha (desarrollo actual)
 
-De la rama [feature/async](https://github.com/David-Lor/VigoBus-TelegramBot/tree/feature/async) parte el desarrollo de la nueva versión del bot, que principalmente tendrá como mejoras base el funcionamiento asíncrono y una mejor estructura de proyecto.
+De la rama [development](https://github.com/David-Lor/VigoBus-TelegramBot/tree/development) (y subramas feature) parte el desarrollo de la nueva versión del bot, que principalmente tendrá como mejoras base el funcionamiento asíncrono y una mejor estructura de proyecto.
 
 Así mismo, al contrario que hasta ahora se había planteado (con ligeras adaptaciones), la responsabilidad del backend del bot se limita al máximo a las propias tareas del bot, sirviéndose de dos proyectos adicionales que sirven como API para gestionar información externa:
 
@@ -28,8 +28,20 @@ Así mismo, al contrario que hasta ahora se había planteado (con ligeras adapta
 
 Entre las novedades prácticas a incorporar, se pueden destacar: renombrar paradas, búsqueda de paradas por nombre, por ubicación, y modo inline.
 
+## Requirements
+
+- Python >= 3.6
+- [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
+- [DataManager](https://github.com/David-Lor/Telegram-BusBot-DataManager)
+- requirements listed in [requirements.txt](requirements.txt)
+- A Telegram bot created with BotFather
+
+## Changelog
+
+- 0.1.0 - Initial async version (basic Get Stop messages)
+
 ## Disclaimer
 
-This project is not endorsed by, directly affiliated with, maintained, sponsored or in any way officially connected with the company or companies responsible for the public transport service of the city of Vigo.
+This project is not endorsed by, directly affiliated with, maintained by, sponsored by or in any way officially connected with the company or companies responsible for the public transport service of the city of Vigo.
 
 _Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni en cualquier otra manera oficialmente conectado con la compañía o compañías responsables del sistema de transporte público de la ciudad de Vigo._
