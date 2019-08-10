@@ -1,0 +1,13 @@
+aiogram  # Async Telegram Bot API wrapper
+requests-async  # HTTP requests
+python-dotenv  # dotenv setting files
+pybuses-entities  # Stop/Bus entities
+pymongo  # MongoDB client
+motor  # MongoDB Async client
+dotenv-settings-handler  # Settings Handler
+python-dotenv  # .env file loader
+pyyaml  # YAML file parser
+addict  # better dicts
+watchdog  # watch directories for file changes
+emoji  # replace aliases with emojis
+pydantic  # class builder

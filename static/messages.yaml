@@ -1,0 +1,99 @@
+# YAML special string format: https://stackoverflow.com/a/21699210
+# |- each line is new line; no new line at the end
+# >- literal strings, escape characters, allow multiline as single line; no new line at the end
+# Emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
+start:
+  - |-
+    ¡Hola! :wave: Este bot proporciona información sobre los autobuses urbanos de la ciudad de Vigo en tiempo real y por paradas.
+
+    Para empezar, envíame el código de la parada que quieras consultar. Podrás encontrar los números de parada en las marquesinas y paradas de autobús.
+
+    :question:¿Dudas? Para más información y ayuda, envía /ayuda
+help:
+  - |-
+    :question: *Ayuda e información* :question:
+
+    :point_right:*¿Cómo ver el estado de una parada?*
+    Simplemente, envía el código de la parada en el chat con el bot. Podrás encontrar los códigos de parada en las marquesinas y paradas de autobús. Al momento, el bot te responderá con el listado de todos los autobuses que pasarán por la parada, así como el tiempo estimado que faltará para su llegada.
+    Los tiempos enviados, además de ser estimados, no se actualizan de forma automática. Para actualizarlos, puedes pulsar sobre el botón Actualizar que aparecerá debajo del mensaje recibido. Al final del mensaje podrás ver la hora y fecha en las que se actualizó la información.
+
+    :point_right:*Guardar paradas*
+    Puedes guardar tus paradas favoritas o más usadas en una lista que podrás consultar posteriormente. Para guardar una parada, búscala primero, y a continuación, pulsa sobre el botón Guardar, justo debajo del mensaje recibido.
+    Para ver tus paradas guardadas, utiliza el comando /paradas. Todas tus paradas guardadas aparecerán en forma de botones, y pulsando sobre ellos, recibirás las estimaciones de buses de cada una.
+    Cuando recibas la información sobre una parada guardada, verás que el botón Guardar ha sido reemplazado por el botón Eliminar, que te permitirá borrar esa parada de tu lista de paradas guardadas cuando quieras.
+
+    :point_right:*¿Problemas? ¿Comentarios?*
+    Si tienes cualquier duda o quieres reportar algún problema, o simplemente quieres proponer alguna idea, obtén más información con el comando /feedback.
+
+    :point_right:*Recepción de novedades*
+    Todas las novedades relacionadas con el bot, como nuevas características implementadas, problemas técnicos, etc. se comunicarán a través de [este canal de Telegram](https://t.me/vigobus)
+
+    :information_source:*Lista completa de comandos disponibles*
+    :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente o precedido por /stop
+    :small_orange_diamond:/paradas: accede a todas tus paradas guardadas
+    :small_orange_diamond:/about: Información sobre el bot
+    :small_orange_diamond:/feedback: envia tus comentarios, ideas o problemas que hayas encontrado usando el bot
+    :small_orange_diamond:/donate: ¿cómo puedes colaborar con el mantenimiento de este bot?
+donate:
+  - |-
+    :coffee:*¡Se necesitan donaciones!*:coffee:
+    Al contrario que muchas de las aplicaciones para móvil que existen para ver los horarios de los autobuses, los bots de Telegram necesitan funcionar en un servidor de forma constante para que puedan ser utilizados por el público.
+    Además, ciertas aplicaciones no oficiales, sin sufrir ningún gasto en servidores ni mantenimiento, contienen anuncios y publicidad embebida, que este bot no incluye de ninguna de sus maneras.
+
+    Cualquier aportación es de gran ayuda para sufragar el coste que supone mantener el servidor y, por tanto, el bot en funcionamiento, y así mantener este y otros proyectos a flote.
+    :blush:*¡Gracias!*
+    [PayPal](https://www.paypal.me/EnforcerZhukov)
+about:
+  - |-
+    :oncoming_bus:*VigoBus Telegram Bot*:oncoming_bus: es un bot no oficial para consultar las paradas y autobuses de la red de autobuses urbanos de la ciudad de Vigo desde Telegram. Se trata de un proyecto personal escrito en Python, de código abierto y sin ánimo de lucro.
+
+    *La información proporcionada por este bot puede no ser exacta al 100%* por motivos técnicos propios o ajenos, por lo que su uso no ofrece ninguna garantía.
+
+    Creado en Vigo con :heart: [Python](https://www.python.org/), [aiogram](https://github.com/eternnoir/pyTelegramBotAPI) y otras fantásticas herramientas y librerías.
+    :smiley_cat:[Repositorio GitHub del proyecto](https://github.com/David-Lor/VigoBus-TelegramBot)
+
+    :coffee:¡Ayuda a mantener este bot en funcionamiento! /aportar
+
+    _Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni de cualquier otra manera oficialmente conectado con la compañía o compañías responsables del sistema de transporte público de la ciudad de Vigo._
+stop:
+  message: |-
+    *Parada #{stop_id} ({stop_name})*
+    {buses}
+    :clock4:_Última actualización: {last_update}_
+  stop_custom_name: >-
+    {stop_custom_name} - {stop_original_name}
+  bus_line: >-
+    ```  {line} ({route}): {time}```
+  bus_time_remaining: >-
+    {minutes}m
+  bus_time_now:
+    <<<
+  time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+    %d/%m %H:%M:%S
+  no_buses_found: >-
+    ``` ¡No hay buses!```
+  not_exists:
+    :negative_squared_cross_mark:La parada solicitada no existe.
+  not_valid:
+    :negative_squared_cross_mark:La parada solicitada no es válida.
+  generic_error:
+    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+  buttons:
+    update:
+      :repeat:Actualizar
+    save:
+      :floppy_disk:Guardar
+    delete:
+      :negative_squared_cross_mark:Eliminar
+    rename:
+      :pencil2:Renombrar
+saved_stops:
+  message_has_stops: >-
+    :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*
+  message_no_stops: >-
+    *¡No tienes ninguna parada guardada!* Busca una y pulsa en el botón de Guardar para que aparezca aquí.
+  buttons:
+    stop: >-
+      {stop_name} (#{stop_id})
+    remove:
+      X
