@@ -80,7 +80,7 @@ stop:
     :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
   buttons:
     refresh:
-      :repeat:Actualizar
+      :arrows_counterclockwise:Actualizar
     save:
       :floppy_disk:Guardar
     delete:

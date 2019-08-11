@@ -6,7 +6,7 @@ Register all the available handlers (messages, callbacks...) to the Bot Dispatch
 import aiogram
 
 # # Package # #
-from . import message_handlers, callback_handler
+from . import message_handlers, callback_handlers
 
 __all__ = ("register_handlers",)
 
@@ -16,4 +16,4 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     This function is called after creating a new Bot instance and before running it (using Polling or Webhook).
     """
     message_handlers.register_handlers(dispatcher)
-    callback_handler.register_handler(dispatcher)
+    callback_handlers.register_handlers(dispatcher)

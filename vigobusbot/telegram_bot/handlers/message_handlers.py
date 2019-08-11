@@ -6,6 +6,7 @@ Telegram Bot Message Handlers: functions that handle incoming messages, dependin
 import aiogram
 
 # # Project # #
+from ..status_sender import *
 from ..message_generators import *
 from ...static_handler import *
 from ...exceptions import *
@@ -37,14 +38,17 @@ async def command_stop(message: aiogram.types.Message):
     """Stop command handler receives forwarded messages from the Global Message Handler
     after filtering the user intention.
     """
-    try:
-        stop_id = int(message.text.replace("/stop", "").strip())
+    stop_id = int(message.text.replace("/stop", "").strip())
+    chat_id = message.chat.id
 
+    try:
         context = SourceContext(
             stop_id=stop_id,
             source_message=message,
             get_all_buses=False
         )
+
+        await start_typing(bot=message.bot, chat_id=chat_id)
         text, markup = await generate_stop_message(context)
 
         await message.reply(
@@ -61,6 +65,9 @@ async def command_stop(message: aiogram.types.Message):
 
     except (GetterException, AssertionError):
         await message.reply(get_messages().stop.generic_error)
+
+    finally:
+        stop_typing(chat_id)
 
 
 async def global_message_handler(message: aiogram.types.Message):
