@@ -7,11 +7,14 @@ import aiogram
 
 # # Project # #
 from ..message_generators import *
+from ...exceptions import *
 
 __all__ = ("register_handlers",)
 
 
 async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
+    """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
+    """
     try:
         stop_id = callback_data["stop_id"]
         get_all_buses = int(callback_data["get_all_buses"])
@@ -31,11 +34,15 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
             text=text,
             chat_id=chat_id,
             message_id=message_id,
-            reply_markup=markup,
-            parse_mode="Markdown"
+            reply_markup=markup
         )
 
     # TODO Add Except cases and replies to users
+
+    except MessageNotModified:
+        # MessageNotModified exceptions can trigger when user presses Update button many times too quickly,
+        # resulting on the same message text with the same timestamp. Ignore these errors.
+        pass
 
     finally:
         # stop_typing(chat_id)
@@ -43,7 +50,7 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
-    """Register the callback query handler for the given Bot Dispatcher.
+    """Register the callback query (inline keyboard buttons) handlers for the given Bot Dispatcher.
     """
     # Stop Refresh button
     dispatcher.register_callback_query_handler(stop_refresh, StopUpdateCallbackData.filter())

@@ -16,22 +16,22 @@ __all__ = ("register_handlers",)
 
 async def command_start(message: aiogram.types.Message):
     for text in get_messages().start:
-        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown")
+        await message.bot.send_message(message.chat.id, text)
 
 
 async def command_help(message: aiogram.types.Message):
     for text in get_messages().help:
-        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown")
+        await message.bot.send_message(message.chat.id, text)
 
 
 async def command_donate(message: aiogram.types.Message):
     for text in get_messages().donate:
-        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown", disable_web_page_preview=True)
+        await message.bot.send_message(message.chat.id, text)
 
 
 async def command_about(message: aiogram.types.Message):
     for text in get_messages().about:
-        await message.bot.send_message(message.chat.id, text, parse_mode="Markdown", disable_web_page_preview=True)
+        await message.bot.send_message(message.chat.id, text)
 
 
 async def command_stop(message: aiogram.types.Message):
@@ -51,10 +51,11 @@ async def command_stop(message: aiogram.types.Message):
         await start_typing(bot=message.bot, chat_id=chat_id)
         text, markup = await generate_stop_message(context)
 
-        await message.reply(
+        await message.bot.send_message(
+            chat_id=message.chat.id,
+            reply_to_message_id=message.message_id,
             text=text,
-            reply_markup=markup,
-            parse_mode="Markdown"
+            reply_markup=markup
         )
 
     except ValueError:
