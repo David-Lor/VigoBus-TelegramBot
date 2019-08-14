@@ -11,7 +11,7 @@ import aiogram
 
 # # Project # #
 from ...entities import *
-from ...vigobus_getters import *
+from ...vigobus_api import *
 
 # # Package # #
 from .source_context import *
