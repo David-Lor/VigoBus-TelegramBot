@@ -4,8 +4,12 @@ Custom and imported exceptions used over all the project.
 
 # # Installed # #
 from pybusent import StopNotExist
+from aiogram.utils.exceptions import *
 
-__all__ = ("GetterException", "GetterInternalException", "GetterAPIException", "GetterTimedOut", "StopNotExist")
+__all__ = (
+    "GetterException", "GetterInternalException", "GetterAPIException", "GetterTimedOut", "StopNotExist",
+    "MessageNotModified"
+)
 
 
 class GetterException(Exception):
