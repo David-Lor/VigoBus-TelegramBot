@@ -11,3 +11,4 @@ addict  # better dicts
 watchdog  # watch directories for file changes
 emoji  # replace aliases with emojis
 pydantic  # class builder
+cryptography  # encode/decode persisted user data
