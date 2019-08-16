@@ -43,6 +43,7 @@ async def command_stop(message: aiogram.types.Message):
 
     try:
         context = SourceContext(
+            user_id=chat_id,
             stop_id=stop_id,
             source_message=message,
             get_all_buses=False

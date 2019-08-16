@@ -41,6 +41,6 @@ async def generate_stop_message(context: SourceContext) -> Tuple[str, aiogram.ty
     assert isinstance(buses, list)
 
     text = generate_stop_message_text(stop, buses)
-    buttons = generate_stop_message_buttons(context=context)
+    buttons = await generate_stop_message_buttons(context=context)  # TODO place within 'results' asyncio.gather tasks
 
     return text, buttons

@@ -43,7 +43,7 @@ class SavedStopDecoded(SavedStopBase):
     """Saved Stop decoded/native. Used after decoding a GET request or before sending a POST request.
     """
     stop_id: int
-    user_id: int
+    user_id: Optional[int]
 
     # def encode(self) -> SavedStopEncoded:
     #     """Get the SavedStopEncoded equivalent of this decoded/native Saved Stop.
