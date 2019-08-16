@@ -14,6 +14,8 @@ from .key_generator import *
 
 __all__ = ("SavedStopEncoded", "SavedStopDecoded", "SavedStops")
 
+# TODO decode/encode methods are not used for now until finding best encoding/encryption method for the data
+
 
 class SavedStopBase(pydantic.BaseModel):
     stop_id: Union[str, int]
@@ -25,16 +27,16 @@ class SavedStopEncoded(SavedStopBase):
     """Saved Stop encoded. Used to send as body of a POST request, or as result of a GET request.
     """
     stop_id: str
-    user_id: str
+    user_id: Optional[str]
 
-    def decode(self, decoded_user_id: int) -> SavedStopBase:
-        """Get the SavedStopDecoded equivalent of this encoded Saved Stop.
-        """
-        return SavedStopDecoded(
-            user_id=decoded_user_id,
-            stop_id=decode(user_id=decoded_user_id, encoded_data=self.stop_id),
-            stop_name=decode(user_id=decoded_user_id, encoded_data=self.stop_name)
-        )
+    # def decode(self, decoded_user_id: int) -> SavedStopBase:
+    #     """Get the SavedStopDecoded equivalent of this encoded Saved Stop.
+    #     """
+    #     return SavedStopDecoded(
+    #         user_id=decoded_user_id,
+    #         stop_id=decode(user_id=decoded_user_id, encoded_data=self.stop_id),
+    #         stop_name=decode(user_id=decoded_user_id, encoded_data=self.stop_name)
+    #     )
 
 
 class SavedStopDecoded(SavedStopBase):
@@ -43,14 +45,14 @@ class SavedStopDecoded(SavedStopBase):
     stop_id: int
     user_id: int
 
-    def encode(self) -> SavedStopEncoded:
-        """Get the SavedStopEncoded equivalent of this decoded/native Saved Stop.
-        """
-        return SavedStopEncoded(
-            user_id=generate_user_hash(self.user_id),
-            stop_id=encode(user_id=self.user_id, raw_data=self.stop_id),
-            stop_name=encode(user_id=self.user_id, raw_data=self.stop_name)
-        )
+    # def encode(self) -> SavedStopEncoded:
+    #     """Get the SavedStopEncoded equivalent of this decoded/native Saved Stop.
+    #     """
+    #     return SavedStopEncoded(
+    #         user_id=generate_user_hash(self.user_id),
+    #         stop_id=encode(user_id=self.user_id, raw_data=self.stop_id),
+    #         stop_name=encode(user_id=self.user_id, raw_data=self.stop_name)
+    #     )
 
 
-SavedStops = List[SavedStopDecoded]
+SavedStops = List[SavedStopBase]
