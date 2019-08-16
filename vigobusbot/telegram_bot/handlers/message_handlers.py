@@ -38,10 +38,11 @@ async def command_stop(message: aiogram.types.Message):
     """Stop command handler receives forwarded messages from the Global Message Handler
     after filtering the user intention.
     """
-    stop_id = int(message.text.replace("/stop", "").strip())
     chat_id = message.chat.id
 
     try:
+        stop_id = int(message.text.replace("/stop", "").strip())
+
         context = SourceContext(
             user_id=chat_id,
             stop_id=stop_id,
