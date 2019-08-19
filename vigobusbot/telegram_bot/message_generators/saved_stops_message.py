@@ -4,6 +4,7 @@ Have the responsability of getting the Saved Stops list of the user.
 """
 
 # # Native # #
+import asyncio
 from typing import Tuple, Optional
 
 # # Installed # #
@@ -34,11 +35,18 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
         )
         markup = aiogram.types.InlineKeyboardMarkup()
 
+        saved_stops_results = await asyncio.gather(
+            *[get_stop(stop.stop_id) for stop in saved_stops]
+        )  # TODO Set timeout?
+
         for stop in saved_stops:
             button = aiogram.types.InlineKeyboardButton(
                 text=messages.saved_stops.buttons.stop.format(
-                    stop_name=(await get_stop(stop.stop_id)).name,  # TODO put as task in asyncio.gather
-                    stop_id=stop.stop_id
+                    stop_id=stop.stop_id,
+                    stop_name=next(
+                        stop_result.name for stop_result in saved_stops_results
+                        if stop_result.stopid == stop.stop_id
+                    )
                 ),
                 callback_data=StopGetCallbackData.new(
                     stop_id=stop.stop_id
