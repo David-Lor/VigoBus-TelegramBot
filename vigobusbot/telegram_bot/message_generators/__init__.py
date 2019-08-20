@@ -12,5 +12,6 @@ from .callback_data import *
 __all__ = (
     "generate_stop_message", "generate_stop_message_text", "generate_stop_message_buttons",
     "generate_saved_stops_message", "SourceContext", "SourceType",
-    "StopUpdateCallbackData", "StopSaveCallbackData", "StopDeleteCallbackData", "StopGetCallbackData"
+    "StopUpdateCallbackData", "StopGetCallbackData",
+    "StopSaveCallbackData", "StopDeleteCallbackData", "StopRenameCallbackData"
 )
