@@ -38,6 +38,7 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 ## Changelog
 
+- 0.1.2 - Support for Saved Stops and working command to list all of them
 - 0.1.1 - Inline keyboard markup with callback support for Refreshing Stop messages
 - 0.1.0 - Initial async version (basic Get Stop messages)
 
