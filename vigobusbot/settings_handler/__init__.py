@@ -9,7 +9,7 @@ from typing import Optional
 from dotenv_settings_handler import BaseSettingsHandler
 from dotenv import load_dotenv
 
-__all__ = ("telegram_settings", "api_settings", "data_manager_settings")
+__all__ = ("telegram_settings", "api_settings", "persistence_settings")
 
 load_dotenv()
 
@@ -27,6 +27,9 @@ class TelegramSettings(BaseBotSettings):
     polling_timeout: float = 30
     static_path: Optional[str]
 
+    class Config:
+        case_insensitive = True
+
 
 class APISettings(BaseBotSettings):
     url = "http://localhost:5000"
@@ -34,12 +37,20 @@ class APISettings(BaseBotSettings):
 
     class Config:
         env_prefix = "API_"
+        case_insensitive = True
 
 
-class DataManagerSettings(BaseBotSettings):
-    pass
+class PersistenceSettings(BaseBotSettings):
+    url = "http://localhost:5001"
+    salt = "FixedSalt"
+    timeout: float = 30
+    cache_size: int = 100
+
+    class Config:
+        env_prefix = "PERSIST_"
+        case_insensitive = True
 
 
 telegram_settings = TelegramSettings()
 api_settings = APISettings()
-data_manager_settings = DataManagerSettings()
+persistence_settings = PersistenceSettings()

@@ -34,15 +34,32 @@ async def command_about(message: aiogram.types.Message):
         await message.bot.send_message(message.chat.id, text)
 
 
+async def command_stops(message: aiogram.types.Message):
+    """Stops command handler must return all the Stops saved by the user
+    """
+    chat_id = user_id = message.chat.id
+
+    try:
+        await start_typing(bot=message.bot, chat_id=chat_id)
+
+        text, buttons = await generate_saved_stops_message(user_id)
+        await message.bot.send_message(message.chat.id, text, reply_markup=buttons)
+
+    finally:
+        stop_typing(chat_id)
+
+
 async def command_stop(message: aiogram.types.Message):
     """Stop command handler receives forwarded messages from the Global Message Handler
     after filtering the user intention.
     """
-    stop_id = int(message.text.replace("/stop", "").strip())
     chat_id = message.chat.id
 
     try:
+        stop_id = int(message.text.replace("/stop", "").strip())
+
         context = SourceContext(
+            user_id=chat_id,
             stop_id=stop_id,
             source_message=message,
             get_all_buses=False
@@ -93,6 +110,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /about command
     dispatcher.register_message_handler(command_about, commands=("about", "acerca", "acercade"))
+
+    # /stops command
+    dispatcher.register_message_handler(command_stops, commands=("stops", "paradas"))
 
     # /stop command
     dispatcher.register_message_handler(command_stop, commands=("stop", "parada"))

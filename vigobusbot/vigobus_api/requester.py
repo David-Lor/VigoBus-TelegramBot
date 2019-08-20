@@ -25,4 +25,5 @@ async def http_get(endpoint, query_params=None, body=None, timeout=settings.time
         timeout=timeout
     )
     result.raise_for_status()
+    result.encoding = "utf-8"
     return result
