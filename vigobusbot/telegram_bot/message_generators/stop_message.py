@@ -11,6 +11,7 @@ from typing import Tuple
 import aiogram
 
 # # Project # #
+from ...persistence_api import saved_stops
 from ...entities import *
 from ...vigobus_api import *
 
@@ -28,25 +29,26 @@ async def generate_stop_message(context: SourceContext) -> Tuple[str, aiogram.ty
     results = await asyncio.gather(
         get_stop(context.stop_id),
         get_buses(context.stop_id),
-        generate_stop_message_buttons(context)
+        saved_stops.get_stop(user_id=context.user_id, stop_id=context.stop_id)
     )  # TODO Set Timeout?
 
     stop = None
     buses = None
-    buttons = None
+    user_saved_stop = None
 
     for result in results:
         if isinstance(result, Stop):
             stop = result
         elif isinstance(result, list):
             buses = result
-        elif isinstance(result, aiogram.types.InlineKeyboardMarkup):
-            buttons = result
+        elif isinstance(result, saved_stops.SavedStopBase):
+            user_saved_stop = result
 
     assert isinstance(stop, Stop)
     assert isinstance(buses, list)
-    assert isinstance(buttons, aiogram.types.InlineKeyboardMarkup)
+    is_stop_saved = bool(user_saved_stop)
 
-    text = generate_stop_message_text(stop, buses)
+    text = generate_stop_message_text(stop=stop, buses=buses, user_saved_stop=user_saved_stop)
+    buttons = generate_stop_message_buttons(context=context, is_stop_saved=is_stop_saved)
 
     return text, buttons

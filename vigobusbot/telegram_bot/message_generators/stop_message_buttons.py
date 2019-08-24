@@ -7,7 +7,6 @@ import aiogram
 
 # # Project # #
 from ...static_handler import *
-from ...persistence_api import saved_stops
 
 # # Package # #
 from .source_context import *
@@ -16,11 +15,9 @@ from .entities import *
 __all__ = ("generate_stop_message_buttons",)
 
 
-async def generate_stop_message_buttons(context: SourceContext) -> aiogram.types.InlineKeyboardMarkup:
+def generate_stop_message_buttons(context: SourceContext, is_stop_saved: bool) -> aiogram.types.InlineKeyboardMarkup:
     messages = get_messages()
     row1 = list()
-
-    is_stop_saved = await saved_stops.is_stop_saved(user_id=context.user_id, stop_id=context.stop_id)
 
     button_refresh = aiogram.types.InlineKeyboardButton(
         text=messages.stop.buttons.refresh,
