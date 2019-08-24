@@ -2,6 +2,9 @@
 Callback Handlers for the Callback Queries, produced when users press buttons from the inline keyboards on messages
 """
 
+# # Native # #
+import asyncio
+
 # # Installed # #
 import aiogram
 
@@ -13,6 +16,7 @@ from ..message_generators import *
 from ...persistence_api import saved_stops
 from ...static_handler import get_messages
 from ...vigobus_api import *
+from ...entities import *
 from ...exceptions import *
 
 __all__ = ("register_handlers",)
@@ -107,7 +111,7 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
         stop_name=None
     )
 
-    markup = await generate_stop_message_buttons(context)
+    markup = generate_stop_message_buttons(context=context, is_stop_saved=True)
     await callback_query.bot.edit_message_reply_markup(
         chat_id=chat_id,
         message_id=message_id,
@@ -136,7 +140,7 @@ async def stop_delete(callback_query: aiogram.types.CallbackQuery, callback_data
         stop_id=stop_id
     )
 
-    markup = await generate_stop_message_buttons(context)
+    markup = generate_stop_message_buttons(context=context, is_stop_saved=False)
     await callback_query.bot.edit_message_reply_markup(
         chat_id=chat_id,
         message_id=message_id,
@@ -150,16 +154,40 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
     """
     try:
         messages = get_messages()
-        stop_id = callback_data["stop_id"]
-        stop = await get_stop(stop_id)
+        stop_id = int(callback_data["stop_id"])
+        chat_id = callback_query.message.chat.id
+
+        results = await asyncio.gather(
+            get_stop(stop_id),
+            saved_stops.get_stop(user_id=chat_id, stop_id=stop_id)
+        )
+
+        stop = None
+        saved_stop = None
+
+        for result in results:
+            if isinstance(result, Stop):
+                stop = result
+            elif isinstance(result, saved_stops.SavedStopBase):
+                saved_stop = result
+
+        assert isinstance(stop, Stop)
+        assert isinstance(saved_stop, saved_stops.SavedStopBase)
+
+        text = messages.stop_rename.request.format(
+            stop_id=stop_id,
+            stop_name=stop.name
+        )
+
+        if saved_stop.stop_name:
+            text += "\n" + messages.stop_rename.request_unname.format(
+                current_stop_name=saved_stop.stop_name
+            )
 
         force_reply_message = await callback_query.bot.send_message(
             chat_id=callback_query.message.chat.id,
             reply_markup=RenameStopForceReply.create(),
-            text=messages.stop_rename.request.format(
-                stop_id=stop_id,
-                stop_name=stop.name
-            )
+            text=text
         )
 
         rename_request_context = stop_rename_request_handler.StopRenameRequestContext(

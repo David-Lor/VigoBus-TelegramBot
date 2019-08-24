@@ -17,7 +17,7 @@ __all__ = (
     "register_stop_rename_request", "stop_rename_request_reply_handler", "is_stop_rename_request_registered"
 )
 
-_stop_rename_requests = cachetools.TTLCache(maxsize=2, ttl=3600)
+_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=3600)
 """Storage for Stop Rename requests, which must be replied by users in less than 1 hour (3600s).
 Key=force_reply_message_id
 Value=StopRenameRequestContext
@@ -42,9 +42,15 @@ def is_stop_rename_request_registered(force_reply_message_id: int) -> bool:
 async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message):
     rename_context = _stop_rename_requests.pop(user_reply_message.reply_to_message.message_id)
     new_stop_name = user_reply_message.text
+    remove_custom_name = False
     chat_id = user_reply_message.chat.id
     messages = get_messages()
     # TODO restrictions and filters on user stop name input
+
+    # Remove Stop custom name
+    if new_stop_name.strip().lower() == messages.stop_rename.unname_command:
+        new_stop_name = None
+        remove_custom_name = True
 
     await saved_stops.save_stop(
         user_id=chat_id,
@@ -53,13 +59,22 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
     )
 
     stop = await get_stop(rename_context.stop_id)
-    await user_reply_message.bot.send_message(
-        chat_id=chat_id,
-        text=messages.stop_rename.renamed_successfully.format(
-            stop_id=rename_context.stop_id,
+
+    if not remove_custom_name:
+        text = messages.stop_rename.renamed_successfully.format(
+            stop_id=stop.stopid,
             stop_name=stop.name,
             custom_stop_name=new_stop_name
-        ),
+        )
+    else:
+        text = messages.stop_rename.unnamed_successfully.format(
+            stop_id=stop.stopid,
+            stop_name=stop.name
+        )
+
+    await user_reply_message.bot.send_message(
+        chat_id=chat_id,
+        text=text,
         reply_to_message_id=user_reply_message.message_id
     )
 

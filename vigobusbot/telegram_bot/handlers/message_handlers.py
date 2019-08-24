@@ -95,10 +95,17 @@ async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
     The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
     """
-    # Rename Stop
-    if message.reply_to_message \
-            and stop_rename_request_handler.is_stop_rename_request_registered(message.reply_to_message.message_id):
-        return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+    # Reply to bot message = reply to Rename stop question
+    if message.reply_to_message and message.reply_to_message.from_user.is_bot:
+        if stop_rename_request_handler.is_stop_rename_request_registered(message.reply_to_message.message_id):
+            return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+        else:
+            # if ForceReply message not registered, user might had replied any message, or the request expired
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=get_messages().stop_rename.expired_request,
+                reply_to_message_id=message.message_id
+            )
 
     # Get a Stop by Stop ID
     if message.text.strip().isdigit():

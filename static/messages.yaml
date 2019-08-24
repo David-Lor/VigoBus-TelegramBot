@@ -90,8 +90,16 @@ stop:
 stop_rename:
   request: >-
     :pencil2:¿Qué nombre deseas darle a la parada *#{stop_id} ({stop_name})*?
+  request_unname: >-
+    _Para quitar el nombre actual ({current_stop_name}) envía una x_
+  unname_command:
+    x
   renamed_successfully: >-
-    La parada *#{stop_id} ({stop_name})* ha sido renombrada correctamente a *{custom_stop_name}*
+    :white_check_mark:La parada *#{stop_id} ({stop_name})* ha sido renombrada correctamente a *{custom_stop_name}*
+  unnamed_successfully: >-
+    :white_check_mark:El nombre personalizado de la parada *#{stop_id} ({stop_name})* ha sido eliminado correctamente
+  expired_request: >-
+    No se ha podido completar la operación. Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón *Renombrar* de la parada pertinente.
 saved_stops:
   message_has_stops: >-
     :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*
