@@ -87,6 +87,11 @@ stop:
       :negative_squared_cross_mark:Eliminar
     rename:
       :pencil2:Renombrar
+stop_rename:
+  request: >-
+    :pencil2:¿Qué nombre deseas darle a la parada *#{stop_id} ({stop_name})*?
+  renamed_successfully: >-
+    La parada *#{stop_id} ({stop_name})* ha sido renombrada correctamente a *{custom_stop_name}*
 saved_stops:
   message_has_stops: >-
     :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*

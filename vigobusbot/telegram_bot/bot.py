@@ -29,11 +29,11 @@ class Bot(aiogram.Bot):
 
     async def send_message(self, *args, **kwargs):
         self.__set_message_kwargs(kwargs)
-        await super().send_message(*args, **kwargs)
+        return await super().send_message(*args, **kwargs)
 
     async def edit_message_text(self, *args, **kwargs):
         self.__set_message_kwargs(kwargs)
-        await super().edit_message_text(*args, **kwargs)
+        return await super().edit_message_text(*args, **kwargs)
 
 
 _bot: Optional[Bot] = None

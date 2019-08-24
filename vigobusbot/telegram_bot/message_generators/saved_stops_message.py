@@ -11,7 +11,7 @@ from typing import Tuple, Optional
 import aiogram
 
 # # Package # #
-from .callback_data import *
+from .entities import *
 
 # # Project # #
 from ...persistence_api.saved_stops import get_user_saved_stops

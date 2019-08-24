@@ -5,6 +5,9 @@ Telegram Bot Message Handlers: functions that handle incoming messages, dependin
 # # Installed # #
 import aiogram
 
+# # Package # #
+from .request_handlers import stop_rename_request_handler
+
 # # Project # #
 from ..status_sender import *
 from ..message_generators import *
@@ -56,7 +59,7 @@ async def command_stop(message: aiogram.types.Message):
     chat_id = message.chat.id
 
     try:
-        stop_id = int(message.text.replace("/stop", "").strip())
+        stop_id = next(chunk for chunk in message.text.split() if chunk.isdigit())
 
         context = SourceContext(
             user_id=chat_id,
@@ -90,8 +93,14 @@ async def command_stop(message: aiogram.types.Message):
 
 async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
-    The message text is filtered to guess what the user wants (most probably get a Stop).
+    The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
     """
+    # Rename Stop
+    if message.reply_to_message \
+            and stop_rename_request_handler.is_stop_rename_request_registered(message.reply_to_message.message_id):
+        return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+
+    # Get a Stop by Stop ID
     if message.text.strip().isdigit():
         return await command_stop(message)
 

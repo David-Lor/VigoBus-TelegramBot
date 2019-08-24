@@ -11,7 +11,7 @@ from ...persistence_api import saved_stops
 
 # # Package # #
 from .source_context import *
-from .callback_data import *
+from .entities import *
 
 __all__ = ("generate_stop_message_buttons",)
 
