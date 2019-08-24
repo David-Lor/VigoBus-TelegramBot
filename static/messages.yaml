@@ -100,5 +100,7 @@ saved_stops:
   buttons:
     stop: >-
       {stop_name} (#{stop_id})
+    stop_custom_name: >-
+      {stop_custom_name} - {stop_original_name}
     remove:
       X
