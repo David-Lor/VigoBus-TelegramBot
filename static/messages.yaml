@@ -100,8 +100,14 @@ stop_rename:
     :white_check_mark:El nombre personalizado de la parada *#{stop_id} ({stop_name})* ha sido eliminado correctamente
   expired_request: >-
     No se ha podido completar la operación. Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón *Renombrar* de la parada pertinente.
-  regex_sub: >-
+  regex_sub:
+    # Regex that will remove characters from user input Stop custom name
+    >-
     [^\w \¡\¿\!\?\,\;\.\:\-\(\)\/\+]
+  currently_deleted:
+    # Sent as a callback query reply (popup) when user press Rename button when the Stop is already deleted
+    >-
+    La parada no está guardada en tu listado de paradas guardadas. Para renombrarla debes volver a guardarla.
 saved_stops:
   message_has_stops: >-
     :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*
