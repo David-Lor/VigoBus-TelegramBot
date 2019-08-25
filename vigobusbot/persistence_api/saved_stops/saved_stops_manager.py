@@ -34,7 +34,7 @@ async def get_stop(user_id: int, stop_id: int) -> Optional[SavedStopBase]:
 
 
 async def is_stop_saved(user_id: int, stop_id: int) -> bool:
-    saved_stop = get_stop(user_id=user_id, stop_id=stop_id)
+    saved_stop = await get_stop(user_id=user_id, stop_id=stop_id)
     return bool(saved_stop)
 
 

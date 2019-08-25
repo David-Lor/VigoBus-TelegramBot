@@ -26,7 +26,7 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
     """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
     """
     try:
-        stop_id = callback_data["stop_id"]
+        stop_id = int(callback_data["stop_id"])
         get_all_buses = int(callback_data["get_all_buses"])
         chat_id = callback_query.message.chat.id
         message_id = callback_query.message.message_id
@@ -63,7 +63,7 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
 async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """A Stop button on a Saved Stops message. Must send a Stop Message like it would send as response to a Stop command
     """
-    stop_id = callback_data["stop_id"]
+    stop_id = int(callback_data["stop_id"])
     chat_id = user_id = callback_query.message.chat.id
 
     try:
@@ -93,7 +93,7 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
     """Save button on Stop messages. Must save the Stop on Persistence API and update the keyboard markup,
     showing the Delete button instead.
     """
-    stop_id = callback_data["stop_id"]
+    stop_id = int(callback_data["stop_id"])
     get_all_buses = int(callback_data["get_all_buses"])
     chat_id = callback_query.message.chat.id
     message_id = callback_query.message.message_id
@@ -105,11 +105,13 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
         get_all_buses=get_all_buses
     )
 
-    await saved_stops.save_stop(
-        user_id=chat_id,
-        stop_id=stop_id,
-        stop_name=None
-    )
+    if not await saved_stops.is_stop_saved(user_id=chat_id, stop_id=stop_id):
+        await saved_stops.save_stop(
+            user_id=chat_id,
+            stop_id=stop_id,
+            stop_name=None
+        )
+        assert await saved_stops.is_stop_saved(user_id=chat_id, stop_id=stop_id)
 
     markup = generate_stop_message_buttons(context=context, is_stop_saved=True)
     await callback_query.bot.edit_message_reply_markup(
@@ -123,7 +125,7 @@ async def stop_delete(callback_query: aiogram.types.CallbackQuery, callback_data
     """Delete button on Stop messages. Must delete the Stop from Persistence API and update the keyboard markup,
     showing the Save button instead.
     """
-    stop_id = callback_data["stop_id"]
+    stop_id = int(callback_data["stop_id"])
     get_all_buses = int(callback_data["get_all_buses"])
     chat_id = callback_query.message.chat.id
     message_id = callback_query.message.message_id
@@ -135,10 +137,12 @@ async def stop_delete(callback_query: aiogram.types.CallbackQuery, callback_data
         get_all_buses=get_all_buses
     )
 
-    await saved_stops.delete_stop(
-        user_id=chat_id,
-        stop_id=stop_id
-    )
+    if await saved_stops.is_stop_saved(user_id=chat_id, stop_id=stop_id):
+        await saved_stops.delete_stop(
+            user_id=chat_id,
+            stop_id=stop_id
+        )
+        assert not await saved_stops.is_stop_saved(user_id=chat_id, stop_id=stop_id)
 
     markup = generate_stop_message_buttons(context=context, is_stop_saved=False)
     await callback_query.bot.edit_message_reply_markup(
