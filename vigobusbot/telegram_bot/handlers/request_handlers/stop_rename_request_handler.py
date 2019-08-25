@@ -2,10 +2,14 @@
 Handler and utils for working with Stop Rename requests
 """
 
+# # Native # #
+import re
+
 # # Installed # #
 import aiogram
 import pydantic
 import cachetools
+import emoji
 
 # # Project # #
 from ....static_handler import get_messages
@@ -45,12 +49,21 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
     remove_custom_name = False
     chat_id = user_reply_message.chat.id
     messages = get_messages()
-    # TODO restrictions and filters on user stop name input
 
     # Remove Stop custom name
     if new_stop_name.strip().lower() == messages.stop_rename.unname_command:
         new_stop_name = None
         remove_custom_name = True
+
+    # Set Stop custom name (filter input)
+    else:
+        new_stop_name = emoji.demojize(new_stop_name)
+        new_stop_name = re.sub(
+            pattern=messages.stop_rename.regex_sub,
+            repl='',
+            string=new_stop_name
+        )
+        new_stop_name = emoji.emojize(new_stop_name)
 
     await saved_stops.save_stop(
         user_id=chat_id,
