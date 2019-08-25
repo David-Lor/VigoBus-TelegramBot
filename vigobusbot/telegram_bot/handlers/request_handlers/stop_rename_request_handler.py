@@ -43,8 +43,12 @@ def is_stop_rename_request_registered(force_reply_message_id: int) -> bool:
     return force_reply_message_id in _stop_rename_requests
 
 
+def get_stop_rename_request_context(force_reply_message_id: int) -> StopRenameRequestContext:
+    return _stop_rename_requests.pop(force_reply_message_id)
+
+
 async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message):
-    rename_context = _stop_rename_requests.pop(user_reply_message.reply_to_message.message_id)
+    rename_context = get_stop_rename_request_context(user_reply_message.reply_to_message.message_id)
     new_stop_name = user_reply_message.text
     remove_custom_name = False
     chat_id = user_reply_message.chat.id
@@ -89,6 +93,11 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         chat_id=chat_id,
         text=text,
         reply_to_message_id=user_reply_message.message_id
+    )
+    # Remove ForceReply message sent by bot to avoid client from getting asked for a reply when reopening the client
+    await user_reply_message.bot.delete_message(
+        chat_id=chat_id,
+        message_id=rename_context.force_reply_message_id
     )
 
     # TODO Edit original message with new Stop data
