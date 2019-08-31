@@ -76,8 +76,6 @@ stop:
     :negative_squared_cross_mark:La parada solicitada no existe.
   not_valid:
     :negative_squared_cross_mark:La parada solicitada no es válida.
-  generic_error:
-    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
   buttons:
     refresh:
       :arrows_counterclockwise:Actualizar
@@ -120,3 +118,8 @@ saved_stops:
       {stop_custom_name} - {stop_original_name}
     remove:
       X
+generic:
+  generic_error: >-
+    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+  deprecated_inline_keyboard_button: >-
+    :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.

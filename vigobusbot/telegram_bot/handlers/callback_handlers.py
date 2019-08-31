@@ -240,6 +240,18 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
             )
 
 
+async def generic_callback_handler(callback_query: aiogram.types.CallbackQuery):
+    """Any deprecated button is handled by the Generic Handler, informing the user of this situation.
+    """
+    messages = get_messages()
+
+    await callback_query.bot.answer_callback_query(
+        callback_query_id=callback_query.id,
+        text=messages.generic.deprecated_inline_keyboard_button,
+        show_alert=True
+    )
+
+
 def register_handlers(dispatcher: aiogram.Dispatcher):
     """Register the callback query (inline keyboard buttons) handlers for the given Bot Dispatcher.
     """
@@ -258,5 +270,5 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     # Stop Rename button
     dispatcher.register_callback_query_handler(stop_rename, StopRenameCallbackData.filter())
 
-    # Rest of buttons
-    # TODO Generic handler to inform users that a button is deprecated
+    # Rest of buttons (generic handler for deprecated buttons)
+    dispatcher.register_callback_query_handler(generic_callback_handler)
