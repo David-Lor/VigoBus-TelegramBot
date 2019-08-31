@@ -227,7 +227,8 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
         rename_request_context = stop_rename_request_handler.StopRenameRequestContext(
             stop_id=data.stop_id,
             user_id=callback_query.message.chat.id,
-            original_stop_message_id=source_message.message_id,
+            get_all_buses=data.get_all_buses,
+            source_message=source_message,
             force_reply_message_id=force_reply_message.message_id
         )
         stop_rename_request_handler.register_stop_rename_request(rename_request_context)

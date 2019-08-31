@@ -7,11 +7,11 @@ import re
 
 # # Installed # #
 import aiogram
-import pydantic
 import cachetools
 import emoji
 
 # # Project # #
+from ...message_generators import generate_stop_message, SourceContext
 from ....static_handler import get_messages
 from ....vigobus_api import get_stop
 from ....persistence_api import saved_stops
@@ -28,10 +28,7 @@ Value=StopRenameRequestContext
 """
 
 
-class StopRenameRequestContext(pydantic.BaseModel):
-    stop_id: int
-    user_id: int
-    original_stop_message_id: int
+class StopRenameRequestContext(SourceContext):
     force_reply_message_id: int
 
 
@@ -100,4 +97,16 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         message_id=rename_context.force_reply_message_id
     )
 
-    # TODO Edit original message with new Stop data
+    # Edit original Stop message
+    source_context = SourceContext(
+        stop_id=rename_context.stop_id,
+        user_id=chat_id,
+        source_message=rename_context.source_message
+    )
+    text, buttons = await generate_stop_message(context=source_context)
+    await user_reply_message.bot.edit_message_text(
+        chat_id=chat_id,
+        text=text,
+        message_id=rename_context.source_message.message_id,
+        reply_markup=buttons
+    )
