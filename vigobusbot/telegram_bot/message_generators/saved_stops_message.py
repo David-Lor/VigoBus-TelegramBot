@@ -37,7 +37,7 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
 
         read_stops_results = await asyncio.gather(
             *[get_stop(stop.stop_id) for stop in saved_stops]
-        )  # TODO Set timeout?
+        )
 
         for saved_stop in saved_stops:
             stop_original_name = next(
@@ -51,7 +51,7 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
                     stop_original_name=stop_original_name
                 )
             else:
-                stop_name_text=stop_original_name
+                stop_name_text = stop_original_name
 
             button = aiogram.types.InlineKeyboardButton(
                 text=messages.saved_stops.buttons.stop.format(

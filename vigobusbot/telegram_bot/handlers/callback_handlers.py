@@ -168,34 +168,44 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
     """Rename button on Stop messages. Must ask the user for the new Stop name on a new message using ForceReply,
     and register the request for identifying user reply later on the message handler.
     """
+    answered_callback_query = False
+
     try:
         messages = get_messages()
+        source_message = callback_query.message
         stop_id = int(callback_data["stop_id"])
-        chat_id = callback_query.message.chat.id
+        chat_id = source_message.chat.id
 
-        results = await asyncio.gather(
+        stop, saved_stop = await asyncio.gather(
             get_stop(stop_id),
             saved_stops.get_stop(user_id=chat_id, stop_id=stop_id)
         )
 
-        stop = None
-        saved_stop = None
-
-        for result in results:
-            if isinstance(result, Stop):
-                stop = result
-            elif isinstance(result, saved_stops.SavedStopBase):
-                saved_stop = result
-
-        assert isinstance(stop, Stop)
-
         # User pressed Rename button when the stop is already deleted
         if saved_stop is None:
-            await callback_query.bot.answer_callback_query(
-                callback_query_id=callback_query.id,
-                text=messages.stop_rename.currently_deleted,
-                show_alert=True
+            update_keyboard_context = SourceContext(
+                stop_id=stop_id,
+                user_id=chat_id,
+                source_message=source_message
             )
+            await asyncio.gather(
+                # Let user know the stop is already deleted
+                callback_query.bot.answer_callback_query(
+                    callback_query_id=callback_query.id,
+                    text=messages.stop_rename.currently_deleted,
+                    show_alert=True
+                ),
+                # Also update source message
+                callback_query.bot.edit_message_reply_markup(
+                    chat_id=chat_id,
+                    message_id=source_message.message_id,
+                    reply_markup=generate_stop_message_buttons(
+                        context=update_keyboard_context,
+                        is_stop_saved=False
+                    )
+                )
+            )
+            answered_callback_query = True
             return
 
         text = messages.stop_rename.request.format(
@@ -209,7 +219,7 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
             )
 
         force_reply_message = await callback_query.bot.send_message(
-            chat_id=callback_query.message.chat.id,
+            chat_id=chat_id,
             reply_markup=RenameStopForceReply.create(),
             text=text
         )
@@ -217,15 +227,16 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
         rename_request_context = stop_rename_request_handler.StopRenameRequestContext(
             stop_id=stop_id,
             user_id=callback_query.message.chat.id,
-            original_stop_message_id=callback_query.message.message_id,
+            original_stop_message_id=source_message.message_id,
             force_reply_message_id=force_reply_message.message_id
         )
         stop_rename_request_handler.register_stop_rename_request(rename_request_context)
 
     finally:
-        await callback_query.bot.answer_callback_query(
-            callback_query_id=callback_query.id
-        )
+        if not answered_callback_query:
+            await callback_query.bot.answer_callback_query(
+                callback_query_id=callback_query.id
+            )
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):

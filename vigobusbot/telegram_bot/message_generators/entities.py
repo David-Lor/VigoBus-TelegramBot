@@ -14,11 +14,13 @@ __all__ = (
     "RenameStopForceReply"
 )
 
-StopUpdateCallbackData = CallbackData("refresh", "stop_id", "get_all_buses")
+CommonCallbackDataKeys = ("stop_id", "get_all_buses")
 
-StopSaveCallbackData = CallbackData("save", "stop_id", "get_all_buses")
-StopDeleteCallbackData = CallbackData("delete", "stop_id", "get_all_buses")
-StopRenameCallbackData = CallbackData("rename", "stop_id")
+StopUpdateCallbackData = CallbackData("refresh", *CommonCallbackDataKeys)
+
+StopSaveCallbackData = CallbackData("save", *CommonCallbackDataKeys)
+StopDeleteCallbackData = CallbackData("delete", *CommonCallbackDataKeys)
+StopRenameCallbackData = CallbackData("rename", *CommonCallbackDataKeys)
 
 StopGetCallbackData = CallbackData("get", "stop_id")
 
