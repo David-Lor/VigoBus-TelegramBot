@@ -78,7 +78,7 @@ async def command_stop(message: aiogram.types.Message):
             reply_markup=markup
         )
 
-    except ValueError:
+    except (ValueError, StopIteration):
         await message.reply(get_messages().stop.not_valid)
 
     except StopNotExist:
