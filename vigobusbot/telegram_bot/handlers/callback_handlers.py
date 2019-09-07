@@ -90,15 +90,16 @@ async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: d
         )
 
 
-async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
-    """Save button on Stop messages. Must save the Stop on Persistence API and update the keyboard markup,
-    showing the Delete button instead.
+async def _stop_save_delete(callback_query: aiogram.types.CallbackQuery, callback_data: dict, save_stop: bool):
+    """Unification of stop_save and stop_delete logic. save_stop=True is save stop; False is delete stop
     """
-    # TODO We could unify save & delete functions in one (actions to perform after saving/deleting are the same)
     try:
         data = CallbackDataExtractor.extract(callback_data)
         chat_id = callback_query.message.chat.id
         message_id = callback_query.message.message_id
+
+        is_stop_saved = await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id)
+        persisted = False
 
         context = SourceContext(
             user_id=chat_id,
@@ -107,15 +108,26 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
             get_all_buses=data.get_all_buses
         )
 
-        if not await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id):
+        if save_stop and not is_stop_saved:
             await saved_stops.save_stop(
                 user_id=chat_id,
                 stop_id=data.stop_id,
                 stop_name=None
             )
-            assert await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id)
+            persisted = True
 
-        markup = generate_stop_message_buttons(context=context, is_stop_saved=True)
+        elif not save_stop and is_stop_saved:
+            await saved_stops.delete_stop(
+                user_id=chat_id,
+                stop_id=data.stop_id
+            )
+            persisted = True
+
+        if persisted:
+            is_stop_saved = await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id)
+            assert is_stop_saved == save_stop
+
+        markup = generate_stop_message_buttons(context=context, is_stop_saved=is_stop_saved)
         await callback_query.bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=message_id,
@@ -126,42 +138,20 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
         await callback_query.bot.answer_callback_query(
             callback_query_id=callback_query.id
         )
+
+
+async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
+    """Save button on Stop messages. Must save the Stop on Persistence API and update the keyboard markup,
+    showing the Delete button instead.
+    """
+    await _stop_save_delete(callback_query, callback_data, save_stop=True)
 
 
 async def stop_delete(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """Delete button on Stop messages. Must delete the Stop from Persistence API and update the keyboard markup,
     showing the Save button instead.
     """
-    try:
-        data = CallbackDataExtractor.extract(callback_data)
-        chat_id = callback_query.message.chat.id
-        message_id = callback_query.message.message_id
-
-        context = SourceContext(
-            user_id=chat_id,
-            stop_id=data.stop_id,
-            source_message=callback_query.message,
-            get_all_buses=data.get_all_buses
-        )
-
-        if await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id):
-            await saved_stops.delete_stop(
-                user_id=chat_id,
-                stop_id=data.stop_id
-            )
-            assert not await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id)
-
-        markup = generate_stop_message_buttons(context=context, is_stop_saved=False)
-        await callback_query.bot.edit_message_reply_markup(
-            chat_id=chat_id,
-            message_id=message_id,
-            reply_markup=markup
-        )
-
-    finally:
-        await callback_query.bot.answer_callback_query(
-            callback_query_id=callback_query.id
-        )
+    await _stop_save_delete(callback_query, callback_data, save_stop=False)
 
 
 async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
