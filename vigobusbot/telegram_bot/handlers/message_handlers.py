@@ -91,6 +91,28 @@ async def command_stop(message: aiogram.types.Message):
         stop_typing(chat_id)
 
 
+async def command_cancel(message: aiogram.types.Message):
+    """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
+    The ForceReply message sent by the bot must be deleted, if possible.
+    """
+    messages = get_messages()
+    user_id = chat_id = message.chat.id
+    stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
+
+    if stop_rename_request_context:
+        await message.bot.delete_message(
+            chat_id=chat_id,
+            message_id=stop_rename_request_context.force_reply_message_id
+        )
+
+    else:
+        await message.bot.send_message(
+            chat_id=chat_id,
+            text=messages.generic.deprecated_cancel_command,
+            reply_to_message_id=message.message_id
+        )
+
+
 async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
     The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
@@ -132,6 +154,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /stop command
     dispatcher.register_message_handler(command_stop, commands=("stop", "parada"))
+
+    # /cancel command
+    dispatcher.register_message_handler(command_cancel, commands=("cancel", "cancelar"))
 
     # Rest of text messages
     dispatcher.register_message_handler(global_message_handler)

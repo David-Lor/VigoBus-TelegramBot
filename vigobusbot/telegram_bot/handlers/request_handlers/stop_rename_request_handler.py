@@ -4,6 +4,7 @@ Handler and utils for working with Stop Rename requests
 
 # # Native # #
 import re
+from typing import Optional
 
 # # Installed # #
 import aiogram
@@ -15,13 +16,14 @@ from ...message_generators import generate_stop_message, SourceContext
 from ....static_handler import get_messages
 from ....vigobus_api import get_stop
 from ....persistence_api import saved_stops
+from ....settings_handler import telegram_settings as settings
 
 __all__ = (
-    "StopRenameRequestContext",
+    "StopRenameRequestContext", "get_stop_rename_request_context",
     "register_stop_rename_request", "stop_rename_request_reply_handler", "is_stop_rename_request_registered"
 )
 
-_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=3600)
+_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.stop_rename_request_ttl)
 """Storage for Stop Rename requests, which must be replied by users in less than 1 hour (3600s).
 Key=force_reply_message_id
 Value=StopRenameRequestContext
@@ -40,7 +42,20 @@ def is_stop_rename_request_registered(force_reply_message_id: int) -> bool:
     return force_reply_message_id in _stop_rename_requests
 
 
-def get_stop_rename_request_context(force_reply_message_id: int) -> StopRenameRequestContext:
+def get_stop_rename_request_context(
+        force_reply_message_id: Optional[int] = None, user_id: Optional[int] = None
+) -> Optional[StopRenameRequestContext]:
+    if user_id and not force_reply_message_id:
+        try:
+            force_reply_message_id = next(
+                force_reply_message_id
+                for force_reply_message_id, context
+                in _stop_rename_requests.items()
+                if context.user_id == user_id
+            )
+        except StopIteration:
+            return None
+
     return _stop_rename_requests.pop(force_reply_message_id)
 
 

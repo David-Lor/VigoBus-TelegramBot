@@ -86,8 +86,9 @@ stop:
     rename:
       :pencil2:Renombrar
 stop_rename:
-  request: >-
+  request: |-
     :pencil2:¿Qué nombre deseas darle a la parada *#{stop_id} ({stop_name})*?
+    _Para cancelar la operación, pulsa sobre /cancelar_
   request_unname: >-
     _Para quitar el nombre actual ({current_stop_name}) envía una x_
   unname_command:
@@ -96,8 +97,10 @@ stop_rename:
     :white_check_mark:La parada *#{stop_id} ({stop_name})* ha sido renombrada correctamente a *{custom_stop_name}*
   unnamed_successfully: >-
     :white_check_mark:El nombre personalizado de la parada *#{stop_id} ({stop_name})* ha sido eliminado correctamente
-  expired_request: >-
-    No se ha podido completar la operación. Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón *Renombrar* de la parada pertinente.
+  expired_request: |-
+    Disculpas, no se ha podido completar la operación.
+    Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón *Renombrar* de la parada pertinente.
+    Si estabas intentando obtener una parada, vuelve a intentarlo cerrando el diálogo de respuesta.
   regex_sub:
     # Regex that will remove characters from user input Stop custom name
     >-
@@ -123,3 +126,6 @@ generic:
     :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
   deprecated_inline_keyboard_button: >-
     :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.
+  deprecated_cancel_command: |-
+    :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
+    Si el mensaje que te pide introducir el nombre de parada te molesta, puedes borrarlo con clic derecho o pulsación larga y Eliminar.
