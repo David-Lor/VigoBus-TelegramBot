@@ -28,6 +28,10 @@ Así mismo, al contrario que hasta ahora se había planteado (con ligeras adapta
 
 Entre las novedades prácticas a incorporar, se pueden destacar: renombrar paradas, búsqueda de paradas por nombre, por ubicación, y modo inline.
 
+## Microservice structure
+
+![VigoBusBot microservice structure](VigoBusTelegramBot_Structure.svg)
+
 ## Requirements
 
 - Python >= 3.6
