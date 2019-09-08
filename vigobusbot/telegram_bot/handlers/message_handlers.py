@@ -5,6 +5,9 @@ Telegram Bot Message Handlers: functions that handle incoming messages, dependin
 # # Installed # #
 import aiogram
 
+# # Package # #
+from .request_handlers import stop_rename_request_handler
+
 # # Project # #
 from ..status_sender import *
 from ..message_generators import *
@@ -56,7 +59,7 @@ async def command_stop(message: aiogram.types.Message):
     chat_id = message.chat.id
 
     try:
-        stop_id = int(message.text.replace("/stop", "").strip())
+        stop_id = next(chunk for chunk in message.text.split() if chunk.isdigit())
 
         context = SourceContext(
             user_id=chat_id,
@@ -75,23 +78,74 @@ async def command_stop(message: aiogram.types.Message):
             reply_markup=markup
         )
 
-    except ValueError:
+    except (ValueError, StopIteration):
         await message.reply(get_messages().stop.not_valid)
 
     except StopNotExist:
         await message.reply(get_messages().stop.not_exists)
 
     except (GetterException, AssertionError):
-        await message.reply(get_messages().stop.generic_error)
+        await message.reply(get_messages().generic.generic_error)
 
     finally:
         stop_typing(chat_id)
 
 
+async def command_cancel(message: aiogram.types.Message):
+    """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
+    The ForceReply message sent by the bot must be deleted, if possible.
+    """
+    user_id = chat_id = message.chat.id
+    stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
+
+    if stop_rename_request_context:
+        await message.bot.delete_message(
+            chat_id=chat_id,
+            message_id=stop_rename_request_context.force_reply_message_id
+        )
+
+    else:
+        await message.bot.send_message(
+            chat_id=chat_id,
+            text=get_messages().stop_rename.deprecated_command,
+            reply_to_message_id=message.message_id
+        )
+
+
+async def command_removename(message: aiogram.types.Message):
+    """Remove Name command handler removes a custom name from a previously user saved Stop.
+    A rename ForceReply message should be sent by the bot and the StopRenameRequestContext must exist.
+    """
+    user_id = chat_id = message.chat.id
+
+    if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id):
+        return await stop_rename_request_handler.stop_rename_request_reply_handler(message, remove_custom_name=True)
+
+    else:
+        await message.bot.send_message(
+            chat_id=chat_id,
+            text=get_messages().stop_rename.deprecated_command,
+            reply_to_message_id=message.message_id
+        )
+
+
 async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
-    The message text is filtered to guess what the user wants (most probably get a Stop).
+    The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
     """
+    # Reply to bot message = reply to Rename stop question
+    if message.reply_to_message and message.reply_to_message.from_user.is_bot:
+        if stop_rename_request_handler.get_stop_rename_request_context(message.reply_to_message.message_id):
+            return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+        else:
+            # if ForceReply message not registered, user might had replied any message, or the request expired
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=get_messages().stop_rename.expired_request,
+                reply_to_message_id=message.message_id
+            )
+
+    # Get a Stop by Stop ID
     if message.text.strip().isdigit():
         return await command_stop(message)
 
@@ -116,6 +170,12 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /stop command
     dispatcher.register_message_handler(command_stop, commands=("stop", "parada"))
+
+    # /cancel command
+    dispatcher.register_message_handler(command_cancel, commands=("cancel", "cancelar"))
+
+    # /removename command
+    dispatcher.register_message_handler(command_removename, commands=("removename", "quitarnombre"))
 
     # Rest of text messages
     dispatcher.register_message_handler(global_message_handler)

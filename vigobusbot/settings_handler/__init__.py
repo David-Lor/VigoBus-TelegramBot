@@ -26,6 +26,7 @@ class TelegramSettings(BaseBotSettings):
     polling_fast = True
     polling_timeout: float = 30
     static_path: Optional[str]
+    stop_rename_request_ttl: int = 3600
 
     class Config:
         case_insensitive = True

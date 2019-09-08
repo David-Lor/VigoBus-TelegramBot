@@ -11,7 +11,7 @@ from .entities import *
 # from .key_generator import *
 from ..requester import *
 
-__all__ = ("get_user_saved_stops", "save_stop", "delete_stop", "is_stop_saved")
+__all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved")
 
 
 async def get_user_saved_stops(user_id: int) -> SavedStops:
@@ -25,9 +25,17 @@ async def get_user_saved_stops(user_id: int) -> SavedStops:
     return [SavedStopDecoded(**stop_json) for stop_json in stops_json]
 
 
-async def is_stop_saved(user_id: int, stop_id: int) -> bool:
+async def get_stop(user_id: int, stop_id: int) -> Optional[SavedStopBase]:
     saved_stops = await get_user_saved_stops(user_id)
-    return any(saved_stop for saved_stop in saved_stops if saved_stop.stop_id == stop_id)
+    try:
+        return next(saved_stop for saved_stop in saved_stops if saved_stop.stop_id == stop_id)
+    except StopIteration:
+        return None
+
+
+async def is_stop_saved(user_id: int, stop_id: int) -> bool:
+    saved_stop = await get_stop(user_id=user_id, stop_id=stop_id)
+    return bool(saved_stop)
 
 
 async def save_stop(user_id: int, stop_id: int, stop_name: Optional[str] = None):

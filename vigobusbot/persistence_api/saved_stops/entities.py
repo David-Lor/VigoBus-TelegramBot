@@ -9,10 +9,10 @@ from typing import Union, Optional, List
 import pydantic
 
 # # Package # #
-from .encoder_decoder import *
-from .key_generator import *
+# from .encoder_decoder import *
+# from .key_generator import *
 
-__all__ = ("SavedStopEncoded", "SavedStopDecoded", "SavedStops")
+__all__ = ("SavedStopEncoded", "SavedStopDecoded", "SavedStopBase", "SavedStops")
 
 # TODO decode/encode methods are not used for now until finding best encoding/encryption method for the data
 

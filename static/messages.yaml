@@ -76,8 +76,6 @@ stop:
     :negative_squared_cross_mark:La parada solicitada no existe.
   not_valid:
     :negative_squared_cross_mark:La parada solicitada no es válida.
-  generic_error:
-    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
   buttons:
     refresh:
       :arrows_counterclockwise:Actualizar
@@ -87,13 +85,45 @@ stop:
       :negative_squared_cross_mark:Eliminar
     rename:
       :pencil2:Renombrar
+stop_rename:
+  request: |-
+    :pencil2:¿Qué nombre deseas darle a la parada *#{stop_id} ({stop_name})*?
+    _Para cancelar la operación, pulsa sobre /cancelar_
+  request_unname: >-
+    _Para quitar el nombre actual ({current_stop_name}) pulsa sobre /quitarnombre_
+  renamed_successfully: >-
+    :white_check_mark:La parada *#{stop_id} ({stop_name})* ha sido renombrada correctamente a *{custom_stop_name}*
+  unnamed_successfully: >-
+    :white_check_mark:El nombre personalizado de la parada *#{stop_id} ({stop_name})* ha sido eliminado correctamente
+  expired_request: |-
+    Disculpas, no se ha podido completar la operación.
+    Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón *Renombrar* de la parada pertinente.
+    Si estabas intentando obtener una parada, vuelve a intentarlo cerrando el diálogo de respuesta.
+  deprecated_command: |-
+    :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
+    Si el mensaje que te pide introducir el nombre de parada te molesta, puedes borrarlo con clic derecho/pulsación larga y Eliminar.
+  regex_sub:
+    # Regex that will remove characters from user input Stop custom name
+    >-
+    [^\w \¡\¿\!\?\,\;\.\:\-\(\)\/\+]
+  currently_deleted:
+    # Sent as a callback query reply (popup) when user press Rename button when the Stop is already deleted
+    >-
+    La parada no está guardada en tu listado de paradas guardadas. Para renombrarla debes volver a guardarla.
 saved_stops:
   message_has_stops: >-
     :busstop:*Tienes {n_stops} parada{plural} guardada{plural}:*
   message_no_stops: >-
-    *¡No tienes ninguna parada guardada!* Busca una y pulsa en el botón de Guardar para que aparezca aquí.
+    :triangular_flag_on_post:*¡No tienes ninguna parada guardada!* Busca una y pulsa en el botón de Guardar para que aparezca aquí.
   buttons:
     stop: >-
       {stop_name} (#{stop_id})
+    stop_custom_name: >-
+      {stop_custom_name} - {stop_original_name}
     remove:
       X
+generic:
+  generic_error: >-
+    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+  deprecated_inline_keyboard_button: >-
+    :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.

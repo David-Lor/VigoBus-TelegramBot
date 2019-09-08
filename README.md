@@ -32,18 +32,19 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 - Python >= 3.6
 - [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
-- [DataManager](https://github.com/David-Lor/Telegram-BusBot-DataManager)
+- [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
 
 ## Changelog
 
+- 0.1.3 - Support for setting custom stop names on user saved stops
 - 0.1.2 - Support for Saved Stops and working command to list all of them
 - 0.1.1 - Inline keyboard markup with callback support for Refreshing Stop messages
 - 0.1.0 - Initial async version (basic Get Stop messages)
 
 ## Disclaimer
 
-This project is not endorsed by, directly affiliated with, maintained by, sponsored by or in any way officially connected with the company or companies responsible for the public transport service of the city of Vigo.
+This project is not endorsed by, directly affiliated with, maintained by, sponsored by or in any way officially connected with the company, companies and/or entities responsible for the public transport service of the city of Vigo.
 
-_Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni en cualquier otra manera oficialmente conectado con la compañía o compañías responsables del sistema de transporte público de la ciudad de Vigo._
+_Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni en cualquier otra manera oficialmente conectado con la compañía, compañías y/o entidades responsables del sistema de transporte público de la ciudad de Vigo._

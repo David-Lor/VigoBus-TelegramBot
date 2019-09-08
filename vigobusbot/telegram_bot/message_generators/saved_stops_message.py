@@ -11,7 +11,7 @@ from typing import Tuple, Optional
 import aiogram
 
 # # Package # #
-from .callback_data import *
+from .entities import *
 
 # # Project # #
 from ...persistence_api.saved_stops import get_user_saved_stops
@@ -35,21 +35,31 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
         )
         markup = aiogram.types.InlineKeyboardMarkup()
 
-        saved_stops_results = await asyncio.gather(
+        read_stops_results = await asyncio.gather(
             *[get_stop(stop.stop_id) for stop in saved_stops]
-        )  # TODO Set timeout?
+        )
 
-        for stop in saved_stops:
+        for saved_stop in saved_stops:
+            stop_original_name = next(
+                stop_result.name for stop_result in read_stops_results
+                if stop_result.stopid == saved_stop.stop_id
+            )
+
+            if saved_stop.stop_name:
+                stop_name_text = messages.saved_stops.buttons.stop_custom_name.format(
+                    stop_custom_name=saved_stop.stop_name,
+                    stop_original_name=stop_original_name
+                )
+            else:
+                stop_name_text = stop_original_name
+
             button = aiogram.types.InlineKeyboardButton(
                 text=messages.saved_stops.buttons.stop.format(
-                    stop_id=stop.stop_id,
-                    stop_name=next(
-                        stop_result.name for stop_result in saved_stops_results
-                        if stop_result.stopid == stop.stop_id
-                    )
+                    stop_id=saved_stop.stop_id,
+                    stop_name=stop_name_text
                 ),
                 callback_data=StopGetCallbackData.new(
-                    stop_id=stop.stop_id
+                    stop_id=saved_stop.stop_id
                 )
             )
             markup.row(button)
