@@ -19,8 +19,8 @@ from ....persistence_api import saved_stops
 from ....settings_handler import telegram_settings as settings
 
 __all__ = (
-    "StopRenameRequestContext", "get_stop_rename_request_context",
-    "register_stop_rename_request", "stop_rename_request_reply_handler", "is_stop_rename_request_registered"
+    "StopRenameRequestContext",
+    "register_stop_rename_request", "stop_rename_request_reply_handler", "get_stop_rename_request_context"
 )
 
 _stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.stop_rename_request_ttl)
@@ -36,10 +36,6 @@ class StopRenameRequestContext(SourceContext):
 
 def register_stop_rename_request(context: StopRenameRequestContext):
     _stop_rename_requests[context.force_reply_message_id] = context
-
-
-def is_stop_rename_request_registered(force_reply_message_id: int) -> bool:
-    return force_reply_message_id in _stop_rename_requests
 
 
 def get_stop_rename_request_context(
@@ -59,19 +55,19 @@ def get_stop_rename_request_context(
     return _stop_rename_requests.pop(force_reply_message_id)
 
 
-async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message):
-    rename_context = get_stop_rename_request_context(user_reply_message.reply_to_message.message_id)
+async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message, remove_custom_name=False):
+    """This handler is called from message handlers when a user replies to a Stop Rename ForceReply request.
+    The user can reply with a custom name, or requesting to remove the already existing custom stop name.
+    If setting a custom name, user_reply_message is the message sent by the user with the desired custom name.
+    If removing a custom name, remove_custom_name=True and user_reply_message is the command message sent by the user.
+    """
     new_stop_name = user_reply_message.text
-    remove_custom_name = False
     chat_id = user_reply_message.chat.id
     messages = get_messages()
 
-    # Remove Stop custom name
-    if new_stop_name.strip().lower() == messages.stop_rename.unname_command:
+    if remove_custom_name:
         new_stop_name = None
-        remove_custom_name = True
-
-    # Set Stop custom name (filter input)
+        rename_context = get_stop_rename_request_context(user_id=user_reply_message.from_user.id)
     else:
         new_stop_name = emoji.demojize(new_stop_name)
         new_stop_name = re.sub(
@@ -80,6 +76,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
             string=new_stop_name
         )
         new_stop_name = emoji.emojize(new_stop_name)
+        rename_context = get_stop_rename_request_context(user_reply_message.reply_to_message.message_id)
 
     await saved_stops.save_stop(
         user_id=chat_id,

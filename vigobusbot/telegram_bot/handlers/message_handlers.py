@@ -95,7 +95,6 @@ async def command_cancel(message: aiogram.types.Message):
     """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
     The ForceReply message sent by the bot must be deleted, if possible.
     """
-    messages = get_messages()
     user_id = chat_id = message.chat.id
     stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
 
@@ -108,7 +107,24 @@ async def command_cancel(message: aiogram.types.Message):
     else:
         await message.bot.send_message(
             chat_id=chat_id,
-            text=messages.generic.deprecated_cancel_command,
+            text=get_messages().stop_rename.deprecated_command,
+            reply_to_message_id=message.message_id
+        )
+
+
+async def command_removename(message: aiogram.types.Message):
+    """Remove Name command handler removes a custom name from a previously user saved Stop.
+    A rename ForceReply message should be sent by the bot and the StopRenameRequestContext must exist.
+    """
+    user_id = chat_id = message.chat.id
+
+    if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id):
+        return await stop_rename_request_handler.stop_rename_request_reply_handler(message, remove_custom_name=True)
+
+    else:
+        await message.bot.send_message(
+            chat_id=chat_id,
+            text=get_messages().stop_rename.deprecated_command,
             reply_to_message_id=message.message_id
         )
 
@@ -119,7 +135,7 @@ async def global_message_handler(message: aiogram.types.Message):
     """
     # Reply to bot message = reply to Rename stop question
     if message.reply_to_message and message.reply_to_message.from_user.is_bot:
-        if stop_rename_request_handler.is_stop_rename_request_registered(message.reply_to_message.message_id):
+        if stop_rename_request_handler.get_stop_rename_request_context(message.reply_to_message.message_id):
             return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
         else:
             # if ForceReply message not registered, user might had replied any message, or the request expired
@@ -157,6 +173,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /cancel command
     dispatcher.register_message_handler(command_cancel, commands=("cancel", "cancelar"))
+
+    # /removename command
+    dispatcher.register_message_handler(command_removename, commands=("removename", "quitarnombre"))
 
     # Rest of text messages
     dispatcher.register_message_handler(global_message_handler)
