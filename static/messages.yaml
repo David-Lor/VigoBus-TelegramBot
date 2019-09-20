@@ -85,6 +85,10 @@ stop:
       :negative_squared_cross_mark:Eliminar
     rename:
       :pencil2:Renombrar
+    more_buses:
+      :heavy_plus_sign:Buses
+    less_buses:
+      :heavy_minus_sign:Buses
 stop_rename:
   request: |-
     :pencil2:¿Qué nombre deseas darle a la parada *#{stop_id} ({stop_name})*?
