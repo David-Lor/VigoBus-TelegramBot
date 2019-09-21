@@ -4,6 +4,7 @@ Helper to generate the Stop Message text body
 
 # # Native # #
 import datetime
+from typing import Optional
 
 # # Project # #
 from ...persistence_api import saved_stops
@@ -13,8 +14,13 @@ from ...entities import *
 __all__ = ("generate_stop_message_text",)
 
 
-def generate_stop_message_text(stop: Stop, buses: Buses, user_saved_stop: saved_stops.SavedStopBase) -> str:
+def generate_stop_message_text(
+        stop: Stop,
+        buses_response: BusesResponse,
+        user_saved_stop: Optional[saved_stops.SavedStopBase]
+) -> str:
     messages = get_messages()
+    buses = buses_response.buses
 
     # Generate Stop Name text
     if user_saved_stop and user_saved_stop.stop_name:

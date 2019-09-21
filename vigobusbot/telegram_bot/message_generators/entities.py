@@ -11,16 +11,20 @@ from aiogram.types.force_reply import ForceReply
 __all__ = (
     "StopUpdateCallbackData", "StopGetCallbackData",
     "StopSaveCallbackData", "StopDeleteCallbackData", "StopRenameCallbackData",
+    "StopMoreBusesCallbackData", "StopLessBusesCallbackData",
     "RenameStopForceReply"
 )
 
-CommonCallbackDataKeys = ("stop_id", "get_all_buses")
+CommonCallbackDataKeys = ("stop_id", "get_all_buses", "more_buses_available")
 
 StopUpdateCallbackData = CallbackData("refresh", *CommonCallbackDataKeys)
 
 StopSaveCallbackData = CallbackData("save", *CommonCallbackDataKeys)
 StopDeleteCallbackData = CallbackData("delete", *CommonCallbackDataKeys)
 StopRenameCallbackData = CallbackData("rename", *CommonCallbackDataKeys)
+
+StopMoreBusesCallbackData = CallbackData("more_buses", *CommonCallbackDataKeys)
+StopLessBusesCallbackData = CallbackData("less_buses", *CommonCallbackDataKeys)
 
 StopGetCallbackData = CallbackData("get", "stop_id")
 
