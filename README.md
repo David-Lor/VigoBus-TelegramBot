@@ -42,6 +42,7 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 ## Changelog
 
+- 0.1.4 - Button on Stop messages to show More/Less buses
 - 0.1.3 - Support for setting custom stop names on user saved stops
 - 0.1.2 - Support for Saved Stops and working command to list all of them
 - 0.1.1 - Inline keyboard markup with callback support for Refreshing Stop messages
