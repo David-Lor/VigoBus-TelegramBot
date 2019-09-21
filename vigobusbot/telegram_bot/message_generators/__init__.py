@@ -15,5 +15,6 @@ __all__ = (
     "generate_saved_stops_message", "SourceContext", "SourceType",
     "StopUpdateCallbackData", "StopGetCallbackData",
     "StopSaveCallbackData", "StopDeleteCallbackData", "StopRenameCallbackData",
+    "StopMoreBusesCallbackData", "StopLessBusesCallbackData",
     "RenameStopForceReply", "CallbackDataExtractor"
 )

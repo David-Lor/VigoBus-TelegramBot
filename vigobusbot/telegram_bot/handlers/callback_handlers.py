@@ -26,15 +26,13 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
     """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
     """
     try:
-        data = CallbackDataExtractor.extract(callback_data)
         chat_id = callback_query.message.chat.id
         message_id = callback_query.message.message_id
 
         context = SourceContext(
             user_id=chat_id,
-            stop_id=data.stop_id,
             source_message=callback_query.message,
-            get_all_buses=data.get_all_buses
+            **callback_data
         )
 
         # For now, not sending "typing" status, since after message is updated it can still show "typing"...
@@ -56,9 +54,8 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
         # resulting on the same message text with the same timestamp. Ignore these errors.
         pass
 
-    finally:
-        # stop_typing(chat_id)
-        pass
+    # finally:
+    #     stop_typing(chat_id)
 
 
 async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
@@ -103,9 +100,8 @@ async def _stop_save_delete(callback_query: aiogram.types.CallbackQuery, callbac
 
         context = SourceContext(
             user_id=chat_id,
-            stop_id=data.stop_id,
             source_message=callback_query.message,
-            get_all_buses=data.get_all_buses
+            **callback_data
         )
 
         if save_stop and not is_stop_saved:
@@ -215,11 +211,10 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
         )
 
         rename_request_context = stop_rename_request_handler.StopRenameRequestContext(
-            stop_id=data.stop_id,
             user_id=callback_query.message.chat.id,
-            get_all_buses=data.get_all_buses,
             source_message=source_message,
-            force_reply_message_id=force_reply_message.message_id
+            force_reply_message_id=force_reply_message.message_id,
+            **callback_data
         )
         stop_rename_request_handler.register_stop_rename_request(rename_request_context)
 
@@ -228,6 +223,22 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
             await callback_query.bot.answer_callback_query(
                 callback_query_id=callback_query.id
             )
+
+
+async def stop_show_more_buses(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
+    """Show More Buses on a Stop message when more buses are/were available. Must refresh the Stop message with
+    get_all_buses=True on the SourceContext.
+    """
+    callback_data["get_all_buses"] = True
+    await stop_refresh(callback_query, callback_data)
+
+
+async def stop_show_less_buses(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
+    """Show More Buses on a Stop message when more buses are/were available. Must refresh the Stop message with
+    get_all_buses=False on the SourceContext.
+    """
+    callback_data["get_all_buses"] = False
+    await stop_refresh(callback_query, callback_data)
 
 
 async def generic_callback_handler(callback_query: aiogram.types.CallbackQuery):
@@ -259,6 +270,12 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # Stop Rename button
     dispatcher.register_callback_query_handler(stop_rename, StopRenameCallbackData.filter())
+
+    # Stop show More Buses button
+    dispatcher.register_callback_query_handler(stop_show_more_buses, StopMoreBusesCallbackData.filter())
+
+    # Stop show Less Buses button
+    dispatcher.register_callback_query_handler(stop_show_less_buses, StopLessBusesCallbackData.filter())
 
     # Rest of buttons (generic handler for deprecated buttons)
     dispatcher.register_callback_query_handler(generic_callback_handler)
