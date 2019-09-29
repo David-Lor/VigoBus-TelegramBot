@@ -1,32 +1,18 @@
-"""TEST - BASIC BOT COMMANDS
+"""TESTS - BASIC BOT COMMANDS
 """
 
 # # Package # #
 from .utils import *
 
-# # Project # #
-from vigobusbot.static_handler import get_messages, load_static_files
 
-
-class TestBasicBotCommands:
+class TestBasicBotCommands(BaseTest):
     """Request the bot for basic text commands without complex logic.
     """
-    client: BotIntegrationClient = None
-    messages = None
-
-    @classmethod
-    def setup_class(cls):
-        load_static_files()
-        start_bot()
-        cls.messages = get_messages()
-        cls.client = start_client()
-
-    @classmethod
-    def teardown_class(cls):
-        stop_client()
-        stop_bot()
 
     def __command_test(self, command, expected):
+        """Given a command and the expected output message/s,
+        send the command as the client and wait for the bot to reply.
+        """
         if isinstance(expected, str):
             expected = [expected]
         n_expected = len(expected)

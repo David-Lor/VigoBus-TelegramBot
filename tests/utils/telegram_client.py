@@ -1,6 +1,9 @@
-"""TEST UTILS - TELEGRAM CLIENT
+"""TESTS - UTILS - TELEGRAM CLIENT
 Start and stop the Telegram client for testing using tgintegration (and pyrogram behind)
 """
+
+# # Native # #
+from typing import Optional
 
 # # Installed # #
 from tgintegration import BotIntegrationClient
@@ -10,8 +13,7 @@ from .settings import settings
 
 __all__ = ("start_client", "stop_client", "BotIntegrationClient")
 
-# noinspection PyTypeChecker
-__client: BotIntegrationClient = None
+__client: Optional[BotIntegrationClient] = None
 
 
 def start_client() -> BotIntegrationClient:
@@ -31,5 +33,7 @@ def start_client() -> BotIntegrationClient:
 
 
 def stop_client():
+    global __client
     if __client and __client.is_started:
         __client.stop()
+        __client = None
