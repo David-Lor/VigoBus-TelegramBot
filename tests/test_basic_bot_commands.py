@@ -26,21 +26,25 @@ class TestBasicBotCommands(BaseTest):
     def test_command_start(self):
         """Test the /start command
         """
+        self.debug_test_name()
         self.__command_test("start", self.messages.start)
 
     def test_command_help(self):
         """Test the /help command
         """
+        self.debug_test_name()
         self.__command_test("help", self.messages.help)
         self.__command_test("ayuda", self.messages.help)
 
     def test_command_donate(self):
         """Test the /donate command
         """
+        self.debug_test_name()
         self.__command_test("donate", self.messages.donate)
 
     def test_command_about(self):
         """Test the /about command
         """
+        self.debug_test_name()
         self.__command_test("about", self.messages.about)
         self.__command_test("acercade", self.messages.about)

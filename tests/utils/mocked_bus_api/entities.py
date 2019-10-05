@@ -1,5 +1,5 @@
-"""TESTS - UTILS - MOCKED API - ENTITIES
-Entities used by the Mocked API
+"""TESTS - UTILS - MOCKED BUS API - ENTITIES
+Entities used by the Mocked Bus API
 """
 
 # # Native # #

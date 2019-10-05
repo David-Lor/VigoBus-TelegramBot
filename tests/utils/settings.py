@@ -19,7 +19,6 @@ class SettingsTest(BaseSettingsHandler):
     min_wait_consecutive: float = 2.0
     buses_limit: int = 5
     """Max buses returned when get_all_buses=0"""
-    fake_api_port: int = 5555
     api_join_timeout: float = 15
 
     class Config:

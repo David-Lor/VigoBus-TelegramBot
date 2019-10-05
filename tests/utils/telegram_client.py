@@ -28,7 +28,7 @@ def start_client() -> BotIntegrationClient:
         )
 
     __client.start()
-    __client.clear_chat()
+    # __client.clear_chat()
     return __client
 
 

@@ -129,6 +129,14 @@ async def command_removename(message: aiogram.types.Message):
         )
 
 
+# noinspection PyUnusedLocal
+async def command_test(*args, **kwargs):
+    """Test command is used by bot tests, to show debug information on Telegram chat.
+    These messages are ignored by the bot.
+    """
+    pass
+
+
 async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
     The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
@@ -176,6 +184,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /removename command
     dispatcher.register_message_handler(command_removename, commands=("removename", "quitarnombre"))
+
+    # /test command
+    dispatcher.register_message_handler(command_test, commands=("test",))
 
     # Rest of text messages
     dispatcher.register_message_handler(global_message_handler)
