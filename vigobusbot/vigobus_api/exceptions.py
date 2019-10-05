@@ -18,18 +18,21 @@ TimeoutExceptions = (TimeoutError, requests.Timeout, asyncio.TimeoutError)
 
 
 @contextlib.contextmanager
-def manage_exceptions():
+def manage_exceptions(stop_id: int):
     # noinspection PyBroadException
     try:
         yield
+
     except TimeoutExceptions:
         raise GetterTimedOut()
+
     except requests.HTTPError as ex:
         response: requests.Response = ex.response
         code = response.status_code
         if code == 404:
-            raise StopNotExist()
+            raise StopNotExist(stop_id)
         else:
-            raise GetterAPIException()
-    except Exception:
-        raise GetterInternalException()
+            raise GetterAPIException(ex)
+
+    except Exception as ex:
+        raise GetterInternalException(ex)
