@@ -35,12 +35,20 @@ class StopRenameRequestContext(SourceContext):
 
 
 def register_stop_rename_request(context: StopRenameRequestContext):
+    """Register a Stop rename request on the _stop_rename_requests local cache.
+    The key is the Message ID of the Force Reply message sent by the bot.and
+    The value is the StopRenameRequestContext object.
+    """
     _stop_rename_requests[context.force_reply_message_id] = context
 
 
 def get_stop_rename_request_context(
-        force_reply_message_id: Optional[int] = None, user_id: Optional[int] = None
+        force_reply_message_id: Optional[int] = None, user_id: Optional[int] = None, pop: bool = True
 ) -> Optional[StopRenameRequestContext]:
+    """Search the Context of a Stop Rename request, given the Message ID of the Force Reply message sent by the bot,
+    or the User ID that requested it - In this last case the context is searched on the local cache,
+    supposing only one request exists per user, since the first result is acquired; if not found, return None).
+    """
     if user_id and not force_reply_message_id:
         try:
             force_reply_message_id = next(
@@ -52,7 +60,10 @@ def get_stop_rename_request_context(
         except StopIteration:
             return None
 
-    return _stop_rename_requests.pop(force_reply_message_id)
+    if pop:
+        return _stop_rename_requests.pop(force_reply_message_id)
+    else:
+        return _stop_rename_requests[force_reply_message_id]
 
 
 async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message, remove_custom_name=False):

@@ -135,7 +135,9 @@ async def global_message_handler(message: aiogram.types.Message):
     """
     # Reply to bot message = reply to Rename stop question
     if message.reply_to_message and message.reply_to_message.from_user.is_bot:
-        if stop_rename_request_handler.get_stop_rename_request_context(message.reply_to_message.message_id):
+        if stop_rename_request_handler.get_stop_rename_request_context(
+                force_reply_message_id=message.reply_to_message.message_id, pop=False
+        ):
             return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
         else:
             # if ForceReply message not registered, user might had replied any message, or the request expired
