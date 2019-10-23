@@ -3,11 +3,10 @@ Helpers to request HTTP sources
 """
 
 # # Native # #
-import asyncio
 import urllib.parse
 
 # # Installed # #
-import requests_async as requests
+import httpx
 
 # # Project # #
 from ..settings_handler import api_settings as settings
@@ -15,15 +14,24 @@ from ..settings_handler import api_settings as settings
 __all__ = ("http_get",)
 
 
-async def http_get(endpoint, query_params=None, body=None, timeout=settings.timeout) -> requests.Response:
-    result: requests.Response = await asyncio.wait_for(
-        requests.get(
-            url=urllib.parse.urljoin(settings.url, endpoint),
-            params=query_params,
-            json=body
-        ),
-        timeout=timeout
-    )
-    result.raise_for_status()
-    result.encoding = "utf-8"
-    return result
+async def http_get(
+        endpoint, query_params=None, timeout=settings.timeout, retries=settings.retries
+) -> httpx.AsyncResponse:
+    last_ex = None
+
+    for _ in range(retries):
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                result = await client.get(
+                    url=urllib.parse.urljoin(settings.url, endpoint),
+                    params=query_params
+                )
+
+            result.raise_for_status()
+            result.encoding = "utf-8"
+            return result
+
+        except httpx.Timeout as ex:
+            last_ex = ex
+
+    raise last_ex

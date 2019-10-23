@@ -35,6 +35,7 @@ class TelegramSettings(BaseBotSettings):
 class APISettings(BaseBotSettings):
     url = "http://localhost:5000"
     timeout: float = 30
+    retries: int = 2
 
     class Config:
         env_prefix = "API_"
@@ -45,6 +46,7 @@ class PersistenceSettings(BaseBotSettings):
     url = "http://localhost:5001"
     salt = "FixedSalt"
     timeout: float = 30
+    retries: int = 2
     cache_size: int = 100
 
     class Config:
