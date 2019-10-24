@@ -1,5 +1,5 @@
 aiogram  # Async Telegram Bot API wrapper
-requests-async  # HTTP requests
+httpx  # HTTP requests
 python-dotenv  # dotenv setting files
 pybuses-entities  # Stop/Bus entities
 pymongo  # MongoDB client
