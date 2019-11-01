@@ -16,7 +16,7 @@ __all__ = ("get_buses",)
 
 
 async def get_buses(stop_id: int, get_all_buses=False) -> BusesResponse:
-    with manage_exceptions():
+    with manage_exceptions(stop_id):
         query_params = {
             "get_all_buses": int(get_all_buses)
         }

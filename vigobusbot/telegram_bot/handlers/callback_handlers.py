@@ -47,8 +47,6 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
             reply_markup=markup
         )
 
-    # TODO Add Except cases and replies to users
-
     except MessageNotModified:
         # MessageNotModified exceptions can trigger when user presses Update button many times too quickly,
         # resulting on the same message text with the same timestamp. Ignore these errors.
