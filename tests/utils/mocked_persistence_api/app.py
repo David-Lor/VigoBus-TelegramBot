@@ -10,7 +10,7 @@ from typing import List, Optional
 
 # # Installed # #
 import flask
-import requests
+import httpx
 
 # # Package # #
 from .entities import *
@@ -60,11 +60,11 @@ class FakePersistenceAPI(FakeAPIBase):
     def clear(self):
         self._request("/clear")
 
-    def _request(self, endpoint: str, method: str = "GET", data: Optional[dict] = None) -> requests.Response:
+    def _request(self, endpoint: str, method: str = "GET", data: Optional[dict] = None) -> httpx.Response:
         functions = {
-            "GET": requests.get,
-            "POST": requests.post,
-            "DELETE": requests.delete
+            "GET": httpx.get,
+            "POST": httpx.post,
+            "DELETE": httpx.delete
         }
         return functions[method](urllib.parse.urljoin(f"http://localhost:{self.app_port}", endpoint), json=data)
 

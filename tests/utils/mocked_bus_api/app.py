@@ -9,7 +9,7 @@ import base64
 
 # # Installed # #
 import flask
-import requests
+import httpx
 from pybusent.sorting import BusSort
 
 # # Package # #
@@ -67,7 +67,7 @@ class FakeBusAPI(FakeAPIBase, BusData):
 
     def set_data(self, data: BusData):
         self._clear()
-        requests.post(f"http://localhost:{self.app_port}/data", json=data.encode_data())
+        httpx.post(f"http://localhost:{self.app_port}/data", json=data.encode_data())
         return self.ok_response()
 
     def _post_set_data(self):

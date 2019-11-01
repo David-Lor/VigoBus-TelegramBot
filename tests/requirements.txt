@@ -3,4 +3,3 @@ tgintegration  # telegram integration test framework
 pyrogram==0.7.4  # telegram user client (version locked due to tgintegration deprecation)
 faker  # generate random data
 flask  # run the fake API
-requests  # HTTP requests (sync)

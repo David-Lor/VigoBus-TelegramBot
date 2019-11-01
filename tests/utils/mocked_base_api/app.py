@@ -12,7 +12,7 @@ from typing import Optional, Union
 
 # # Installed # #
 import flask
-import requests
+import httpx
 from gevent.pywsgi import WSGIServer
 
 # # Parent Package # #
@@ -64,19 +64,17 @@ class FakeAPIBase:
 
     def wait_for_api(self, timeout=settings.api_join_timeout):
         start = time.time()
-        exc = None
 
         while time.time() - start < timeout:
             try:
-                result: requests.Response = requests.get(
+                result: httpx.Response = httpx.get(
                     f"http://127.0.0.1:{self.app_port}/status",
                     timeout=settings.api_join_timeout
                 )
                 result.raise_for_status()
                 return result
 
-            except (requests.HTTPError, requests.ConnectionError) as ex:
-                exc = ex
+            except (httpx.HTTPError, ConnectionError):
                 time.sleep(0.25)
 
         raise TimeoutError(f"Timeout while waiting for the Fake {self.app_name} API to be initialized")
@@ -105,7 +103,7 @@ class FakeAPIBase:
 
     def stop_server(self, timeout=settings.api_join_timeout, join=False):
         if self._app_process and self._app_process.is_alive():
-            with contextlib.suppress(requests.RequestException):
-                requests.get(f"http://localhost:{self.app_port}/stop", timeout=timeout)
+            with contextlib.suppress(httpx.HTTPError):
+                httpx.get(f"http://localhost:{self.app_port}/stop", timeout=timeout)
             if join:
                 self._app_process.join(timeout=timeout)
