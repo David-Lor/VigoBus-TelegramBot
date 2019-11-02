@@ -7,6 +7,7 @@ import aiogram
 
 # # Package # #
 from .request_handlers import stop_rename_request_handler
+from .rate_limit_handlers import handle_user_rate_limit
 
 # # Project # #
 from ..status_sender import *
@@ -17,22 +18,30 @@ from ...exceptions import *
 __all__ = ("register_handlers",)
 
 
+def handle_rate_limit(message: aiogram.types.Message):
+    handle_user_rate_limit(message.chat.id)
+
+
 async def command_start(message: aiogram.types.Message):
+    handle_rate_limit(message)
     for text in get_messages().start:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_help(message: aiogram.types.Message):
+    handle_rate_limit(message)
     for text in get_messages().help:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_donate(message: aiogram.types.Message):
+    handle_rate_limit(message)
     for text in get_messages().donate:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_about(message: aiogram.types.Message):
+    handle_rate_limit(message)
     for text in get_messages().about:
         await message.bot.send_message(message.chat.id, text)
 
@@ -40,6 +49,7 @@ async def command_about(message: aiogram.types.Message):
 async def command_stops(message: aiogram.types.Message):
     """Stops command handler must return all the Stops saved by the user
     """
+    handle_rate_limit(message)
     chat_id = user_id = message.chat.id
 
     try:
@@ -56,6 +66,7 @@ async def command_stop(message: aiogram.types.Message):
     """Stop command handler receives forwarded messages from the Global Message Handler
     after filtering the user intention.
     """
+    handle_rate_limit(message)
     chat_id = message.chat.id
 
     try:
@@ -95,6 +106,7 @@ async def command_cancel(message: aiogram.types.Message):
     """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
     The ForceReply message sent by the bot must be deleted, if possible.
     """
+    handle_rate_limit(message)
     user_id = chat_id = message.chat.id
     stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
 
@@ -116,6 +128,7 @@ async def command_removename(message: aiogram.types.Message):
     """Remove Name command handler removes a custom name from a previously user saved Stop.
     A rename ForceReply message should be sent by the bot and the StopRenameRequestContext must exist.
     """
+    handle_rate_limit(message)
     user_id = chat_id = message.chat.id
 
     if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id):

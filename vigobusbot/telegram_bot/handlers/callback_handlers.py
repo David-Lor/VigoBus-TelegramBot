@@ -10,6 +10,7 @@ import aiogram
 
 # # Package # #
 from .request_handlers import stop_rename_request_handler
+from .rate_limit_handlers import handle_user_rate_limit
 
 # # Project # #
 from ..status_sender import *
@@ -22,9 +23,15 @@ from ...exceptions import *
 __all__ = ("register_handlers",)
 
 
+def handle_rate_limit(callback_query: aiogram.types.CallbackQuery):
+    handle_user_rate_limit(callback_query.message.chat.id)
+
+
 async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
     """
+    handle_rate_limit(callback_query)
+
     try:
         chat_id = callback_query.message.chat.id
         message_id = callback_query.message.message_id
@@ -59,6 +66,7 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
 async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """A Stop button on a Saved Stops message. Must send a Stop Message like it would send as response to a Stop command
     """
+    handle_rate_limit(callback_query)
     data = CallbackDataExtractor.extract(callback_data)
     chat_id = user_id = callback_query.message.chat.id
 
@@ -88,6 +96,8 @@ async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: d
 async def _stop_save_delete(callback_query: aiogram.types.CallbackQuery, callback_data: dict, save_stop: bool):
     """Unification of stop_save and stop_delete logic. save_stop=True is save stop; False is delete stop
     """
+    handle_rate_limit(callback_query)
+
     try:
         data = CallbackDataExtractor.extract(callback_data)
         chat_id = callback_query.message.chat.id
@@ -152,6 +162,7 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
     """Rename button on Stop messages. Must ask the user for the new Stop name on a new message using ForceReply,
     and register the request for identifying user reply later on the message handler.
     """
+    handle_rate_limit(callback_query)
     answered_callback_query = False
 
     try:
@@ -242,6 +253,7 @@ async def stop_show_less_buses(callback_query: aiogram.types.CallbackQuery, call
 async def generic_callback_handler(callback_query: aiogram.types.CallbackQuery):
     """Any deprecated button is handled by the Generic Handler, informing the user of this situation.
     """
+    handle_rate_limit(callback_query)
     messages = get_messages()
 
     await callback_query.bot.answer_callback_query(

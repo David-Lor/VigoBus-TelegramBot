@@ -131,3 +131,5 @@ generic:
     :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
   deprecated_inline_keyboard_button: >-
     :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.
+  rate_limit_error: >-
+    :negative_squared_cross_mark:Parece que has realizado demasiadas peticiones seguidas. Por favor, espera un poco :cold_sweat:

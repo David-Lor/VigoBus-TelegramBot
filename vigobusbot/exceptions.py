@@ -8,7 +8,7 @@ from aiogram.utils.exceptions import *
 
 __all__ = (
     "GetterException", "GetterInternalException", "GetterAPIException", "GetterTimedOut", "StopNotExist",
-    "MessageNotModified"
+    "MessageNotModified", "UserRateLimit"
 )
 
 
@@ -29,4 +29,9 @@ class GetterAPIException(GetterInternalException):
 
 class GetterTimedOut(TimeoutError, GetterException):
     """A Stop/Bus Getter failed due to a timeout"""
+    pass
+
+
+class UserRateLimit(Exception):
+    """A user exceeded the request rate limit of the bot"""
     pass
