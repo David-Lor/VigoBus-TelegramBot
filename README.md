@@ -39,9 +39,16 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
+- Docker recommended for deployment
 
 ## Changelog
 
+- 0.1.5:
+    - fix: stop rename crashing
+    - add error handler for uncatched global, generic exceptions
+    - switch from requests_async to httpx
+    - add retries on HTTP requests
+    - add user request rate limit (amount per time)
 - 0.1.4 - Button on Stop messages to show More/Less buses
 - 0.1.3 - Support for setting custom stop names on user saved stops
 - 0.1.2 - Support for Saved Stops and working command to list all of them
