@@ -43,6 +43,7 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 ## Changelog
 
+- 0.1.6 - Add logging
 - 0.1.5:
     - fix: stop rename crashing
     - add error handler for uncatched global, generic exceptions
