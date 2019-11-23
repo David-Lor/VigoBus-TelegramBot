@@ -8,6 +8,7 @@ import cachetools
 # # Project # #
 from ....settings_handler import telegram_settings as settings
 from ....exceptions import *
+from ....logger import *
 
 __all__ = ("handle_user_rate_limit",)
 
@@ -30,6 +31,8 @@ def handle_user_rate_limit(user_id: int):
     requests += 1
 
     if requests > settings.user_rate_limit_amount:
+        logger.debug(f"User {user_id} exceeded rate limit with {requests} requests")
         raise UserRateLimit()
     else:
+        logger.debug(f"User {user_id} performed a request (current rate: {requests}/{settings.user_rate_limit_amount})")
         _user_requests[user_id] = requests

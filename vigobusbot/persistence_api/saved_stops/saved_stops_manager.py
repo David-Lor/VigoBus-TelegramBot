@@ -11,6 +11,9 @@ from .entities import *
 # from .key_generator import *
 from ..requester import *
 
+# # Project # #
+from ...logger import *
+
 __all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved")
 
 
@@ -21,7 +24,7 @@ async def get_user_saved_stops(user_id: int) -> SavedStops:
         endpoint=f"/stops/{user_id}"
     )
     stops_json = json.loads(result.text)
-    # return [SavedStopEncoded(**stop_json).decode(user_id) for stop_json in stops_json]
+    logger.debug(f"Read {len(stops_json)} Saved Stops of user {user_id}")
     return [SavedStopDecoded(**stop_json) for stop_json in stops_json]
 
 
@@ -47,9 +50,9 @@ async def save_stop(user_id: int, stop_id: int, stop_name: Optional[str] = None)
     await http_request(
         method=POST,
         endpoint="/stops",
-        # body=dict(stop.encode())
         body=dict(stop)
     )
+    logger.debug(f"Saved/Updated Stop for user {user_id}")
 
 
 async def delete_stop(user_id: int, stop_id: int):
@@ -57,3 +60,4 @@ async def delete_stop(user_id: int, stop_id: int):
         method=DELETE,
         endpoint=f"/stops/{user_id}/{stop_id}"
     )
+    logger.debug(f"Deleted Stop for user {user_id}")

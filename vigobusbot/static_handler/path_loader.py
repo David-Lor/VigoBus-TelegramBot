@@ -6,36 +6,24 @@ Path Loader to get the 'static' path, getting it from the settings or finding in
 import pathlib
 
 # # Project # #
-from ..settings_handler import telegram_settings as settings
+from ..logger import *
+from ..settings_handler import system_settings as settings
 
 __all__ = ("get_static_path",)
 
-
-# def get_static_path():
-#     current_directory = os.getcwd()
-#     static_directory = None
-#
-#     for _ in range(5):
-#         if "static" in os.listdir(current_directory):
-#             static_directory = os.path.join(current_directory, "static")
-#             break
-#         else:
-#             current_directory = os.path.join(current_directory, "..")
-#
-#     if static_directory is None:
-#         raise FileNotFoundError("Static path not found!")
-#
-#     return static_directory
+STATIC_PATH_LEVEL_LIMIT = 5
 
 
 def get_static_path() -> pathlib.Path:
     if settings.static_path is not None:
-        return pathlib.Path(settings.static_path)
+        static_path = pathlib.Path(settings.static_path)
+        logger.debug(f"Static files path is {static_path}")
+        return static_path
 
     current_path = pathlib.Path('.').absolute()
     static_path = None
 
-    for _ in range(5):
+    for _ in range(STATIC_PATH_LEVEL_LIMIT):
         try:
             _static_path = next(current_path.glob("static"))
             if _static_path.is_dir():
@@ -47,4 +35,5 @@ def get_static_path() -> pathlib.Path:
     if static_path is None:
         raise FileNotFoundError("Static path not found!")
 
+    logger.debug(f"Found Static files path at {static_path}")
     return static_path
