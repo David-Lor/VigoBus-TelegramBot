@@ -9,9 +9,7 @@ from typing import Optional
 from dotenv_settings_handler import BaseSettingsHandler
 from dotenv import load_dotenv
 
-__all__ = ("telegram_settings", "api_settings", "persistence_settings")
-
-load_dotenv()
+__all__ = ("telegram_settings", "api_settings", "persistence_settings", "system_settings")
 
 
 class BaseBotSettings(BaseSettingsHandler):
@@ -25,13 +23,9 @@ class TelegramSettings(BaseBotSettings):
     skip_prev_updates = True
     polling_fast = True
     polling_timeout: float = 30
-    static_path: Optional[str]
     stop_rename_request_ttl: int = 3600
     user_rate_limit_amount: int = 5
     user_rate_limit_time: int = 1
-
-    class Config:
-        case_insensitive = True
 
 
 class APISettings(BaseBotSettings):
@@ -39,9 +33,8 @@ class APISettings(BaseBotSettings):
     timeout: float = 30
     retries: int = 2
 
-    class Config:
+    class Config(BaseBotSettings.Config):
         env_prefix = "API_"
-        case_insensitive = True
 
 
 class PersistenceSettings(BaseBotSettings):
@@ -51,11 +44,18 @@ class PersistenceSettings(BaseBotSettings):
     retries: int = 2
     cache_size: int = 100
 
-    class Config:
+    class Config(BaseBotSettings.Config):
         env_prefix = "PERSIST_"
-        case_insensitive = True
 
+
+class SystemSettings(BaseBotSettings):
+    static_path: Optional[str]
+    log_level: str = "INFO"
+
+
+load_dotenv()
 
 telegram_settings = TelegramSettings()
 api_settings = APISettings()
 persistence_settings = PersistenceSettings()
+system_settings = SystemSettings()

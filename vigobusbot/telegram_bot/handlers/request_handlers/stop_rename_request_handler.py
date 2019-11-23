@@ -17,6 +17,7 @@ from ....static_handler import get_messages
 from ....vigobus_api import get_stop
 from ....persistence_api import saved_stops
 from ....settings_handler import telegram_settings as settings
+from ....logger import *
 
 __all__ = (
     "StopRenameRequestContext",
@@ -40,6 +41,10 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     The value is the StopRenameRequestContext object.
     """
     _stop_rename_requests[context.force_reply_message_id] = context
+    logger.debug(
+        f"Registered Stop Rename Request for user {context.user_id} "
+        f"and ForceReply message {context.force_reply_message_id}"
+    )
 
 
 def get_stop_rename_request_context(
@@ -75,6 +80,9 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
     new_stop_name = user_reply_message.text
     chat_id = user_reply_message.chat.id
     messages = get_messages()
+    logger.debug(
+        f"Processing Stop Rename request for user {chat_id} (from reply message {user_reply_message.message_id})"
+    )
 
     if remove_custom_name:
         new_stop_name = None
@@ -95,6 +103,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         stop_name=new_stop_name
     )
 
+    # Getting the Stop info is required as part of message text sent to user confirming that stop got renamed
     stop = await get_stop(rename_context.stop_id)
 
     if not remove_custom_name:
@@ -119,6 +128,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         chat_id=chat_id,
         message_id=rename_context.force_reply_message_id
     )
+    logger.debug(f"Stop successfully renamed (from reply message {user_reply_message.message_id})")
 
     # Edit original Stop message
     source_context = SourceContext(
@@ -132,4 +142,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         text=text,
         message_id=rename_context.source_message.message_id,
         reply_markup=buttons
+    )
+    logger.debug(
+        f"Edited original Stop message after renaming the Stop (from reply message {user_reply_message.message_id})"
     )

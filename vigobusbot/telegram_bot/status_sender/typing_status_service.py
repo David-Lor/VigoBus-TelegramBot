@@ -9,18 +9,24 @@ from typing import Dict
 # # Installed # #
 import aiogram
 
+# # Project # #
+from ...logger import *
+
 __all__ = ("start_typing", "stop_typing")
 
 typing_chats: Dict[int, asyncio.Event] = dict()  # { chat_id: event }
 
 
 async def typing_service(bot: aiogram.Bot, chat_id: int, stop_event: asyncio.Event):
+    # TODO Add a safety stop time
+    logger.debug(f"Started Typing chat action for chat {chat_id}")
     while not stop_event.is_set():
         await bot.send_chat_action(
             chat_id=chat_id,
             action=aiogram.types.ChatActions.TYPING
         )
         await asyncio.sleep(4.5)
+    logger.debug(f"Ended Typing chat action on chat {chat_id}")
 
 
 async def start_typing(bot: aiogram.Bot, chat_id: int):

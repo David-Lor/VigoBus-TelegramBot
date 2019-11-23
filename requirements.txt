@@ -1,6 +1,5 @@
 aiogram  # Async Telegram Bot API wrapper
 httpx  # HTTP requests
-python-dotenv  # dotenv setting files
 pybuses-entities  # Stop/Bus entities
 pymongo  # MongoDB client
 motor  # MongoDB Async client
@@ -13,3 +12,4 @@ emoji  # replace aliases with emojis
 pydantic  # class builder
 cryptography  # encode/decode persisted user data
 cachetools  # cache
+loguru  # logging

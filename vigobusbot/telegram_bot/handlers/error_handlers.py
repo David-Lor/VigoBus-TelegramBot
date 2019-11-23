@@ -3,6 +3,7 @@ Telegram Bot Error Handlers for global exceptions
 """
 
 # # Native # #
+import traceback
 import contextlib
 
 # # Installed # #
@@ -11,6 +12,7 @@ import aiogram
 # # Project # #
 from ...static_handler import *
 from ...exceptions import *
+from ...logger import *
 
 __all__ = ("register_handlers",)
 
@@ -49,10 +51,16 @@ async def global_error_handler(update: aiogram.types.Update, exception: Exceptio
 
     else:
         # Unidentified (Generic) errors
+        traceback_msg = ""
+        if exception.__traceback__:
+            # TODO Format/get traceback str
+            traceback_msg = f" - Traceback:\n{traceback.format_tb(exception.__traceback__)}"
+        logger.error(f"Unidentified error while processing a client request ({exception}){traceback_msg}")
         await notify_error(update, messages.generic.generic_error)
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
     """Register all the error handlers for the given Bot Dispatcher.
     """
+    # TODO register for each type using "exception" kwarg
     dispatcher.register_errors_handler(global_error_handler)

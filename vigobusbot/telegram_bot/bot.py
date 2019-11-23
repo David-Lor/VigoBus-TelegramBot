@@ -9,6 +9,7 @@ from typing import Optional
 import aiogram
 
 # # Project # #
+from ..logger import *
 from ..settings_handler import telegram_settings as settings
 
 # # Package # #
@@ -46,4 +47,5 @@ def get_bot() -> Bot:
     if _bot is None:
         _bot = Bot(token=settings.token)
         register_handlers(_bot.dispatcher)
+        logger.debug("Created new bot instance")
     return _bot

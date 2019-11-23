@@ -14,6 +14,7 @@ from ..status_sender import *
 from ..message_generators import *
 from ...static_handler import *
 from ...exceptions import *
+from ...logger import *
 
 __all__ = ("register_handlers",)
 
@@ -23,24 +24,28 @@ def handle_rate_limit(message: aiogram.types.Message):
 
 
 async def command_start(message: aiogram.types.Message):
+    logger.debug("Requested command /start")
     handle_rate_limit(message)
     for text in get_messages().start:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_help(message: aiogram.types.Message):
+    logger.debug("Requested command /help")
     handle_rate_limit(message)
     for text in get_messages().help:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_donate(message: aiogram.types.Message):
+    logger.debug("Requested command /donate")
     handle_rate_limit(message)
     for text in get_messages().donate:
         await message.bot.send_message(message.chat.id, text)
 
 
 async def command_about(message: aiogram.types.Message):
+    logger.debug("Requested command /about")
     handle_rate_limit(message)
     for text in get_messages().about:
         await message.bot.send_message(message.chat.id, text)
@@ -49,6 +54,7 @@ async def command_about(message: aiogram.types.Message):
 async def command_stops(message: aiogram.types.Message):
     """Stops command handler must return all the Stops saved by the user
     """
+    logger.debug("Requested command /stops")
     handle_rate_limit(message)
     chat_id = user_id = message.chat.id
 
@@ -66,6 +72,7 @@ async def command_stop(message: aiogram.types.Message):
     """Stop command handler receives forwarded messages from the Global Message Handler
     after filtering the user intention.
     """
+    logger.debug("Requested command /stop")
     handle_rate_limit(message)
     chat_id = message.chat.id
 
@@ -106,6 +113,7 @@ async def command_cancel(message: aiogram.types.Message):
     """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
     The ForceReply message sent by the bot must be deleted, if possible.
     """
+    logger.debug("Requested command /cancel (for ForceReply operation)")
     handle_rate_limit(message)
     user_id = chat_id = message.chat.id
     stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
@@ -128,6 +136,7 @@ async def command_removename(message: aiogram.types.Message):
     """Remove Name command handler removes a custom name from a previously user saved Stop.
     A rename ForceReply message should be sent by the bot and the StopRenameRequestContext must exist.
     """
+    logger.debug("Requested command /removename")
     handle_rate_limit(message)
     user_id = chat_id = message.chat.id
 
@@ -148,6 +157,7 @@ async def global_message_handler(message: aiogram.types.Message):
     """
     # Reply to bot message = reply to Rename stop question
     if message.reply_to_message and message.reply_to_message.from_user.is_bot:
+        logger.debug("Received Reply to bot message")
         if stop_rename_request_handler.get_stop_rename_request_context(
                 force_reply_message_id=message.reply_to_message.message_id, pop=False
         ):
@@ -162,6 +172,7 @@ async def global_message_handler(message: aiogram.types.Message):
 
     # Get a Stop by Stop ID
     if message.text.strip().isdigit():
+        logger.debug("Requested Stop without command (direct input)")
         return await command_stop(message)
 
 
