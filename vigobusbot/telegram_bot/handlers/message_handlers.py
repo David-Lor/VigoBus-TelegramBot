@@ -140,7 +140,7 @@ async def command_removename(message: aiogram.types.Message):
     handle_rate_limit(message)
     user_id = chat_id = message.chat.id
 
-    if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id):
+    if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id, pop=False):
         return await stop_rename_request_handler.stop_rename_request_reply_handler(message, remove_custom_name=True)
 
     else:
