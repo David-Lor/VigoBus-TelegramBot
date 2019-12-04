@@ -54,6 +54,7 @@ def get_stop_rename_request_context(
     or the User ID that requested it - In this last case the context is searched on the local cache,
     supposing only one request exists per user, since the first result is acquired; if not found, return None).
     """
+    result: Optional[StopRenameRequestContext] = None
     if user_id and not force_reply_message_id:
         try:
             force_reply_message_id = next(
@@ -63,12 +64,19 @@ def get_stop_rename_request_context(
                 if context.user_id == user_id
             )
         except StopIteration:
-            return None
+            result = None
+        else:
+            if pop:
+                result = _stop_rename_requests.pop(force_reply_message_id)
+            else:
+                result = _stop_rename_requests[force_reply_message_id]
 
-    if pop:
-        return _stop_rename_requests.pop(force_reply_message_id)
-    else:
-        return _stop_rename_requests[force_reply_message_id]
+    logger.debug(f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +
+                 f"{f'ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
+                 f"{f'UserID={user_id} ' if user_id else ''}" +
+                 "(Pop)" if pop else "(No Pop)"
+                 )
+    return result
 
 
 async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message, remove_custom_name=False):

@@ -43,6 +43,8 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 ## Changelog
 
+- 0.1.7 (WIP)
+    - fix stop remove name
 - 0.1.6 - Add logging
 - 0.1.5:
     - fix: stop rename crashing
@@ -58,6 +60,6 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 
 ## Disclaimer
 
-This project is not endorsed by, directly affiliated with, maintained by, sponsored by or in any way officially connected with the company, companies and/or entities responsible for the public transport service of the city of Vigo.
+This project is not endorsed by, directly affiliated with, maintained by, sponsored by or in any way officially related with the company, companies and/or entities responsible for the public transport service of the city of Vigo.
 
-_Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni en cualquier otra manera oficialmente conectado con la compañía, compañías y/o entidades responsables del sistema de transporte público de la ciudad de Vigo._
+_Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni en cualquier otra manera oficialmente vinculado con la compañía, compañías y/o entidades responsables del sistema de transporte público de la ciudad de Vigo._
