@@ -1,15 +1,14 @@
-aiogram  # Async Telegram Bot API wrapper
-httpx  # HTTP requests
-pybuses-entities  # Stop/Bus entities
-pymongo  # MongoDB client
-motor  # MongoDB Async client
-dotenv-settings-handler  # Settings Handler
-python-dotenv  # .env file loader
-pyyaml  # YAML file parser
-addict  # better dicts
-watchdog  # watch directories for file changes
-emoji  # replace aliases with emojis
-pydantic  # class builder
-cryptography  # encode/decode persisted user data
-cachetools  # cache
-loguru  # logging
+aiogram==2.1  # Async Telegram Bot API wrapper
+httpx==0.7.5  # HTTP requests
+pybuses-entities==0.0.2  # Stop/Bus entities
+pymongo==3.7.2  # MongoDB client
+motor==2.0.0  # MongoDB Async client
+dotenv-settings-handler==0.0.3  # Settings Handler
+python-dotenv==0.10.3  # .env file loader
+pyyaml==5.1.2  # YAML file parser
+addict==2.2.1  # better dicts
+watchdog==0.9.0  # watch directories for file changes
+emoji==0.5.3  # replace aliases with emojis
+pydantic==0.26  # class builder
+cachetools==3.1.1  # cache
+loguru==0.3.2  # logging

@@ -1,36 +1,19 @@
 # VigoBus-TelegramBot
 
-Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a las mismas -junto a su tiempo restante de llegada, en tiempo real-, en la red de transporte urbano de la ciudad de Vigo.
+![https://telegram.me/vigobusbot](https://img.shields.io/badge/Stable%20bot-@vigobusbot-blue?logo=telegram&style=plastic)
+![https://telegram.me/vigobustestbot](https://img.shields.io/badge/Develop%20bot-@vigobustestbot-blue?logo=telegram&style=plastic)
 
-## ¿Cómo usarlo? - Historia y Ramas
+Telegram Bot that serves bus stops and real-time estimated time of arrival for the buses of the city of Vigo.
 
-#### Bot estable
-
-El bot en su versión estable y soportada se encuentra en funcionamiento bajo [@vigobusbot](https://t.me/vigobusbot). Esta versión fue desarrollada y puesta en marcha sobre abril del 2017, permitiendo buscar paradas por ID y guardándolas en listados de paradas favoritas.
-
-Desde entonces se han realizado diversas refactorizaciones, con el fin de mejorar el código, el funcionamiento del bot y dar cabida a nuevas funcionalidades.
-
-#### Bot beta
-
-Una segunda versión se desplegó en abril del 2019 bajo [@vigobustestbot](https://t.me/vigobustestbot), con su código fuente disponible bajo la rama [wip0](https://github.com/David-Lor/VigoBus-TelegramBot/tree/wip0).
-
-Este bot puede utilizarse, pero dado su carácter temporal, podrá dejar de funcionar en cualquier momento, y los datos guardados ser borrados. En la medida de lo posible, se intentarán migrar a la futura versión. 
-Como principales mejoras, cuenta con algunos cambios estéticos y la posibilidad de renombrar paradas.
-
-#### Bot alpha (desarrollo actual)
-
-De la rama [development](https://github.com/David-Lor/VigoBus-TelegramBot/tree/development) (y subramas feature) parte el desarrollo de la nueva versión del bot, que principalmente tendrá como mejoras base el funcionamiento asíncrono y una mejor estructura de proyecto.
-
-Así mismo, al contrario que hasta ahora se había planteado (con ligeras adaptaciones), la responsabilidad del backend del bot se limita al máximo a las propias tareas del bot, sirviéndose de dos proyectos adicionales que sirven como API para gestionar información externa:
-
-- [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI) obtiene la información de paradas y autobuses que los usuarios del bot soliciten. Para ello consulta fuentes de datos externas y locales (caché y base de datos).
-- [DataManager](https://github.com/David-Lor/Telegram-BusBot-DataManager) gestiona los datos persistentes requeridos por el bot, que por el momento se limitan a las paradas guardadas de los usuarios.
-
-Entre las novedades prácticas a incorporar, se pueden destacar: renombrar paradas, búsqueda de paradas por nombre, por ubicación, y modo inline.
+_Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a las mismas -junto a su tiempo restante de llegada, en tiempo real-, en la red de transporte urbano de la ciudad de Vigo._
 
 ## Microservice structure
 
 ![VigoBusBot microservice structure](VigoBusTelegramBot_Structure.svg)
+
+- VigoBusAPI: REST API to fetch stop & real-time estimated time of buses arrival
+- Persistence API: REST API to persist data
+- MongoDB: used by both API to persist data
 
 ## Requirements
 
@@ -39,7 +22,7 @@ Entre las novedades prácticas a incorporar, se pueden destacar: renombrar parad
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
-- Docker recommended for deployment
+- Docker recommended for deployment using the [Python-Autoclonable-App](https://github.com/David-Lor/Docker-Python-Autoclonable-App) image
 
 ## Changelog
 
