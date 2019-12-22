@@ -102,9 +102,6 @@ async def command_stop(message: aiogram.types.Message):
     except StopNotExist:
         await message.reply(get_messages().stop.not_exists)
 
-    except (GetterException, AssertionError):
-        await message.reply(get_messages().generic.generic_error)
-
     finally:
         stop_typing(chat_id)
 
