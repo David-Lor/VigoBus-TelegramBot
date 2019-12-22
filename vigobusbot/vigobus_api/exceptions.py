@@ -1,5 +1,5 @@
 """EXCEPTIONS
-Exception manager for Bus and Stop getters, returning PyBusEnt exceptions depending on the response returned by the API.
+Exception manager for Bus and Stop getters, returning custom exceptions depending on the response returned by the API.
 """
 
 # # Native # #

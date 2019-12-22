@@ -51,7 +51,7 @@ def generate_stop_message_text(
     last_update_text = datetime.datetime.now().strftime(messages.stop.time_format)
 
     return messages.stop.message.format(
-        stop_id=stop.stopid,
+        stop_id=stop.stop_id,
         stop_name=stop_name_text,
         buses=buses_text,
         last_update=last_update_text
