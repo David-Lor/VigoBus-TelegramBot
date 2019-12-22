@@ -42,7 +42,7 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
         for saved_stop in saved_stops:
             stop_original_name = next(
                 stop_result.name for stop_result in read_stops_results
-                if stop_result.stopid == saved_stop.stop_id
+                if stop_result.stop_id == saved_stop.stop_id
             )
 
             if saved_stop.stop_name:

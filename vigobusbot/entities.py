@@ -2,11 +2,29 @@
 Custom and imported entities used all over the project
 """
 
+# # Native # #
+from typing import Optional, List
+
 # # Installed # #
 import pydantic
-from pybusent import Stop, Bus, Buses
 
 __all__ = ("Stop", "Bus", "Buses", "BusesResponse")
+
+
+class Stop(pydantic.BaseModel):
+    stop_id: int
+    name: str
+    lat: Optional[float]
+    lon: Optional[float]
+
+
+class Bus(pydantic.BaseModel):
+    line: str
+    route: str
+    time: int
+
+
+Buses = List[Bus]
 
 
 class BusesResponse(pydantic.BaseModel):

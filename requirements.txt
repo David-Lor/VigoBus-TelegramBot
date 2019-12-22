@@ -1,6 +1,5 @@
 aiogram==2.1  # Async Telegram Bot API wrapper
 httpx==0.7.5  # HTTP requests
-pybuses-entities==0.0.2  # Stop/Bus entities
 pymongo==3.7.2  # MongoDB client
 motor==2.0.0  # MongoDB Async client
 dotenv-settings-handler==0.0.3  # Settings Handler
