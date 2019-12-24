@@ -1,7 +1,7 @@
 # VigoBus-TelegramBot
 
-![https://telegram.me/vigobusbot](https://img.shields.io/badge/Stable%20bot-@vigobusbot-blue?logo=telegram&style=plastic)
-![https://telegram.me/vigobustestbot](https://img.shields.io/badge/Develop%20bot-@vigobustestbot-blue?logo=telegram&style=plastic)
+[![@vigobusbot](https://img.shields.io/badge/Stable%20bot-@vigobusbot-blue?logo=telegram&style=plastic)](https://telegram.me/vigobusbot)
+[![@vigobustestbot](https://img.shields.io/badge/Develop%20bot-@vigobustestbot-blue?logo=telegram&style=plastic)](https://telegram.me/vigobustestbot)
 
 Telegram Bot that serves bus stops and real-time estimated time of arrival for the buses of the city of Vigo.
 
@@ -11,9 +11,10 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ![VigoBusBot microservice structure](VigoBusTelegramBot_Structure.svg)
 
+- VigoBusTelegramBot: this project, serving as the Telegram Bot backend, and connecting to the following API:
 - VigoBusAPI: REST API to fetch stop & real-time estimated time of buses arrival
 - Persistence API: REST API to persist data
-- MongoDB: used by both API to persist data
+- MongoDB: used by both REST API to persist data
 
 ## Requirements
 
@@ -22,7 +23,12 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
+- A MongoDB database (for both required API)
+
+### Deployment
+
 - Docker recommended for deployment using the [Python-Autoclonable-App](https://github.com/David-Lor/Docker-Python-Autoclonable-App) image
+- Refer to [docker-compose.yml](tools/deployment/vigobusbot) file to deploy all the required services
 
 ## Changelog
 
