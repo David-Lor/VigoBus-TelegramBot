@@ -3,12 +3,12 @@ Custom and imported entities used all over the project
 """
 
 # # Native # #
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 # # Installed # #
 import pydantic
 
-__all__ = ("Stop", "Bus", "Buses", "BusesResponse")
+__all__ = ("Stop", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse")
 
 
 class Stop(pydantic.BaseModel):
@@ -24,7 +24,9 @@ class Bus(pydantic.BaseModel):
     time: int
 
 
+Stops = List[Stop]
 Buses = List[Bus]
+StopsDict = Dict[int, Stop]
 
 
 class BusesResponse(pydantic.BaseModel):

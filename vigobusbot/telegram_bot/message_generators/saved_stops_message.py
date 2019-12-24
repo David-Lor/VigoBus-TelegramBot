@@ -1,6 +1,6 @@
 """SAVED STOPS MESSAGE
 Generator of Saved Stops message body (text and keyboard markup).
-Have the responsability of getting the Saved Stops list of the user.
+Have the responsability of getting the Saved Stops list of the user from the Persistence API .
 """
 
 # # Native # #
@@ -17,6 +17,7 @@ from .entities import *
 from ...persistence_api.saved_stops import get_user_saved_stops
 from ...static_handler import *
 from ...vigobus_api import *
+from ...entities import *
 
 __all__ = ("generate_saved_stops_message",)
 
@@ -35,23 +36,24 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
         )
         markup = aiogram.types.InlineKeyboardMarkup()
 
-        read_stops_results = await asyncio.gather(
-            *[get_stop(stop.stop_id) for stop in saved_stops]
-        )
+        # Get the Real Stop info from the Bus API
+        real_stops: StopsDict = await get_multiple_stops(*[stop.stop_id for stop in saved_stops], return_dict=True)
+
+        # Add the Real Stop name to the Saved Stops
+        for saved_stop in saved_stops:
+            saved_stop.stop_original_name = real_stops[saved_stop.stop_id].name
+
+        # Sort saved stops by custom name or real name
+        saved_stops.sort(key=lambda stop: stop.stop_name or stop.stop_original_name)
 
         for saved_stop in saved_stops:
-            stop_original_name = next(
-                stop_result.name for stop_result in read_stops_results
-                if stop_result.stop_id == saved_stop.stop_id
-            )
-
             if saved_stop.stop_name:
                 stop_name_text = messages.saved_stops.buttons.stop_custom_name.format(
                     stop_custom_name=saved_stop.stop_name,
-                    stop_original_name=stop_original_name
+                    stop_original_name=saved_stop.stop_original_name
                 )
             else:
-                stop_name_text = stop_original_name
+                stop_name_text = saved_stop.stop_original_name
 
             button = aiogram.types.InlineKeyboardButton(
                 text=messages.saved_stops.buttons.stop.format(

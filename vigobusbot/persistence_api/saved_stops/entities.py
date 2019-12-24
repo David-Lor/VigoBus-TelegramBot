@@ -21,6 +21,7 @@ class SavedStopBase(pydantic.BaseModel):
     stop_id: Union[str, int]
     user_id: Union[str, int]
     stop_name: Optional[str]
+    stop_original_name: Optional[str]
 
 
 class SavedStopEncoded(SavedStopBase):
