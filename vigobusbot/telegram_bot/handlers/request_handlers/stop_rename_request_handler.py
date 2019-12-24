@@ -4,6 +4,7 @@ Handler and utils for working with Stop Rename requests
 
 # # Native # #
 import re
+import contextlib
 from typing import Optional
 
 # # Installed # #
@@ -42,8 +43,7 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     """
     _stop_rename_requests[context.force_reply_message_id] = context
     logger.debug(
-        f"Registered Stop Rename Request for user {context.user_id} "
-        f"and ForceReply message {context.force_reply_message_id}"
+        f"Registered Stop Rename Request (user={context.user_id}, ForceReplyMessageID={context.force_reply_message_id})"
     )
 
 
@@ -51,31 +51,32 @@ def get_stop_rename_request_context(
         force_reply_message_id: Optional[int] = None, user_id: Optional[int] = None, pop: bool = True
 ) -> Optional[StopRenameRequestContext]:
     """Search the Context of a Stop Rename request, given the Message ID of the Force Reply message sent by the bot,
-    or the User ID that requested it - In this last case the context is searched on the local cache,
-    supposing only one request exists per user, since the first result is acquired; if not found, return None).
+    OR the User ID that requested it - In this last case the context is searched on the local cache,
+    supposing only one request exists per user, since the first result is acquired; if not found, return None.
     """
     result: Optional[StopRenameRequestContext] = None
+
     if user_id and not force_reply_message_id:
-        try:
+        with contextlib.suppress(StopIteration):
             force_reply_message_id = next(
                 force_reply_message_id
                 for force_reply_message_id, context
                 in _stop_rename_requests.items()
                 if context.user_id == user_id
             )
-        except StopIteration:
-            result = None
-        else:
-            if pop:
-                result = _stop_rename_requests.pop(force_reply_message_id)
-            else:
-                result = _stop_rename_requests[force_reply_message_id]
 
-    logger.debug(f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +
-                 f"{f'ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
-                 f"{f'UserID={user_id} ' if user_id else ''}" +
-                 "(Pop)" if pop else "(No Pop)"
-                 )
+    if force_reply_message_id:
+        if pop:
+            result = _stop_rename_requests.pop(force_reply_message_id)
+        else:
+            result = _stop_rename_requests[force_reply_message_id]
+
+    logger.debug(
+        f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +
+        f"{f'ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
+        f"{f'UserID={user_id} ' if user_id else ''}" +
+        ("(Pop)" if pop else "(No Pop)")
+    )
     return result
 
 

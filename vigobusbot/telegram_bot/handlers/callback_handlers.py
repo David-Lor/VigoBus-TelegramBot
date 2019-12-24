@@ -19,6 +19,7 @@ from ...persistence_api import saved_stops
 from ...static_handler import get_messages
 from ...vigobus_api import *
 from ...exceptions import *
+from ...logger import *
 
 __all__ = ("register_handlers",)
 
@@ -30,6 +31,7 @@ def handle_rate_limit(callback_query: aiogram.types.CallbackQuery):
 async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
     """
+    logger.debug("Requested button Refresh Stop")
     handle_rate_limit(callback_query)
 
     try:
@@ -59,13 +61,11 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
         # resulting on the same message text with the same timestamp. Ignore these errors.
         pass
 
-    # finally:
-    #     stop_typing(chat_id)
-
 
 async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """A Stop button on a Saved Stops message. Must send a Stop Message like it would send as response to a Stop command
     """
+    logger.debug("Requested button Get Stop from saved stops")
     handle_rate_limit(callback_query)
     data = CallbackDataExtractor.extract(callback_data)
     chat_id = user_id = callback_query.message.chat.id
@@ -148,6 +148,7 @@ async def stop_save(callback_query: aiogram.types.CallbackQuery, callback_data: 
     """Save button on Stop messages. Must save the Stop on Persistence API and update the keyboard markup,
     showing the Delete button instead.
     """
+    logger.debug("Requested button Save Stop")
     await _stop_save_delete(callback_query, callback_data, save_stop=True)
 
 
@@ -155,6 +156,7 @@ async def stop_delete(callback_query: aiogram.types.CallbackQuery, callback_data
     """Delete button on Stop messages. Must delete the Stop from Persistence API and update the keyboard markup,
     showing the Save button instead.
     """
+    logger.debug("Requested button Delete Stop")
     await _stop_save_delete(callback_query, callback_data, save_stop=False)
 
 
@@ -162,6 +164,7 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
     """Rename button on Stop messages. Must ask the user for the new Stop name on a new message using ForceReply,
     and register the request for identifying user reply later on the message handler.
     """
+    logger.debug("Requested button Rename Stop")
     handle_rate_limit(callback_query)
     answered_callback_query = False
 
@@ -229,15 +232,14 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
 
     finally:
         if not answered_callback_query:
-            await callback_query.bot.answer_callback_query(
-                callback_query_id=callback_query.id
-            )
+            await callback_query.bot.answer_callback_query(callback_query_id=callback_query.id)
 
 
 async def stop_show_more_buses(callback_query: aiogram.types.CallbackQuery, callback_data: dict):
     """Show More Buses on a Stop message when more buses are/were available. Must refresh the Stop message with
     get_all_buses=True on the SourceContext.
     """
+    logger.debug("Requested button Show More Buses")
     callback_data["get_all_buses"] = True
     await stop_refresh(callback_query, callback_data)
 
@@ -246,6 +248,7 @@ async def stop_show_less_buses(callback_query: aiogram.types.CallbackQuery, call
     """Show More Buses on a Stop message when more buses are/were available. Must refresh the Stop message with
     get_all_buses=False on the SourceContext.
     """
+    logger.debug("Requested button Show Less Buses")
     callback_data["get_all_buses"] = False
     await stop_refresh(callback_query, callback_data)
 
@@ -253,6 +256,7 @@ async def stop_show_less_buses(callback_query: aiogram.types.CallbackQuery, call
 async def generic_callback_handler(callback_query: aiogram.types.CallbackQuery):
     """Any deprecated button is handled by the Generic Handler, informing the user of this situation.
     """
+    logger.info(f"Requested a deprecated button (data={callback_query.data})")
     handle_rate_limit(callback_query)
     messages = get_messages()
 
