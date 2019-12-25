@@ -26,6 +26,7 @@ class TelegramSettings(BaseBotSettings):
     stop_rename_request_ttl: int = 3600
     user_rate_limit_amount: int = 5
     user_rate_limit_time: int = 1
+    typing_safe_limit_time: float = 30
 
 
 class APISettings(BaseBotSettings):
@@ -51,6 +52,7 @@ class PersistenceSettings(BaseBotSettings):
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]
     log_level: str = "INFO"
+    test: bool = False
 
 
 load_dotenv()
