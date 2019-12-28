@@ -8,8 +8,10 @@ import aiogram
 # # Package # #
 from .request_handlers import stop_rename_request_handler
 from .rate_limit_handlers import handle_user_rate_limit
+from . import test_message_handlers
 
 # # Project # #
+from ...settings_handler import system_settings
 from ..status_sender import *
 from ..message_generators import *
 from ...static_handler import *
@@ -91,7 +93,6 @@ async def command_stop(message: aiogram.types.Message):
 
         await message.bot.send_message(
             chat_id=message.chat.id,
-            reply_to_message_id=message.message_id,
             text=text,
             reply_markup=markup
         )
@@ -200,5 +201,11 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     # /removename command
     dispatcher.register_message_handler(command_removename, commands=("removename", "quitarnombre"))
 
+    # Test handlers
+    if system_settings.test:
+        test_message_handlers.register_handlers(dispatcher)
+
     # Rest of text messages
     dispatcher.register_message_handler(global_message_handler)
+
+    logger.debug("Registered Message Handlers")

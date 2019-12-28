@@ -36,10 +36,10 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
     - fix stop remove name
     - remove usage of external pybusent library in favor of self-defined classes
     - sort user saved stops by stop custom or real name
-    - fix: stop rename crashing
+    - fix stop rename failing
 - 0.1.6 - Add logging
 - 0.1.5:
-    - fix: stop rename crashing
+    - fix stop rename crashing
     - add error handler for uncatched global, generic exceptions
     - switch from requests_async to httpx
     - add retries on HTTP requests
