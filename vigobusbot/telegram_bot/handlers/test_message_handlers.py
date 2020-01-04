@@ -2,7 +2,7 @@
 Telegram Bot Message Handlers for test purposes. Loaded from message_handlers.
 """
 
-# # Native # #
+# # Installed # #
 import aiogram
 
 # # Package # #
@@ -14,10 +14,19 @@ from ...logger import *
 
 
 async def command_typing_forever(message: aiogram.types.Message):
-    logger.debug("Requested Test command /test_typing_forever")
-    chat_id = message.chat.id
-    handle_user_rate_limit(chat_id)
-    await start_typing(bot=message.bot, chat_id=chat_id)
+    async with contextualize_request():
+        logger.debug("Requested Test command /test_typing_forever")
+        chat_id = message.chat.id
+        handle_user_rate_limit(chat_id)
+        await start_typing(bot=message.bot, chat_id=chat_id)
+
+
+async def command_fail(message: aiogram.types.Message):
+    async with contextualize_request():
+        logger.debug("Requested Test command /test_fail")
+        chat_id = message.chat.id
+        handle_user_rate_limit(chat_id)
+        return 0 / 0
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
@@ -26,5 +35,8 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     """
     # Test send Typing status and never stop it (should auto-stop due to safe time limit)
     dispatcher.register_message_handler(command_typing_forever, commands=("test_typing_forever", "testTypingForever"))
+
+    # Test raising an uncatched exception from the command handler, that should be catched by the global error handler
+    dispatcher.register_message_handler(command_fail, commands=("test_fail", "testFail"))
 
     logger.debug("Registered Test Message Handlers")

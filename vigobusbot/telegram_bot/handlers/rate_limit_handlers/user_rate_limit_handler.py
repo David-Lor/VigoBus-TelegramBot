@@ -23,6 +23,7 @@ def handle_user_rate_limit(user_id: int):
     """Add +1 to the requests counter of the user (or create the counter if not exists or expired).
     :raises: UserRateLimit if limit exceeded
     """
+    # TODO Set as part of a context manager to handle the rate limit, create the logging Context ID, ...
     try:
         requests = _user_requests[user_id]
     except KeyError:
