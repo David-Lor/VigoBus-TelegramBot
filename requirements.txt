@@ -8,4 +8,4 @@ watchdog==0.9.0  # watch directories for file changes
 emoji==0.5.3  # replace aliases with emojis
 pydantic==0.26  # class builder
 cachetools==3.1.1  # cache
-loguru==0.3.2  # logging
+loguru==0.4.0  # logging
