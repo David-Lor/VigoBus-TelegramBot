@@ -60,6 +60,8 @@ services:
       - PERSIST_URL=http://vigobus_persistence_api:5000
     env_file:
       - vigobus_bot.env
+    secrets:
+      - telegram_token
     depends_on:
       - vigobus_api
       - persistence_api
@@ -75,6 +77,10 @@ networks:
   backend:
     driver: bridge
     internal: true
+
+secrets:
+  telegram_token:
+    file: telegram_token.txt
 
 volumes:
   mongo:
