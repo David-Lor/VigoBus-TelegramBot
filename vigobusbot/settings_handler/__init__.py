@@ -55,6 +55,10 @@ class PersistenceSettings(BaseBotSettings):
     class Config(BaseBotSettings.Config):
         env_prefix = "PERSIST_"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.salt = load_secrets_file(path=self.salt.strip(), path_startswith=True)
+
 
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]

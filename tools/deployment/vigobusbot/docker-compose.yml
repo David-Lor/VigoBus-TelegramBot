@@ -62,6 +62,7 @@ services:
       - vigobus_bot.env
     secrets:
       - telegram_token
+      - telegram_persist_salt
     depends_on:
       - vigobus_api
       - persistence_api
@@ -81,6 +82,8 @@ networks:
 secrets:
   telegram_token:
     file: telegram_token.txt
+  telegram_persist_salt:
+    file: telegram_persist_salt.txt
 
 volumes:
   mongo:
