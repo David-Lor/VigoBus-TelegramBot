@@ -19,9 +19,10 @@ __all__ = ("Bot", "get_bot")
 
 
 class Bot(aiogram.Bot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.dispatcher = aiogram.Dispatcher(self)
+        logger.debug(f"Created new Bot instance with token {kwargs['token'][:4]}...{kwargs['token'][-4:]}")
 
     @staticmethod
     def __set_message_kwargs(kwargs: dict):
@@ -47,5 +48,4 @@ def get_bot() -> Bot:
     if _bot is None:
         _bot = Bot(token=settings.token)
         register_handlers(_bot.dispatcher)
-        logger.debug("Created new bot instance")
     return _bot

@@ -9,6 +9,9 @@ from typing import Optional
 from dotenv_settings_handler import BaseSettingsHandler
 from dotenv import load_dotenv
 
+# # Package # #
+from .helpers import *
+
 __all__ = ("telegram_settings", "api_settings", "persistence_settings", "system_settings")
 
 
@@ -27,6 +30,10 @@ class TelegramSettings(BaseBotSettings):
     user_rate_limit_amount: int = 5
     user_rate_limit_time: int = 1
     typing_safe_limit_time: float = 30
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.token = load_secrets_file(path=self.token.strip(), path_startswith=True)
 
 
 class APISettings(BaseBotSettings):
