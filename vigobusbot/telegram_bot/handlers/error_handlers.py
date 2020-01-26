@@ -36,27 +36,30 @@ async def notify_error(update: aiogram.types.Update, text: str):
             )
 
 
-async def global_error_handler(update: aiogram.types.Update, exception: Exception):
+async def global_error_handler(update: aiogram.types.Update, exception: Exception) -> True:
     """Handle all types of exceptions uncatched by source functions.
     """
-    messages = get_messages()
+    try:
+        messages = get_messages()
 
-    if isinstance(exception, StopNotExist):
-        # StopNotExist errors are preferably catched on source functions, to avoid logging them on output
-        await notify_error(update, messages.stop.not_exists)
+        if isinstance(exception, StopNotExist):
+            await notify_error(update, messages.stop.not_exists)
 
-    elif isinstance(exception, UserRateLimit):
-        # TODO The UserRateLimit exception + traceback is being logged
-        await notify_error(update, messages.generic.rate_limit_error)
+        elif isinstance(exception, UserRateLimit):
+            await notify_error(update, messages.generic.rate_limit_error)
 
-    else:
-        # Unidentified (Generic) errors
-        traceback_msg = ""
-        if exception.__traceback__:
-            # TODO Format/get traceback str
-            traceback_msg = f" - Traceback:\n{traceback.format_tb(exception.__traceback__)}"
-        logger.error(f"Unidentified error while processing a client request ({exception}){traceback_msg}")
-        await notify_error(update, messages.generic.generic_error)
+        else:
+            # Unidentified (Generic) errors
+            traceback_msg = ""
+            if exception.__traceback__:
+                # TODO Format/get traceback str
+                traceback_msg = f" - Traceback:\n{traceback.format_tb(exception.__traceback__)}"
+            # TODO No request id context on this log record
+            logger.error(f"Unidentified error while processing a client request ({exception}){traceback_msg}")
+            await notify_error(update, messages.generic.generic_error)
+
+    finally:
+        return True
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
