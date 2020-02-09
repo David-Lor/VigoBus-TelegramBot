@@ -32,7 +32,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
-- 0.1.7 (WIP)
+- 0.1.7
     - encode/decode saved user stop data into/from Persistence API
     - fix "task exception was never retrieved" warning on aiogram error handler
     - add support for loading bot token from a secrets file
