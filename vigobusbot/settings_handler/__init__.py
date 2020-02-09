@@ -50,10 +50,14 @@ class PersistenceSettings(BaseBotSettings):
     salt = "FixedSalt"
     timeout: float = 30
     retries: int = 2
-    cache_size: int = 100
+    key_cache_size: int = 100
 
     class Config(BaseBotSettings.Config):
         env_prefix = "PERSIST_"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.salt = load_secrets_file(path=self.salt.strip(), path_startswith=True)
 
 
 class SystemSettings(BaseBotSettings):

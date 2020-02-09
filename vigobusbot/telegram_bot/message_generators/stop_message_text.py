@@ -17,7 +17,7 @@ __all__ = ("generate_stop_message_text",)
 def generate_stop_message_text(
         stop: Stop,
         buses_response: BusesResponse,
-        user_saved_stop: Optional[saved_stops.SavedStopBase]
+        user_saved_stop: Optional[saved_stops.SavedStop]
 ) -> str:
     messages = get_messages()
     buses = buses_response.buses
