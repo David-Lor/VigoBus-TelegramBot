@@ -4,7 +4,6 @@ Have the responsability of getting the Saved Stops list of the user from the Per
 """
 
 # # Native # #
-import asyncio
 from typing import Tuple, Optional
 
 # # Installed # #

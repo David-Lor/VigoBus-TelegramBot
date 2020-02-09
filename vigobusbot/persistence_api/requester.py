@@ -4,6 +4,7 @@ Helpers to request the HTTP Persistence API
 
 # # Native # #
 import urllib.parse
+from typing import Optional
 
 # # Installed # #
 import httpx
@@ -21,7 +22,9 @@ DELETE = "DELETE"
 
 
 async def http_request(
-        method, endpoint, query_params=None, body=None, timeout=settings.timeout, retries=settings.retries
+        method, endpoint,
+        query_params: Optional[dict] = None, body: Optional[dict] = None,
+        timeout=settings.timeout, retries=settings.retries
 ) -> httpx.AsyncResponse:
     last_ex = None
     url = urllib.parse.urljoin(settings.url, endpoint)
@@ -43,6 +46,11 @@ async def http_request(
         except httpx.Timeout as ex:
             logger.warning(f"Request on {method} {url} timed out (retries: {retry_count+1}/{retries})")
             last_ex = ex
+
+        except httpx.HTTPError as ex:
+            body_log = f" - Body: \n{ex.response.content.decode()}" if ex.response.content else ""
+            logger.warning(f"Request on {method} {url} failed with code {ex.response.status_code}{body_log}")
+            raise ex
 
         except Exception as ex:
             logger.warning(f"Request on {method} {url} failed: {ex}")

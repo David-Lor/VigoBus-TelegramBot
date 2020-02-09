@@ -50,7 +50,7 @@ class PersistenceSettings(BaseBotSettings):
     salt = "FixedSalt"
     timeout: float = 30
     retries: int = 2
-    cache_size: int = 100
+    key_cache_size: int = 100
 
     class Config(BaseBotSettings.Config):
         env_prefix = "PERSIST_"
