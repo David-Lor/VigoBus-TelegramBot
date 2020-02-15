@@ -31,8 +31,8 @@ help:
     :information_source:*Lista completa de comandos disponibles*
     :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente o precedido por /stop
     :small_orange_diamond:/paradas: accede a todas tus paradas guardadas
-    :small_orange_diamond:/about: Información sobre el bot
-    :small_orange_diamond:/feedback: envia tus comentarios, ideas o problemas que hayas encontrado usando el bot
+    :small_orange_diamond:/extraer_todo: extrae todos tus datos (paradas guardadas) en un archivo JSON
+    :small_orange_diamond:/about: información sobre el bot
     :small_orange_diamond:/donate: ¿cómo puedes colaborar con el mantenimiento de este bot?
 donate:
   - |-
@@ -126,6 +126,10 @@ saved_stops:
       {stop_custom_name} - {stop_original_name}
     remove:
       X
+extracted_data:
+  stops:
+    filename: stops.json
+    description: Paradas guardadas
 generic:
   generic_error: >-
     :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.

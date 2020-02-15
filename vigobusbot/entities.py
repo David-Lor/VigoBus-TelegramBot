@@ -8,7 +8,7 @@ from typing import Optional, List, Dict
 # # Installed # #
 import pydantic
 
-__all__ = ("Stop", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse")
+__all__ = ("Stop", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse", "File", "Files")
 
 
 class Stop(pydantic.BaseModel):
@@ -24,9 +24,15 @@ class Bus(pydantic.BaseModel):
     time: int
 
 
+class File(pydantic.BaseModel):
+    filename: str
+    description: str
+
+
 Stops = List[Stop]
 Buses = List[Bus]
 StopsDict = Dict[int, Stop]
+Files = List[File]
 
 
 class BusesResponse(pydantic.BaseModel):
