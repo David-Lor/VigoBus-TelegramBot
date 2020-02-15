@@ -2,11 +2,14 @@
 Telegram Bot Message Handlers: functions that handle incoming messages, depending on their command or content.
 """
 
+# # Native # #
+import asyncio
+
 # # Installed # #
 import aiogram
 
 # # Package # #
-from .request_handlers import stop_rename_request_handler
+from .request_handlers import stop_rename_request_handler, user_data_request_handler
 from .rate_limit_handlers import handle_user_rate_limit
 from . import test_message_handlers
 
@@ -55,6 +58,25 @@ async def command_about(message: aiogram.types.Message):
         handle_rate_limit(message)
         for text in get_messages().about:
             await message.bot.send_message(message.chat.id, text)
+
+
+async def command_extract_data(message: aiogram.types.Message):
+    async with contextualize_request():
+        logger.debug("Requested command /extractdata")
+        handle_rate_limit(message)
+        chat_id = user_id = message.chat.id
+
+        try:
+            await start_typing(bot=message.bot, chat_id=chat_id)
+
+            files = await user_data_request_handler.extract_user_data(user_id)
+            await asyncio.gather(*[
+                user_data_request_handler.send_file(bot=message.bot, chat_id=chat_id, file=file, remove_file=True)
+                for file in files
+            ])
+
+        finally:
+            stop_typing(chat_id)
 
 
 async def command_stops(message: aiogram.types.Message):
@@ -209,6 +231,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /removename command
     dispatcher.register_message_handler(command_removename, commands=("removename", "quitarnombre"))
+
+    # /extractdata command
+    dispatcher.register_message_handler(command_extract_data, commands=("extractdata", "extraer_todo"))
 
     # Test handlers
     if system_settings.test:

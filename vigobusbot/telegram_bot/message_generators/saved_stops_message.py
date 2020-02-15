@@ -14,9 +14,8 @@ from .entities import *
 
 # # Project # #
 from ...persistence_api.saved_stops import get_user_saved_stops
-from ...static_handler import *
-from ...vigobus_api import *
-from ...entities import *
+from ...vigobus_api.stop_getter import fill_saved_stops_info
+from ...static_handler import get_messages
 
 __all__ = ("generate_saved_stops_message",)
 
@@ -35,12 +34,7 @@ async def generate_saved_stops_message(user_id: int) -> Tuple[str, Optional[aiog
         )
         markup = aiogram.types.InlineKeyboardMarkup()
 
-        # Get the Real Stop info from the Bus API
-        real_stops: StopsDict = await get_multiple_stops(*[stop.stop_id for stop in saved_stops], return_dict=True)
-
-        # Add the Real Stop name to the Saved Stops
-        for saved_stop in saved_stops:
-            saved_stop.stop_original_name = real_stops[saved_stop.stop_id].name
+        await fill_saved_stops_info(saved_stops)
 
         # Sort saved stops by custom name or real name
         saved_stops.sort(key=lambda stop: stop.stop_name or stop.stop_original_name)

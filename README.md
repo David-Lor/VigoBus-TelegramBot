@@ -32,6 +32,8 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- (WIP) 1.0.1
+    - extract user data (saved stops) into JSON file
 - 1.0.0
     - **(breaking Mongo)** encode/decode saved user stop data into/from Persistence API
     - fix "task exception was never retrieved" warning on aiogram error handler

@@ -13,8 +13,9 @@ from .exceptions import manage_exceptions
 
 # # Project # #
 from ..entities import *
+from ..persistence_api.saved_stops.entities import *
 
-__all__ = ("get_stop", "get_multiple_stops")
+__all__ = ("get_stop", "get_multiple_stops", "fill_saved_stops_info")
 
 
 async def get_stop(stop_id: int) -> Stop:
@@ -34,3 +35,16 @@ async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Unio
         return {stop.stop_id: stop for stop in result}
     else:
         return result
+
+
+async def fill_saved_stops_info(saved_stops: SavedStops) -> SavedStops:
+    """Given multiple SavedStops read from database, modify these SavedStops in-place with the remaining stop info
+    (the original stop name) that is not persisted on DB, but on the Bus API.
+    """
+    real_stops: StopsDict = await get_multiple_stops(*[stop.stop_id for stop in saved_stops], return_dict=True)
+
+    for saved_stop in saved_stops:
+        real_stop = real_stops[saved_stop.stop_id]
+        saved_stop.stop_original_name = real_stop.name
+
+    return saved_stops
