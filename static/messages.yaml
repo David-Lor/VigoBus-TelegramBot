@@ -29,9 +29,10 @@ help:
     Todas las novedades relacionadas con el bot, como nuevas características implementadas, problemas técnicos, etc. se comunicarán a través de <a href="https://t.me/vigobus">este canal de Telegram</a>.
 
     :information_source:<b>Lista completa de comandos disponibles</b>
-    :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente o precedido por /stop
+    :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente, o precedido por /stop
     :small_orange_diamond:/paradas: accede a todas tus paradas guardadas
     :small_orange_diamond:/extraer_todo: extrae todos tus datos (paradas guardadas) en un archivo JSON
+    :small_orange_diamond:/borrar_todo: borra todos tus datos (paradas guardadas) del bot
     :small_orange_diamond:/about: información sobre el bot
     :small_orange_diamond:/donate: ¿cómo puedes colaborar con el mantenimiento de este bot?
 donate:
@@ -126,6 +127,9 @@ saved_stops:
       {stop_custom_name} - {stop_original_name}
     remove:
       X
+delete_data:
+  ask_confirmation: :question:¿Seguro que deseas eliminar todos los datos? Si es así, pulsa sobre /borrar_todo_si
+  success: :white_check_mark:Tus datos han sido eliminados
 extracted_data:
   stops:
     filename: stops.json

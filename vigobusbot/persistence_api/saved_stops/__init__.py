@@ -8,5 +8,5 @@ from .saved_stops_manager import *
 
 __all__ = (
     "SavedStopEncoded", "SavedStop", "SavedStops",
-    "get_user_saved_stops", "save_stop", "delete_stop", "is_stop_saved"
+    "get_user_saved_stops", "save_stop", "delete_stop", "is_stop_saved", "delete_all_stops"
 )

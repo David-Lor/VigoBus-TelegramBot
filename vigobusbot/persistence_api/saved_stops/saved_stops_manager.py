@@ -19,7 +19,7 @@ from ..requester import *
 # # Project # #
 from ...logger import *
 
-__all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved")
+__all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved", "delete_all_stops")
 
 
 async def get_user_saved_stops(user_id: int) -> SavedStops:
@@ -73,3 +73,13 @@ async def delete_stop(user_id: int, stop_id: int):
         endpoint=f"/stops/{encoded_user_id}/{stop_id}"
     )
     logger.debug(f"Deleted Stop for user {user_id}")
+
+
+async def delete_all_stops(user_id: int):
+    encoded_user_id = encode_user_id(user_id)
+
+    await http_request(
+        method=DELETE,
+        endpoint=f"/stops/{encoded_user_id}"
+    )
+    logger.debug(f"Deleted ALL Stops for user {user_id}")
