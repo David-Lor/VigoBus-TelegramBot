@@ -31,8 +31,8 @@ class UserDataExtractors:
         stops_dict = [stop.dict() for stop in saved_stops]
 
         filename = f"/tmp/{user_id}_{messages.extracted_data.stops.filename}"
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(stops_dict, file, indent=2)
+        with open(filename, "w") as file:
+            json.dump(stops_dict, file, indent=2, ensure_ascii=False)
 
         return filename
 

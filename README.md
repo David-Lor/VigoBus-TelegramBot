@@ -32,6 +32,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- (WIP) 1.1.1 - fix encoding on extracted user data (saved stops) on JSON file
 - 1.1.0
     - extract user data (saved stops) into JSON file
     - delete all persisted user data (saved stops)
