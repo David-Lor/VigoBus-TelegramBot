@@ -26,7 +26,7 @@ class Bot(aiogram.Bot):
 
     @staticmethod
     def __set_message_kwargs(kwargs: dict):
-        kwargs.setdefault("parse_mode", "Markdown")
+        kwargs.setdefault("parse_mode", "HTML")
         kwargs.setdefault("disable_web_page_preview", True)
 
     async def send_message(self, *args, **kwargs):
