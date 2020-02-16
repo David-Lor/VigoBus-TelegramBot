@@ -44,7 +44,7 @@ async def send_file(bot: aiogram.Bot, chat_id: int, file: File, remove_file: boo
             chat_id=chat_id,
             document=file_open,
             caption=file.description,
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         logger.debug(f"Sent file {filename} to {chat_id} - result: {result}")
 
