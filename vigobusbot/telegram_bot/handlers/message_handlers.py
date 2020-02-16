@@ -15,6 +15,7 @@ from . import test_message_handlers
 
 # # Project # #
 from ...settings_handler import system_settings
+from ...persistence_api.saved_stops import delete_all_stops
 from ..status_sender import *
 from ..message_generators import *
 from ...static_handler import *
@@ -79,6 +80,28 @@ async def command_extract_data(message: aiogram.types.Message):
             stop_typing(chat_id)
 
 
+async def command_delete_data(message: aiogram.types.Message):
+    async with contextualize_request():
+        logger.debug("Requested command /deletedata")
+        handle_rate_limit(message)
+        await message.bot.send_message(message.chat.id, get_messages().delete_data.ask_confirmation)
+
+
+async def command_delete_data_confirmed(message: aiogram.types.Message):
+    async with contextualize_request():
+        logger.debug("Requested command /deletedata_yes")
+        handle_rate_limit(message)
+        chat_id = user_id = message.chat.id
+
+        try:
+            await start_typing(bot=message.bot, chat_id=chat_id)
+            await delete_all_stops(user_id)
+            await message.bot.send_message(chat_id, get_messages().delete_data.success)
+
+        finally:
+            stop_typing(chat_id)
+
+
 async def command_stops(message: aiogram.types.Message):
     """Stops command handler must return all the Stops saved by the user
     """
@@ -91,7 +114,7 @@ async def command_stops(message: aiogram.types.Message):
             await start_typing(bot=message.bot, chat_id=chat_id)
 
             text, buttons = await generate_saved_stops_message(user_id)
-            await message.bot.send_message(message.chat.id, text, reply_markup=buttons)
+            await message.bot.send_message(chat_id, text, reply_markup=buttons)
 
         finally:
             stop_typing(chat_id)
@@ -234,6 +257,12 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /extractdata command
     dispatcher.register_message_handler(command_extract_data, commands=("extractdata", "extraer_todo"))
+
+    # /deletedata command
+    dispatcher.register_message_handler(command_delete_data, commands=("deletedata", "borrar_todo"))
+
+    # /deletedata_yes command
+    dispatcher.register_message_handler(command_delete_data_confirmed, commands=("deletedata_yes", "borrar_todo_si"))
 
     # Test handlers
     if system_settings.test:
