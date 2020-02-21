@@ -25,8 +25,8 @@ __all__ = (
     "register_stop_rename_request", "stop_rename_request_reply_handler", "get_stop_rename_request_context"
 )
 
-_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.stop_rename_request_ttl)
-"""Storage for Stop Rename requests, which must be replied by users in less than 1 hour (3600s).
+_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
+"""Storage for Stop Rename requests, which must be replied by users in less than the force_reply_ttl
 Key=force_reply_message_id
 Value=StopRenameRequestContext
 """
@@ -43,7 +43,7 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     """
     _stop_rename_requests[context.force_reply_message_id] = context
     logger.debug(
-        f"Registered Stop Rename Request (user={context.user_id}, ForceReplyMessageID={context.force_reply_message_id})"
+        f"Registered Stop Rename Request ({context.dict(include={'user_id', 'force_reply_message_id'})})"
     )
 
 
@@ -66,10 +66,11 @@ def get_stop_rename_request_context(
             )
 
     if force_reply_message_id:
-        if pop:
-            result = _stop_rename_requests.pop(force_reply_message_id)
-        else:
-            result = _stop_rename_requests[force_reply_message_id]
+        with contextlib.suppress(KeyError):
+            if pop:
+                result = _stop_rename_requests.pop(force_reply_message_id)
+            else:
+                result = _stop_rename_requests[force_reply_message_id]
 
     logger.debug(
         f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +

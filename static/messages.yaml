@@ -31,6 +31,7 @@ help:
     :information_source:<b>Lista completa de comandos disponibles</b>
     :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente, o precedido por /stop
     :small_orange_diamond:/paradas: accede a todas tus paradas guardadas
+    :small_orange_diamond:/feedback: envía tus comentarios
     :small_orange_diamond:/extraer_todo: extrae todos tus datos (paradas guardadas) en un archivo JSON
     :small_orange_diamond:/borrar_todo: borra todos tus datos (paradas guardadas) del bot
     :small_orange_diamond:/about: información sobre el bot
@@ -101,12 +102,13 @@ stop_rename:
   unnamed_successfully: >-
     :white_check_mark:El nombre personalizado de la parada <b>#{stop_id} ({stop_name})</b> ha sido eliminado correctamente
   expired_request: |-
-    Disculpas, no se ha podido completar la operación.
-    Si estabas intentando renombrar una parada, por favor, vuelve a pulsar sobre el botón <b>Renombrar</b> de la parada pertinente.
-    Si estabas intentando obtener una parada, vuelve a intentarlo cerrando el diálogo de respuesta.
+    :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
+    Si estabas intentando renombrar una parada, vuelve a pulsar sobre el botón <b>Renombrar</b> de la parada pertinente.
+    Si estabas enviando un mensaje con /feedback, vuelve a ejecutar el comando y envía nuevamente el mensaje.
+    Si estabas intentando obtener una parada, vuelve a intentarlo.
   deprecated_command: |-
     :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
-    Si el mensaje que te pide introducir el nombre de parada te molesta, puedes borrarlo con clic derecho/pulsación larga y Eliminar.
+    Si el mensaje que te pide introducir el nombre de parada o texto te molesta, puedes borrarlo con clic derecho/pulsación larga y Eliminar.
   regex_sub:
     # Regex that will remove characters from user input Stop custom name
     >-
@@ -127,6 +129,16 @@ saved_stops:
       {stop_custom_name} - {stop_original_name}
     remove:
       X
+feedback:
+  request: |-
+    :speech_balloon:Si deseas <b>enviar tus comentarios o informar de algún problema</b>, puedes hacerlo respondiendo a este mensaje a continuación.
+    <b>Tu mensaje no tendrá respuesta.</b> Si quieres que se te responda, envía un correo electrónico a <a href="vigobusbot@protonmail.com">vigobusbot@protonmail.com</a>.
+    <i>Para cancelar la operación actual (si no quieres contactar a través del bot), pulsa sobre /cancelar</i>
+    ¡Gracias!
+  send_admin: |-
+    <b>Nuevo mensaje enviado</b> por usuario {user_id}:
+    {message_text}
+  success: :white_check_mark:Tu mensaje ha sido enviado. ¡Gracias!
 delete_data:
   ask_confirmation: :question:¿Seguro que deseas eliminar todos los datos? Si es así, pulsa sobre /borrar_todo_si
   success: :white_check_mark:Tus datos han sido eliminados

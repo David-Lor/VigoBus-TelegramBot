@@ -16,5 +16,5 @@ __all__ = (
     "StopUpdateCallbackData", "StopGetCallbackData",
     "StopSaveCallbackData", "StopDeleteCallbackData", "StopRenameCallbackData",
     "StopMoreBusesCallbackData", "StopLessBusesCallbackData",
-    "RenameStopForceReply", "CallbackDataExtractor"
+    "RenameStopForceReply", "FeedbackForceReply", "CallbackDataExtractor"
 )

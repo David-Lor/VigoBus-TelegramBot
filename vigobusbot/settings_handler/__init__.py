@@ -22,11 +22,12 @@ class BaseBotSettings(BaseSettingsHandler):
 
 class TelegramSettings(BaseBotSettings):
     token: str
+    admin_userid: int
     method = "polling"
     skip_prev_updates = True
     polling_fast = True
     polling_timeout: float = 30
-    stop_rename_request_ttl: int = 3600
+    force_reply_ttl: int = 3600
     user_rate_limit_amount: int = 5
     user_rate_limit_time: int = 1
     typing_safe_limit_time: float = 30

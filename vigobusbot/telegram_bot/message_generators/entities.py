@@ -12,7 +12,7 @@ __all__ = (
     "StopUpdateCallbackData", "StopGetCallbackData",
     "StopSaveCallbackData", "StopDeleteCallbackData", "StopRenameCallbackData",
     "StopMoreBusesCallbackData", "StopLessBusesCallbackData",
-    "RenameStopForceReply"
+    "RenameStopForceReply", "FeedbackForceReply"
 )
 
 CommonCallbackDataKeys = ("stop_id", "get_all_buses", "more_buses_available")
@@ -29,3 +29,4 @@ StopLessBusesCallbackData = CallbackData("less_buses", *CommonCallbackDataKeys)
 StopGetCallbackData = CallbackData("get", "stop_id")
 
 RenameStopForceReply = ForceReply()
+FeedbackForceReply = ForceReply()
