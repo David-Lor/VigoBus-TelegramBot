@@ -32,6 +32,10 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- (WIP) 1.2.0
+    - add one-way feedback communication system (adding "admin_userid" setting)
+    - fix error when renaming stop after forcereply timeout (TTL)
+    - rename Telegram setting 'stop_rename_request_ttl' to 'force_reply_ttl'
 - 1.1.1 - fix encoding on extracted user data (saved stops) on JSON file
 - 1.1.0
     - extract user data (saved stops) into JSON file

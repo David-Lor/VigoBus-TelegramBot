@@ -9,9 +9,9 @@ import asyncio
 import aiogram
 
 # # Package # #
-from .request_handlers import stop_rename_request_handler, user_data_request_handler
 from .rate_limit_handlers import handle_user_rate_limit
 from . import test_message_handlers
+from .request_handlers import *
 
 # # Project # #
 from ...settings_handler import system_settings
@@ -167,13 +167,18 @@ async def command_cancel(message: aiogram.types.Message):
         handle_rate_limit(message)
         user_id = chat_id = message.chat.id
         stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
+        feedback_request_context = feedback_request_handler.get_feedback_request_context(user_id=user_id)
 
         if stop_rename_request_context:
             await message.bot.delete_message(
                 chat_id=chat_id,
                 message_id=stop_rename_request_context.force_reply_message_id
             )
-
+        elif feedback_request_context:
+            await message.bot.delete_message(
+                chat_id=chat_id,
+                message_id=feedback_request_context.force_reply_message_id
+            )
         else:
             await message.bot.send_message(
                 chat_id=chat_id,
@@ -202,18 +207,44 @@ async def command_removename(message: aiogram.types.Message):
             )
 
 
+async def command_feedback(message: aiogram.types.Message):
+    async with contextualize_request():
+        logger.debug("Requested command /feedback")
+        handle_rate_limit(message)
+        chat_id = user_id = message.chat.id
+
+        force_reply_message = await message.bot.send_message(
+            chat_id=chat_id,
+            reply_markup=FeedbackForceReply.create(),
+            text=get_messages().feedback.request
+        )
+
+        feedback_request_context = feedback_request_handler.FeedbackRequestContext(
+            user_id=user_id,
+            force_reply_message_id=force_reply_message.message_id
+        )
+        feedback_request_handler.register_feedback_request(feedback_request_context)
+
+
 async def global_message_handler(message: aiogram.types.Message):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
     The message text is filtered to guess what the user wants (most probably get, search or rename a Stop).
     """
     async with contextualize_request():
-        # Reply to bot message = reply to Rename stop question
+        # Reply to bot message = reply to Force Reply
         if message.reply_to_message and message.reply_to_message.from_user.is_bot:
             logger.debug("Received Reply to bot message")
+
             if stop_rename_request_handler.get_stop_rename_request_context(
                     force_reply_message_id=message.reply_to_message.message_id, pop=False
             ):
                 return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+
+            elif feedback_request_handler.get_feedback_request_context(
+                    force_reply_message_id=message.reply_to_message.message_id, pop=False
+            ):
+                return await feedback_request_handler.feedback_request_reply_handler(message)
+
             else:
                 # if ForceReply message not registered, user might had replied any message, or the request expired
                 await message.bot.send_message(
@@ -263,6 +294,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /deletedata_yes command
     dispatcher.register_message_handler(command_delete_data_confirmed, commands=("deletedata_yes", "borrar_todo_si"))
+
+    # /feedback command
+    dispatcher.register_message_handler(command_feedback, commands=("feedback", "comentarios"))
 
     # Test handlers
     if system_settings.test:
