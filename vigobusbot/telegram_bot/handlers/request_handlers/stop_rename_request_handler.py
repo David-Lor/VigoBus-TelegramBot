@@ -66,10 +66,11 @@ def get_stop_rename_request_context(
             )
 
     if force_reply_message_id:
-        if pop:
-            result = _stop_rename_requests.pop(force_reply_message_id)
-        else:
-            result = _stop_rename_requests[force_reply_message_id]
+        with contextlib.suppress(KeyError):
+            if pop:
+                result = _stop_rename_requests.pop(force_reply_message_id)
+            else:
+                result = _stop_rename_requests[force_reply_message_id]
 
     logger.debug(
         f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +
