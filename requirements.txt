@@ -1,12 +1,11 @@
 aiogram==2.1  # Async Telegram Bot API wrapper
 httpx==0.7.5  # HTTP requests
-dotenv-settings-handler==0.0.3  # Settings Handler
 python-dotenv==0.10.3  # .env file loader
 pyyaml==5.1.2  # YAML file parser
 addict==2.2.1  # better dicts
 watchdog==0.9.0  # watch directories for file changes
 emoji==0.5.3  # replace aliases with emojis
-pydantic==0.26  # class builder
+pydantic==1.4  # class builder
 cachetools==3.1.1  # cache
 cryptography==2.8
 loguru==0.4.0  # logging
