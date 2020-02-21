@@ -6,8 +6,7 @@ Load settings from dotenv file or environment variables
 from typing import Optional
 
 # # Installed # #
-from dotenv_settings_handler import BaseSettingsHandler
-from dotenv import load_dotenv
+import pydantic
 
 # # Package # #
 from .helpers import *
@@ -15,9 +14,9 @@ from .helpers import *
 __all__ = ("telegram_settings", "api_settings", "persistence_settings", "system_settings")
 
 
-class BaseBotSettings(BaseSettingsHandler):
+class BaseBotSettings(pydantic.BaseSettings):
     class Config:
-        case_insensitive = True
+        env_file = ".env"
 
 
 class TelegramSettings(BaseBotSettings):
@@ -66,8 +65,6 @@ class SystemSettings(BaseBotSettings):
     log_level: str = "INFO"
     test: bool = False
 
-
-load_dotenv()
 
 telegram_settings = TelegramSettings()
 api_settings = APISettings()
