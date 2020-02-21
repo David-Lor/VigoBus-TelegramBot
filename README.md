@@ -32,7 +32,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
-- (WIP) 1.2.1 - remove dotenv-settings-handler in favor of pydantic only
+- 1.2.1 - remove dotenv-settings-handler in favor of pydantic only
 - 1.2.0
     - add one-way feedback communication system (adding "admin_userid" setting)
     - fix error when renaming stop after forcereply timeout (TTL)
