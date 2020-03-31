@@ -9,8 +9,8 @@ from typing import Optional
 import aiogram
 
 # # Project # #
-from ..logger import *
-from ..settings_handler import telegram_settings as settings
+from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.logger import logger
 
 # # Package # #
 from .handlers import register_handlers
