@@ -20,9 +20,9 @@ def request_handler(verb: str):
     for logging and error handling purposes.
     :param verb: Descriptor of the request being processed
     """
-    def real_decorator(request_handler_function):
+    def _real_decorator(request_handler_function):
         # noinspection PyUnusedLocal
-        async def wrapper(*args, **kwargs):
+        async def request_wrapper(*args, **kwargs):
             result = None
             request_source: RequestSource = args[0]
             request_id = get_request_id()
@@ -33,14 +33,14 @@ def request_handler(verb: str):
                 user_id = request_source.from_user.id
 
                 with logger.contextualize(request_id=request_id, verb=verb):
-                    logger.debug("Request started")
+                    logger.info("Request started")
 
                     async with handle_exceptions(request_source=request_source):
                         handle_user_rate_limit(user_id=user_id)
                         result = await request_handler_function(*args, **kwargs)
 
                     with logger.contextualize(last_record=True):
-                        logger.debug("Request finished")
+                        logger.info("Request finished")
 
             # ...but sometimes the request handler is called from another request handler
             else:
@@ -55,6 +55,6 @@ def request_handler(verb: str):
 
             return result
 
-        return wrapper
+        return request_wrapper
 
-    return real_decorator
+    return _real_decorator

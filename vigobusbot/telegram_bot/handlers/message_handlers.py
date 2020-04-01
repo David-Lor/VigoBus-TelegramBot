@@ -13,9 +13,8 @@ from . import test_message_handlers
 from .request_handlers import user_data_request_handler, feedback_request_handler, stop_rename_request_handler
 
 # # Project # #
-from vigobusbot.telegram_bot.services import request_handler
+from vigobusbot.telegram_bot.services import request_handler, start_typing, stop_typing
 from vigobusbot.telegram_bot.entities import Message
-from vigobusbot.telegram_bot.status_sender import start_typing, stop_typing
 from vigobusbot.telegram_bot.message_generators import SourceContext, FeedbackForceReply
 from vigobusbot.telegram_bot.message_generators import generate_stop_message, generate_saved_stops_message
 from vigobusbot.persistence_api.saved_stops import delete_all_stops

@@ -9,8 +9,7 @@ import asyncio
 import aiogram
 
 # # Project # #
-from vigobusbot.telegram_bot.services import request_handler
-from vigobusbot.telegram_bot.status_sender import start_typing, stop_typing
+from vigobusbot.telegram_bot.services import request_handler, start_typing, stop_typing
 from vigobusbot.telegram_bot.message_generators import *
 from vigobusbot.persistence_api import saved_stops
 from vigobusbot.static_handler import get_messages

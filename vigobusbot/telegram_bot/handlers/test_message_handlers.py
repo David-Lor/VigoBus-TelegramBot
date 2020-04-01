@@ -7,8 +7,7 @@ import aiogram
 
 # # Project # #
 from vigobusbot.telegram_bot.entities import Message
-from vigobusbot.telegram_bot.services import request_handler
-from vigobusbot.telegram_bot.status_sender.typing_status_service import start_typing
+from vigobusbot.telegram_bot.services import request_handler, start_typing
 from vigobusbot.logger import logger
 
 
