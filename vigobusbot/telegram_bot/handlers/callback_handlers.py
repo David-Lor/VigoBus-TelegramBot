@@ -9,16 +9,16 @@ import asyncio
 import aiogram
 
 # # Project # #
-from vigobusbot.telegram_bot.services import request_handler, start_typing, stop_typing
+from vigobusbot.telegram_bot.services import request_handler
+from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
+from vigobusbot.telegram_bot.services.stop_rename_request_handler import StopRenameRequestContext
+from vigobusbot.telegram_bot.services.stop_rename_request_handler import register_stop_rename_request
 from vigobusbot.telegram_bot.message_generators import *
 from vigobusbot.persistence_api import saved_stops
 from vigobusbot.static_handler import get_messages
 from vigobusbot.vigobus_api import get_stop
 from vigobusbot.exceptions import MessageNotModified
 from vigobusbot.logger import logger
-
-# # Package # #
-from .request_handlers import stop_rename_request_handler
 
 __all__ = ("register_handlers",)
 
@@ -216,13 +216,13 @@ async def stop_rename(callback_query: aiogram.types.CallbackQuery, callback_data
             text=text
         )
 
-        rename_request_context = stop_rename_request_handler.StopRenameRequestContext(
+        rename_request_context = StopRenameRequestContext(
             user_id=callback_query.message.chat.id,
             source_message=source_message,
             force_reply_message_id=force_reply_message.message_id,
             **callback_data
         )
-        stop_rename_request_handler.register_stop_rename_request(rename_request_context)
+        register_stop_rename_request(rename_request_context)
 
     finally:
         if not answered_callback_query:

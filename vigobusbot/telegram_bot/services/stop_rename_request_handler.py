@@ -1,5 +1,5 @@
 """STOP RENAME REQUEST HANDLER
-Handler and utils for working with Stop Rename requests
+Handler and utils for working with Stop Rename requests, involving Force Reply handling
 """
 
 # # Native # #
@@ -13,16 +13,16 @@ import cachetools
 import emoji
 
 # # Project # #
-from ...message_generators import generate_stop_message, SourceContext
-from ....static_handler import get_messages
-from ....vigobus_api import get_stop
-from ....persistence_api import saved_stops
-from ....settings_handler import telegram_settings as settings
-from ....logger import *
+from vigobusbot.telegram_bot.message_generators import generate_stop_message, SourceContext
+from vigobusbot.vigobus_api import get_stop
+from vigobusbot.persistence_api.saved_stops import save_stop
+from vigobusbot.static_handler import get_messages
+from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.logger import logger
 
 __all__ = (
     "StopRenameRequestContext",
-    "register_stop_rename_request", "stop_rename_request_reply_handler", "get_stop_rename_request_context"
+    "register_stop_rename_request", "handle_stop_rename_request_reply", "get_stop_rename_request_context"
 )
 
 _stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
@@ -42,9 +42,7 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     The value is the StopRenameRequestContext object.
     """
     _stop_rename_requests[context.force_reply_message_id] = context
-    logger.debug(
-        f"Registered Stop Rename Request ({context.dict(include={'user_id', 'force_reply_message_id'})})"
-    )
+    logger.debug(f"Registered Stop Rename Request for message {context.force_reply_message_id}")
 
 
 def get_stop_rename_request_context(
@@ -73,15 +71,15 @@ def get_stop_rename_request_context(
                 result = _stop_rename_requests[force_reply_message_id]
 
     logger.debug(
-        f"{'Found' if result else 'Not Found'} StopRenameRequestContext for " +
-        f"{f'ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
-        f"{f'UserID={user_id} ' if user_id else ''}" +
-        ("(Pop)" if pop else "(No Pop)")
+        f"{'Found' if result else 'Not Found'} StopRenameRequestContext" +
+        f"{f' ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
+        f"{f' With-UserID' if user_id else ' No-UserID'}" +
+        (" (Pop)" if pop else " (No-Pop)")
     )
     return result
 
 
-async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Message, remove_custom_name=False):
+async def handle_stop_rename_request_reply(user_reply_message: aiogram.types.Message, remove_custom_name=False):
     """This handler is called from message handlers when a user replies to a Stop Rename ForceReply request.
     The user can reply with a custom name, or requesting to remove the already existing custom stop name.
     If setting a custom name, user_reply_message is the message sent by the user with the desired custom name.
@@ -90,9 +88,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
     new_stop_name = user_reply_message.text
     chat_id = user_reply_message.chat.id
     messages = get_messages()
-    logger.debug(
-        f"Processing Stop Rename request for user {chat_id} (from reply message {user_reply_message.message_id})"
-    )
+    logger.debug(f"Processing Stop Rename request from reply message {user_reply_message.message_id}")
 
     if remove_custom_name:
         new_stop_name = None
@@ -107,7 +103,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         new_stop_name = emoji.emojize(new_stop_name)
         rename_context = get_stop_rename_request_context(user_reply_message.reply_to_message.message_id)
 
-    await saved_stops.save_stop(
+    await save_stop(
         user_id=chat_id,
         stop_id=rename_context.stop_id,
         stop_name=new_stop_name
@@ -138,7 +134,7 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         chat_id=chat_id,
         message_id=rename_context.force_reply_message_id
     )
-    logger.debug(f"Stop successfully renamed (from reply message {user_reply_message.message_id})")
+    logger.debug("Stop successfully renamed")
 
     # Edit original Stop message
     source_context = SourceContext(
@@ -153,6 +149,4 @@ async def stop_rename_request_reply_handler(user_reply_message: aiogram.types.Me
         message_id=rename_context.source_message.message_id,
         reply_markup=buttons
     )
-    logger.debug(
-        f"Edited original Stop message after renaming the Stop (from reply message {user_reply_message.message_id})"
-    )
+    logger.debug("Edited the original Stop message after renaming the Stop")

@@ -10,11 +10,11 @@ import json
 import aiogram
 
 # # Project # #
-from ....persistence_api.saved_stops import get_user_saved_stops
-from ....vigobus_api.stop_getter import fill_saved_stops_info
-from ....static_handler import get_messages
-from ....entities import *
-from ....logger import *
+from vigobusbot.vigobus_api.stop_getter import fill_saved_stops_info
+from vigobusbot.persistence_api.saved_stops import get_user_saved_stops
+from vigobusbot.entities import File, Files
+from vigobusbot.static_handler import get_messages
+from vigobusbot.logger import logger
 
 __all__ = ("extract_user_data", "send_file")
 
@@ -25,6 +25,7 @@ class UserDataExtractors:
     """
     @staticmethod
     async def stops(user_id: int) -> str:
+        logger.debug("Extracting Saved Stops data from user")
         messages = get_messages()
         saved_stops = await get_user_saved_stops(user_id)
         await fill_saved_stops_info(saved_stops)
@@ -46,7 +47,7 @@ async def send_file(bot: aiogram.Bot, chat_id: int, file: File, remove_file: boo
             caption=file.description,
             parse_mode="HTML"
         )
-        logger.debug(f"Sent file {filename} to {chat_id} - result: {result}")
+        logger.debug(f"Sent file {filename} to user")
 
     if remove_file:
         os.remove(filename)
@@ -60,7 +61,7 @@ async def extract_user_data(user_id: int) -> Files:
     Returns File objects, which include the filename (path) and description of each file.
     """
     messages = get_messages()
-    logger.debug(f"Extracting user data for user {user_id}")
+    logger.debug("Extracting user data")
 
     # When adding more extractors, use asyncio.gather
     stops_data = await UserDataExtractors.stops(user_id)

@@ -10,10 +10,16 @@ import aiogram
 
 # # Package # #
 from . import test_message_handlers
-from .request_handlers import user_data_request_handler, feedback_request_handler, stop_rename_request_handler
 
 # # Project # #
-from vigobusbot.telegram_bot.services import request_handler, start_typing, stop_typing
+from vigobusbot.telegram_bot.services import request_handler
+from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
+from vigobusbot.telegram_bot.services.feedback_request_handler import get_feedback_request_context
+from vigobusbot.telegram_bot.services.feedback_request_handler import register_feedback_request
+from vigobusbot.telegram_bot.services.feedback_request_handler import handle_feedback_request_reply
+from vigobusbot.telegram_bot.services.stop_rename_request_handler import get_stop_rename_request_context
+from vigobusbot.telegram_bot.services.stop_rename_request_handler import handle_stop_rename_request_reply
+from vigobusbot.telegram_bot.services.user_data_request_handler import extract_user_data, send_file
 from vigobusbot.telegram_bot.entities import Message
 from vigobusbot.telegram_bot.message_generators import SourceContext, FeedbackForceReply
 from vigobusbot.telegram_bot.message_generators import generate_stop_message, generate_saved_stops_message
@@ -57,9 +63,9 @@ async def command_extract_data(message: Message, *args, **kwargs):
     try:
         await start_typing(bot=message.bot, chat_id=chat_id)
 
-        files = await user_data_request_handler.extract_user_data(user_id)
+        files = await extract_user_data(user_id)
         await asyncio.gather(*[
-            user_data_request_handler.send_file(bot=message.bot, chat_id=chat_id, file=file, remove_file=True)
+            send_file(bot=message.bot, chat_id=chat_id, file=file, remove_file=True)
             for file in files
         ])
 
@@ -144,8 +150,8 @@ async def command_cancel(message: Message, *args, **kwargs):
     The ForceReply message sent by the bot must be deleted, if possible.
     """
     user_id = chat_id = message.chat.id
-    stop_rename_request_context = stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id)
-    feedback_request_context = feedback_request_handler.get_feedback_request_context(user_id=user_id)
+    stop_rename_request_context = get_stop_rename_request_context(user_id=user_id)
+    feedback_request_context = get_feedback_request_context(user_id=user_id)
 
     if stop_rename_request_context:
         await message.bot.delete_message(
@@ -172,8 +178,8 @@ async def command_removename(message: Message, *args, **kwargs):
     """
     user_id = chat_id = message.chat.id
 
-    if stop_rename_request_handler.get_stop_rename_request_context(user_id=user_id, pop=False):
-        return await stop_rename_request_handler.stop_rename_request_reply_handler(message, remove_custom_name=True)
+    if get_stop_rename_request_context(user_id=user_id, pop=False):
+        return await handle_stop_rename_request_reply(message, remove_custom_name=True)
 
     else:
         await message.bot.send_message(
@@ -192,12 +198,7 @@ async def command_feedback(message: Message, *args, **kwargs):
         reply_markup=FeedbackForceReply.create(),
         text=get_messages().feedback.request
     )
-
-    feedback_request_context = feedback_request_handler.FeedbackRequestContext(
-        user_id=user_id,
-        force_reply_message_id=force_reply_message.message_id
-    )
-    feedback_request_handler.register_feedback_request(feedback_request_context)
+    register_feedback_request(user_id=user_id, force_reply_message_id=force_reply_message.message_id)
 
 
 @request_handler("Non-Command Text message")
@@ -209,15 +210,13 @@ async def global_message_handler(message: Message, *args, **kwargs):
     if message.reply_to_message and message.reply_to_message.from_user.is_bot:
         logger.debug("Received Reply to bot message")
 
-        if stop_rename_request_handler.get_stop_rename_request_context(
+        if get_stop_rename_request_context(
                 force_reply_message_id=message.reply_to_message.message_id, pop=False
         ):
-            return await stop_rename_request_handler.stop_rename_request_reply_handler(message)
+            return await handle_stop_rename_request_reply(message)
 
-        elif feedback_request_handler.get_feedback_request_context(
-                force_reply_message_id=message.reply_to_message.message_id, pop=False
-        ):
-            return await feedback_request_handler.feedback_request_reply_handler(message)
+        elif get_feedback_request_context(force_reply_message_id=message.reply_to_message.message_id, pop=False):
+            return await handle_feedback_request_reply(message)
 
         else:
             # if ForceReply message not registered, user might had replied any message, or the request expired
