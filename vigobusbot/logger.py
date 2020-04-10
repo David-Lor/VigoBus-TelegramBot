@@ -13,8 +13,8 @@ from loguru import logger
 # noinspection PyProtectedMember
 from loguru._logger import context as loguru_context
 
-# # Package # #
-from .settings_handler import system_settings as settings
+# # Project # #
+from vigobusbot.settings_handler import system_settings as settings
 
 __all__ = ("logger", "get_request_id", "get_request_verb")
 

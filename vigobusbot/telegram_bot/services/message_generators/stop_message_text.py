@@ -8,8 +8,8 @@ from typing import Optional
 
 # # Project # #
 from vigobusbot.persistence_api import saved_stops
-from vigobusbot.static_handler import *
-from vigobusbot.entities import *
+from vigobusbot.static_handler import get_messages
+from vigobusbot.entities import Stop, BusesResponse
 
 __all__ = ("generate_stop_message_text",)
 

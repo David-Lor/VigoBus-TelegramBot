@@ -3,7 +3,7 @@ Custom and imported exceptions used over all the project.
 """
 
 # # Installed # #
-from aiogram.utils.exceptions import *
+from aiogram.utils.exceptions import MessageNotModified
 
 __all__ = (
     "GetterException", "GetterInternalException", "GetterAPIException", "GetterTimedOut", "StopNotExist",

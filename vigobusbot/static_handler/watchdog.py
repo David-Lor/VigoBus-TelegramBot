@@ -9,12 +9,12 @@ import atexit
 import watchdog.observers
 import watchdog.events
 
-# # Project # #
-from ..logger import *
-
 # # Package # #
 from .loader import load_messages, static_path
 from .files import MESSAGES_FILENAME
+
+# # Project # #
+from vigobusbot.logger import logger
 
 __all__ = ("watchdog_start",)
 

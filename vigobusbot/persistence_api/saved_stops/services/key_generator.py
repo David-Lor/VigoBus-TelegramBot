@@ -11,7 +11,7 @@ import cachetools
 from cryptography.fernet import Fernet
 
 # # Project # #
-from ....settings_handler import persistence_settings as settings
+from vigobusbot.settings_handler import persistence_settings as settings
 
 __all__ = ("get_user_key", "Fernet")
 

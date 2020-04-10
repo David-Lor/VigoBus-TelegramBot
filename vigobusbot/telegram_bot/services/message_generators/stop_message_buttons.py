@@ -6,7 +6,7 @@ Helper to generate the Stop Message buttons markup
 import aiogram
 
 # # Package # #
-from .source_context import *
+from .source_context import SourceContext
 from .entities import *
 
 # # Project # #
