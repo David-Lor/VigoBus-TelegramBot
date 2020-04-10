@@ -11,9 +11,9 @@ from typing import Tuple
 import aiogram
 
 # # Project # #
-from ...persistence_api import saved_stops
-from ...vigobus_api import *
-from ...entities import *
+from vigobusbot.persistence_api import saved_stops
+from vigobusbot.vigobus_api import *
+from vigobusbot.entities import *
 
 # # Package # #
 from .source_context import *

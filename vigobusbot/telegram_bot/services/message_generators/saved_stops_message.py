@@ -13,9 +13,9 @@ import aiogram
 from .entities import *
 
 # # Project # #
-from ...persistence_api.saved_stops import get_user_saved_stops
-from ...vigobus_api.stop_getter import fill_saved_stops_info
-from ...static_handler import get_messages
+from vigobusbot.persistence_api.saved_stops import get_user_saved_stops
+from vigobusbot.vigobus_api.stop_getter import fill_saved_stops_info
+from vigobusbot.static_handler import get_messages
 
 __all__ = ("generate_saved_stops_message",)
 

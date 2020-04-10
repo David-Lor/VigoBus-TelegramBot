@@ -7,9 +7,9 @@ import datetime
 from typing import Optional
 
 # # Project # #
-from ...persistence_api import saved_stops
-from ...static_handler import *
-from ...entities import *
+from vigobusbot.persistence_api import saved_stops
+from vigobusbot.static_handler import *
+from vigobusbot.entities import *
 
 __all__ = ("generate_stop_message_text",)
 

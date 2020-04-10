@@ -10,7 +10,7 @@ from .source_context import *
 from .entities import *
 
 # # Project # #
-from ...static_handler import *
+from vigobusbot.static_handler import *
 
 __all__ = ("generate_stop_message_buttons",)
 

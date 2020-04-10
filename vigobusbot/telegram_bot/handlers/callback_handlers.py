@@ -13,7 +13,7 @@ from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import StopRenameRequestContext
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import register_stop_rename_request
-from vigobusbot.telegram_bot.message_generators import *
+from vigobusbot.telegram_bot.services.message_generators import *
 from vigobusbot.persistence_api import saved_stops
 from vigobusbot.static_handler import get_messages
 from vigobusbot.vigobus_api import get_stop
