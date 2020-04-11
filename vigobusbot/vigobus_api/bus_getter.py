@@ -10,7 +10,7 @@ from .requester import http_get
 from .exceptions import manage_exceptions
 
 # # Project # #
-from ..entities import Bus, BusesResponse
+from vigobusbot.entities import Bus, BusesResponse
 
 __all__ = ("get_buses",)
 

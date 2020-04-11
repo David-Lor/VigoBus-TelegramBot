@@ -9,7 +9,7 @@ import contextlib
 import httpx
 
 # # Project # #
-from ..exceptions import *
+from vigobusbot.exceptions import StopNotExist, GetterAPIException, GetterInternalException, GetterTimedOut
 
 __all__ = ("manage_exceptions", "TimeoutExceptions")
 
