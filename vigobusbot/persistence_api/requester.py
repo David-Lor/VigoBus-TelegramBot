@@ -10,15 +10,16 @@ from typing import Optional
 import httpx
 
 # # Project # #
-from ..settings_handler import persistence_settings as settings
-from ..logger import *
+from vigobusbot.settings_handler import persistence_settings as settings
+from vigobusbot.logger import logger
 
-__all__ = ("http_request", "GET", "POST", "DELETE")
+__all__ = ("http_request", "Methods")
 
 
-GET = "GET"
-POST = "POST"
-DELETE = "DELETE"
+class Methods:
+    GET = "GET"
+    POST = "POST"
+    DELETE = "DELETE"
 
 
 async def http_request(
@@ -32,11 +33,11 @@ async def http_request(
     for retry_count in range(retries):
         try:
             async with httpx.AsyncClient(timeout=timeout) as client:
-                if method == GET:
+                if method == Methods.GET:
                     result = await client.get(url=url, params=query_params)
-                elif method == POST:
+                elif method == Methods.POST:
                     result = await client.post(url=url, params=query_params, json=body)
-                elif method == DELETE:
+                elif method == Methods.DELETE:
                     result = await client.delete(url=url, params=query_params)
 
             result.raise_for_status()

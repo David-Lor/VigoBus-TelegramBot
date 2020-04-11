@@ -6,8 +6,8 @@ Path Loader to get the 'static' path, getting it from the settings or finding in
 import pathlib
 
 # # Project # #
-from ..logger import *
-from ..settings_handler import system_settings as settings
+from vigobusbot.settings_handler import system_settings as settings
+from vigobusbot.logger import logger
 
 __all__ = ("get_static_path",)
 

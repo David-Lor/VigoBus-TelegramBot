@@ -4,7 +4,9 @@ Functions to decode data to raw (Persist API to Bot)
 
 # # Package # #
 from .key_generator import *
-from ..entities import *
+
+# # Project # #
+from vigobusbot.persistence_api.saved_stops.entities import SavedStop, SavedStopEncoded
 
 __all__ = ("decode_stop", "decode_string")
 

@@ -8,12 +8,12 @@ from typing import Optional
 # # Installed # #
 import aiogram
 
+# # Package # #
+from .handlers import register_handlers
+
 # # Project # #
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
-
-# # Package # #
-from .handlers import register_handlers
 
 __all__ = ("Bot", "get_bot")
 

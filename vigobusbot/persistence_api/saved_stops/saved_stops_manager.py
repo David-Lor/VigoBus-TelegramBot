@@ -12,12 +12,12 @@ import contextlib
 from typing import Optional
 
 # # Package # #
-from .entities import *
-from .services import *
-from ..requester import *
+from vigobusbot.persistence_api.saved_stops.entities import SavedStop, SavedStops, SavedStopEncoded
+from vigobusbot.persistence_api.saved_stops.services import *
 
 # # Project # #
-from ...logger import *
+from vigobusbot.persistence_api.requester import http_request, Methods
+from vigobusbot.logger import logger
 
 __all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved", "delete_all_stops")
 
@@ -26,7 +26,7 @@ async def get_user_saved_stops(user_id: int) -> SavedStops:
     encoded_user_id = encode_user_id(user_id)
 
     result = await http_request(
-        method=GET,
+        method=Methods.GET,
         endpoint=f"/stops/{encoded_user_id}"
     )
     stops_json = json.loads(result.text)
@@ -58,7 +58,7 @@ async def save_stop(user_id: int, stop_id: int, stop_name: Optional[str] = None)
     stop_encoded = encode_stop(raw_stop=stop, user_id=user_id)
 
     await http_request(
-        method=POST,
+        method=Methods.POST,
         endpoint="/stops",
         body=stop_encoded.dict()
     )
@@ -69,7 +69,7 @@ async def delete_stop(user_id: int, stop_id: int):
     encoded_user_id = encode_user_id(user_id)
 
     await http_request(
-        method=DELETE,
+        method=Methods.DELETE,
         endpoint=f"/stops/{encoded_user_id}/{stop_id}"
     )
     logger.debug(f"Deleted Stop for user {user_id}")
@@ -79,7 +79,7 @@ async def delete_all_stops(user_id: int):
     encoded_user_id = encode_user_id(user_id)
 
     await http_request(
-        method=DELETE,
+        method=Methods.DELETE,
         endpoint=f"/stops/{encoded_user_id}"
     )
     logger.debug(f"Deleted ALL Stops for user {user_id}")

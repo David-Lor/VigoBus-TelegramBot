@@ -5,12 +5,12 @@ Telegram bot executor using the Polling method
 # # Installed # #
 import aiogram
 
+# # Package # #
+from .bot import get_bot
+
 # # Project # #
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
-
-# # Package # #
-from .bot import get_bot
 
 
 def start_polling():

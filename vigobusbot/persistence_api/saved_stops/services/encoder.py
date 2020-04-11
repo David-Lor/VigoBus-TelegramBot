@@ -7,10 +7,10 @@ import hashlib
 
 # # Package # #
 from .key_generator import *
-from ..entities import *
 
 # # Project # #
-from ....settings_handler import persistence_settings as settings
+from vigobusbot.persistence_api.saved_stops.entities import SavedStop, SavedStopEncoded
+from vigobusbot.settings_handler import persistence_settings as settings
 
 __all__ = ("encode_user_id", "encode_stop", "encode_string")
 

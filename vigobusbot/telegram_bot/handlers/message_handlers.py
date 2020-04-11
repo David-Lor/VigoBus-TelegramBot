@@ -21,8 +21,8 @@ from vigobusbot.telegram_bot.services.stop_rename_request_handler import get_sto
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import handle_stop_rename_request_reply
 from vigobusbot.telegram_bot.services.user_data_request_handler import extract_user_data, send_file
 from vigobusbot.telegram_bot.entities import Message
-from vigobusbot.telegram_bot.message_generators import SourceContext, FeedbackForceReply
-from vigobusbot.telegram_bot.message_generators import generate_stop_message, generate_saved_stops_message
+from vigobusbot.telegram_bot.services.message_generators import SourceContext, FeedbackForceReply
+from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, generate_saved_stops_message
 from vigobusbot.persistence_api.saved_stops import delete_all_stops
 from vigobusbot.settings_handler import system_settings
 from vigobusbot.static_handler import get_messages

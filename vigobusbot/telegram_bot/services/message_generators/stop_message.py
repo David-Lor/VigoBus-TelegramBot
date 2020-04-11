@@ -11,14 +11,14 @@ from typing import Tuple
 import aiogram
 
 # # Project # #
-from ...persistence_api import saved_stops
-from ...vigobus_api import *
-from ...entities import *
+from vigobusbot.persistence_api import saved_stops
+from vigobusbot.vigobus_api import get_stop, get_buses
+from vigobusbot.entities import Stop, BusesResponse
 
 # # Package # #
-from .source_context import *
-from .stop_message_text import *
-from .stop_message_buttons import *
+from .source_context import SourceContext
+from .stop_message_text import generate_stop_message_text
+from .stop_message_buttons import generate_stop_message_buttons
 
 __all__ = ("generate_stop_message",)
 

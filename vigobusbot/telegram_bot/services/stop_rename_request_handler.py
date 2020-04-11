@@ -13,7 +13,7 @@ import cachetools
 import emoji
 
 # # Project # #
-from vigobusbot.telegram_bot.message_generators import generate_stop_message, SourceContext
+from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, SourceContext
 from vigobusbot.vigobus_api import get_stop
 from vigobusbot.persistence_api.saved_stops import save_stop
 from vigobusbot.static_handler import get_messages
