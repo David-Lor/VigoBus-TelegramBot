@@ -32,6 +32,9 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.0.1
+    - refactor message generators
+    - refactor HTTP requester functions, merging in one service
 - 2.0.0 - refactor Telegram Bot request services/helpers
 - 1.2.1 - remove dotenv-settings-handler in favor of pydantic only
 - 1.2.0
