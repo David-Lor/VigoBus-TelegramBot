@@ -3,6 +3,8 @@ Load static files from the 'static' path, such as the Messages file.
 A filesystem watchdog is started to reload content from files if they change during execution.
 """
 
+# TODO Move to services package
+
 # # Package # #
 from .watchdog import watchdog_start
 from .exceptions import *

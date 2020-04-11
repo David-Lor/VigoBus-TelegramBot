@@ -12,7 +12,7 @@ from .requester import http_get
 from .exceptions import manage_exceptions
 
 # # Project # #
-from ..entities import *
+from vigobusbot.entities import Stop, Stops, StopsDict
 from ..persistence_api.saved_stops.entities import *
 
 __all__ = ("get_stop", "get_multiple_stops", "fill_saved_stops_info")
