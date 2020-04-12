@@ -3,6 +3,7 @@ Handler and utils for working with Feedback requests, involving Force Reply hand
 """
 
 # # Native # #
+import asyncio
 import contextlib
 from typing import Optional
 
@@ -62,7 +63,7 @@ def get_feedback_request_context(
 
     logger.debug(
         f"{'Found' if result else 'Not Found'} FeedbackRequestContext" +
-        f"{f'ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
+        f"{f' ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
         f"{f' With-UserID' if user_id else ' No-UserID'}" +
         (" (Pop)" if pop else " (No-Pop)")
     )
@@ -74,7 +75,8 @@ async def handle_feedback_request_reply(user_reply_message: aiogram.types.Messag
     The user replies with the message that wants to send to the bot admin.
     """
     message_text = user_reply_message.text
-    chat_id = user_reply_message.chat.id
+    chat_id = user_id = user_reply_message.chat.id
+    request_context = get_feedback_request_context(user_id=user_id, pop=True)
     messages = get_messages()
 
     logger.info(
@@ -85,7 +87,16 @@ async def handle_feedback_request_reply(user_reply_message: aiogram.types.Messag
         chat_id=settings.admin_userid,
         text=messages.feedback.send_admin.format(user_id=chat_id, message_text=message_text)
     )
-    await user_reply_message.bot.send_message(
+
+    # Confirmation message send to the user
+    confirmation_coro = user_reply_message.bot.send_message(
         chat_id=chat_id,
+        reply_to_message_id=user_reply_message.message_id,
         text=messages.feedback.success
     )
+    # Delete the original message with the ForceReply markup sent by the bot
+    delete_original_message_coro = user_reply_message.bot.delete_message(
+        chat_id=chat_id,
+        message_id=request_context.force_reply_message_id
+    )
+    await asyncio.gather(confirmation_coro, delete_original_message_coro)
