@@ -153,3 +153,12 @@ generic:
     :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.
   rate_limit_error: >-
     :negative_squared_cross_mark:Parece que has realizado demasiadas peticiones seguidas. Por favor, espera un poco :cold_sweat:
+commands:
+  start: Introducción
+  help: Ayuda
+  stop: Buscar una parada por código
+  paradas: Ver tus paradas guardadas
+  extraer_todo: Extrae todos tus datos (paradas guardadas) en un archivo JSON
+  borrar_todo: Borra todos tus datos (paradas guardadas) del bot
+  about: Información sobre el bot (Acerca de)
+  donate: Colaborar con el desarrollo y mantenimiento del bot

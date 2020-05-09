@@ -23,6 +23,7 @@ __all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_s
 
 
 async def get_user_saved_stops(user_id: int) -> SavedStops:
+    logger.debug("Getting Saved Stops of user")
     encoded_user_id = encode_user_id(user_id)
 
     result = await http_request(
@@ -30,7 +31,7 @@ async def get_user_saved_stops(user_id: int) -> SavedStops:
         endpoint=f"/stops/{encoded_user_id}"
     )
     stops_json = json.loads(result.text)
-    logger.debug(f"Read {len(stops_json)} Saved Stops of user {user_id}")
+    logger.debug(f"Read {len(stops_json)} Saved Stops")
 
     return [
         decode_stop(encoded_stop=SavedStopEncoded(**stop_json, user_id=str(user_id)), user_id=user_id)
@@ -50,6 +51,7 @@ async def is_stop_saved(user_id: int, stop_id: int) -> bool:
 
 
 async def save_stop(user_id: int, stop_id: int, stop_name: Optional[str] = None):
+    logger.debug("Saving/Updating Stop")
     stop = SavedStop(
         user_id=user_id,
         stop_id=stop_id,
@@ -62,24 +64,26 @@ async def save_stop(user_id: int, stop_id: int, stop_name: Optional[str] = None)
         endpoint="/stops",
         body=stop_encoded.dict()
     )
-    logger.debug(f"Saved/Updated Stop for user {user_id}")
+    logger.debug(f"Saved/Updated Stop")
 
 
 async def delete_stop(user_id: int, stop_id: int):
+    logger.debug("Deleting Saved Stop of user")
     encoded_user_id = encode_user_id(user_id)
 
     await http_request(
         method=Methods.DELETE,
         endpoint=f"/stops/{encoded_user_id}/{stop_id}"
     )
-    logger.debug(f"Deleted Stop for user {user_id}")
+    logger.debug("Deleted Saved Stop")
 
 
 async def delete_all_stops(user_id: int):
+    logger.debug("Deleting ALL Saved Stops of user")
     encoded_user_id = encode_user_id(user_id)
 
     await http_request(
         method=Methods.DELETE,
         endpoint=f"/stops/{encoded_user_id}"
     )
-    logger.debug(f"Deleted ALL Stops for user {user_id}")
+    logger.debug(f"Deleted ALL Saved Stops")

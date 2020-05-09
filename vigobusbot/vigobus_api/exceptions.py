@@ -26,7 +26,7 @@ def manage_exceptions(stop_id: int):
         raise GetterTimedOut()
 
     except httpx.HTTPError as ex:
-        response: httpx.AsyncResponse = ex.response
+        response = ex.response
         code = response.status_code
         if code == 404:
             raise StopNotExist(stop_id)

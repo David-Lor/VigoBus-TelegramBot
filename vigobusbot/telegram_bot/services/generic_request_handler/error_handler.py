@@ -21,7 +21,7 @@ async def notify_error(request_source: RequestSource, text: str):
     with contextlib.suppress(Exception):
         # TODO Log errors happening here
         if isinstance(request_source, CallbackQuery):
-            r = await request_source.bot.answer_callback_query(
+            await request_source.bot.answer_callback_query(
                 callback_query_id=request_source.id,
                 text=text,
                 show_alert=True
@@ -54,8 +54,4 @@ async def handle_exceptions(request_source: RequestSource):
     except Exception as exception:
         await notify_error(text=get_messages().generic.generic_error, request_source=request_source)
 
-        traceback_msg = ""
-        if exception.__traceback__:
-            traceback_msg = f"\n{traceback.format_exc()}"
-
-        logger.error(f"Unidentified error while processing a client request ({exception}){traceback_msg}")
+        logger.opt(exception=True).error(f"Unidentified error while processing a client request")

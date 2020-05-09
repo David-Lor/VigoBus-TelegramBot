@@ -13,6 +13,7 @@ from .handlers import register_handlers
 
 # # Project # #
 from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
 
 __all__ = ("Bot", "get_bot")
@@ -36,6 +37,22 @@ class Bot(aiogram.Bot):
     async def edit_message_text(self, *args, **kwargs):
         self.__set_message_kwargs(kwargs)
         return await super().edit_message_text(*args, **kwargs)
+
+    async def set_commands(self) -> bool:
+        # noinspection PyBroadException
+        try:
+            commands_dict: dict = get_messages().commands
+            logger.bind(commands=commands_dict).debug("Setting bot commands...")
+
+            await self.set_my_commands([
+                aiogram.types.BotCommand(command=key, description=value)
+                for key, value in commands_dict.items()
+            ])
+            logger.debug("Bot commands successfully set")
+
+        except Exception:
+            logger.opt(exception=True).warning("Bot commands could not be set")
+            return False
 
 
 _bot: Optional[Bot] = None

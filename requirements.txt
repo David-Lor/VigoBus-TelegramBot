@@ -1,4 +1,4 @@
-aiogram==2.1  # Async Telegram Bot API wrapper
+aiogram==2.8  # Async Telegram Bot API wrapper
 httpx==0.7.5  # HTTP requests
 python-dotenv==0.10.3  # .env file loader
 pyyaml==5.1.2  # YAML file parser

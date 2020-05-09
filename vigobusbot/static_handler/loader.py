@@ -25,6 +25,6 @@ def load_messages():
     with open(str(file_path), "r") as file:
         content = parse_emojis(file.read())
         messages_content = parse_yaml_file(content)
-        logger.debug(f"Parsed Messages file:\n{json.dumps(messages_content, indent=2)}")
+        logger.bind(messages=messages_content).debug("Parsed Messages file")
 
     set_messages(messages_content)

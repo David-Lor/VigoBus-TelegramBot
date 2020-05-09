@@ -251,7 +251,7 @@ async def stop_show_less_buses(callback_query: aiogram.types.CallbackQuery, call
 async def generic_callback_handler(callback_query: aiogram.types.CallbackQuery, *args, **kwargs):
     """Any deprecated button is handled by the Generic Handler, informing the user of this situation.
     """
-    logger.info(f"Requested a deprecated button (data={callback_query.data})")
+    logger.bind(callback_data=callback_query.data).info("Requested a deprecated button")
     messages = get_messages()
 
     await callback_query.bot.answer_callback_query(

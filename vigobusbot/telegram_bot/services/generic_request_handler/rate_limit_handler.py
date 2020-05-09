@@ -28,10 +28,10 @@ def handle_user_rate_limit(user_id: int):
     except KeyError:
         requests = 1
 
-    if requests > settings.user_rate_limit_amount:
-        logger.debug(f"User {user_id} exceeded rate limit with {requests} requests")
-        raise UserRateLimit()
-    else:
-        logger.debug(f"Request counter for the user: {requests}/{settings.user_rate_limit_amount}")
-        _user_requests[user_id] = requests
-
+    with logger.contextualize(current_user_requests=requests, user_requests_limit=settings.user_rate_limit_amount):
+        if requests > settings.user_rate_limit_amount:
+            logger.debug("User exceeded rate limit")
+            raise UserRateLimit()
+        else:
+            logger.debug(f"Request counter for the user")
+            _user_requests[user_id] = requests

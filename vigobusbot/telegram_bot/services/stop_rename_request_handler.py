@@ -41,8 +41,9 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     The key is the Message ID of the Force Reply message sent by the bot.and
     The value is the StopRenameRequestContext object.
     """
-    _stop_rename_requests[context.force_reply_message_id] = context
-    logger.debug(f"Registered Stop Rename Request for message {context.force_reply_message_id}")
+    force_reply_message_id = context.force_reply_message_id
+    _stop_rename_requests[force_reply_message_id] = context
+    logger.bind(force_reply_message_id=force_reply_message_id).debug("Registered Stop Rename Request for message")
 
 
 def get_stop_rename_request_context(
@@ -70,12 +71,11 @@ def get_stop_rename_request_context(
             else:
                 result = _stop_rename_requests[force_reply_message_id]
 
-    logger.debug(
-        f"{'Found' if result else 'Not Found'} StopRenameRequestContext" +
-        f"{f' ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
-        f"{f' With-UserID' if user_id else ' No-UserID'}" +
-        (" (Pop)" if pop else " (No-Pop)")
-    )
+    logger.bind(
+        force_reply_message_id=force_reply_message_id,
+        with_user_id=bool(user_id),
+        pop_result=pop
+    ).debug(f"{'Found' if result else 'Not Found'} StopRenameRequestContext")
     return result
 
 
@@ -88,7 +88,9 @@ async def handle_stop_rename_request_reply(user_reply_message: aiogram.types.Mes
     new_stop_name = user_reply_message.text
     chat_id = user_reply_message.chat.id
     messages = get_messages()
-    logger.debug(f"Processing Stop Rename request from reply message {user_reply_message.message_id}")
+    logger.bind(
+        user_reply_message_id=user_reply_message.message_id
+    ).debug("Processing Stop Rename request from reply message")
 
     if remove_custom_name:
         new_stop_name = None
@@ -134,9 +136,9 @@ async def handle_stop_rename_request_reply(user_reply_message: aiogram.types.Mes
         chat_id=chat_id,
         message_id=rename_context.force_reply_message_id
     )
-    logger.debug("Stop successfully renamed")
 
     # Edit original Stop message
+    logger.debug("Stop successfully renamed. Editing the original Stop message after renaming the Stop")
     source_context = SourceContext(
         stop_id=rename_context.stop_id,
         user_id=chat_id,
