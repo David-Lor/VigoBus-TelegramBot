@@ -42,12 +42,13 @@ class Bot(aiogram.Bot):
         # noinspection PyBroadException
         try:
             commands_dict: dict = get_messages().commands
-            logger.bind(commands=commands_dict).debug("Settings bot commands")
+            logger.bind(commands=commands_dict).debug("Setting bot commands...")
 
-            return await self.set_my_commands([
+            await self.set_my_commands([
                 aiogram.types.BotCommand(command=key, description=value)
                 for key, value in commands_dict.items()
             ])
+            logger.debug("Bot commands successfully set")
 
         except Exception:
             logger.opt(exception=True).warning("Bot commands could not be set")

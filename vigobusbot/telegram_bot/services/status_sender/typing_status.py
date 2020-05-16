@@ -40,7 +40,7 @@ async def _typing_service(bot: aiogram.Bot, chat_id: int, stop_event: asyncio.Ev
 
         time_diff = time() - started
         if time_diff >= settings.typing_safe_limit_time:
-            logger.warning(f"Ended Typing chat action due to time exceed (t={int(time_diff)}s)")
+            logger.bind(typing_action_time=time_diff).warning("Ended Typing chat action due to time exceed")
             stop_typing(chat_id=chat_id)
             return
 

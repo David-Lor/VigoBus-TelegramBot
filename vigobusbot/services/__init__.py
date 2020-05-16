@@ -1,5 +1,5 @@
 """SERVICES
-General purpose helpers
+General purpose helpers/services
 """
 
 from . import http

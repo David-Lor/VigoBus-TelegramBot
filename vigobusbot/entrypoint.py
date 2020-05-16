@@ -1,8 +1,6 @@
-"""RUNNER
+"""ENTRYPOINT
 Start Telegram bot using Polling/Webhook methods depending on the settings
 """
-
-# TODO rename to 'entrypoint'
 
 # # Native # #
 import asyncio

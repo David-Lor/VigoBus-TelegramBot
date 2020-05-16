@@ -40,18 +40,19 @@ class UserDataExtractors:
 
 async def send_file(bot: aiogram.Bot, chat_id: int, file: File, remove_file: bool = False):
     filename = file.filename
-    with open(filename, "r") as file_open:
-        result = await bot.send_document(
-            chat_id=chat_id,
-            document=file_open,
-            caption=file.description,
-            parse_mode="HTML"
-        )
-        logger.debug(f"Sent file {filename} to user")
+    with logger.contextualize(filename=filename):
+        with open(filename, "r") as file_open:
+            result = await bot.send_document(
+                chat_id=chat_id,
+                document=file_open,
+                caption=file.description,
+                parse_mode="HTML"
+            )
+            logger.debug(f"Sent file to user")
 
-    if remove_file:
-        os.remove(filename)
-        logger.debug(f"Removed internal file {filename}")
+        if remove_file:
+            os.remove(filename)
+            logger.debug(f"Removed internal file")
 
     return result
 

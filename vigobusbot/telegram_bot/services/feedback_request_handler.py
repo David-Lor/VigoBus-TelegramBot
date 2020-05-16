@@ -37,7 +37,7 @@ class FeedbackRequestContext(pydantic.BaseModel):
 def register_feedback_request(user_id: int, force_reply_message_id: int):
     context = FeedbackRequestContext(user_id=user_id, force_reply_message_id=force_reply_message_id)
     _feedback_requests[context.force_reply_message_id] = context
-    logger.debug(f"Registered Feedback Request for message {force_reply_message_id}")
+    logger.bind(force_reply_message_id=force_reply_message_id).debug("Registered Feedback Request for message")
 
 
 def get_feedback_request_context(
@@ -61,12 +61,11 @@ def get_feedback_request_context(
             else:
                 result = _feedback_requests[force_reply_message_id]
 
-    logger.debug(
-        f"{'Found' if result else 'Not Found'} FeedbackRequestContext" +
-        f"{f' ForceReplyMessageID={force_reply_message_id} ' if force_reply_message_id else ''}" +
-        f"{f' With-UserID' if user_id else ' No-UserID'}" +
-        (" (Pop)" if pop else " (No-Pop)")
-    )
+    logger.bind(
+        force_reply_message_id=force_reply_message_id,
+        with_user_id=bool(user_id),
+        pop_result=pop
+    ).debug(f"{'Found' if result else 'Not Found'} FeedbackRequestContext")
     return result
 
 
@@ -78,10 +77,7 @@ async def handle_feedback_request_reply(user_reply_message: aiogram.types.Messag
     chat_id = user_id = user_reply_message.chat.id
     request_context = get_feedback_request_context(user_id=user_id, pop=True)
     messages = get_messages()
-
-    logger.info(
-        f"Received Feedback message from user {chat_id} with the text (length={len(message_text)}):\n{message_text}"
-    )
+    logger.bind(user_id=user_id, message_text=message_text).info("Received Feedback message")
 
     await user_reply_message.bot.send_message(
         chat_id=settings.admin_userid,
@@ -99,4 +95,6 @@ async def handle_feedback_request_reply(user_reply_message: aiogram.types.Messag
         chat_id=chat_id,
         message_id=request_context.force_reply_message_id
     )
+
+    logger.debug("Sending confirmation to user and message to admin")
     await asyncio.gather(confirmation_coro, delete_original_message_coro)
