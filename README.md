@@ -32,8 +32,9 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
-- WIP
+- 2.1.0
     - send bot commands list to Telegram programmatically
+    - improve logging
 - 2.0.2 - delete original message with ForceReply markup after user sends its Feedback message
 - 2.0.1
     - refactor message generators
