@@ -11,13 +11,13 @@ import httpx
 # # Project # #
 from vigobusbot.exceptions import StopNotExist, GetterAPIException, GetterInternalException, GetterTimedOut
 
-__all__ = ("manage_exceptions", "TimeoutExceptions")
+__all__ = ("manage_stop_exceptions", "TimeoutExceptions")
 
 TimeoutExceptions = (TimeoutError, httpx.Timeout)
 
 
 @contextlib.contextmanager
-def manage_exceptions(stop_id: int):
+def manage_stop_exceptions(stop_id: int):
     # noinspection PyBroadException
     try:
         yield

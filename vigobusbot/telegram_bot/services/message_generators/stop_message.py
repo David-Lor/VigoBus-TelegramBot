@@ -8,7 +8,7 @@ import asyncio
 from typing import Tuple
 
 # # Installed # #
-import aiogram
+from aiogram.types import InlineKeyboardMarkup
 
 # # Project # #
 from vigobusbot.persistence_api import saved_stops
@@ -23,7 +23,7 @@ from .stop_message_buttons import generate_stop_message_buttons
 __all__ = ("generate_stop_message",)
 
 
-async def generate_stop_message(context: SourceContext) -> Tuple[str, aiogram.types.InlineKeyboardMarkup]:
+async def generate_stop_message(context: SourceContext) -> Tuple[str, InlineKeyboardMarkup]:
     """Generate the Text body and Markup buttons to send as a Stop message, given a SourceContext
     """
     stop: Stop
