@@ -23,6 +23,7 @@ from vigobusbot.telegram_bot.services.user_data_request_handler import extract_u
 from vigobusbot.telegram_bot.entities import Message
 from vigobusbot.telegram_bot.services.message_generators import SourceContext, FeedbackForceReply
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, generate_saved_stops_message
+from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_message
 from vigobusbot.persistence_api.saved_stops import delete_all_stops
 from vigobusbot.settings_handler import system_settings
 from vigobusbot.static_handler import get_messages
@@ -144,6 +145,37 @@ async def command_stop(message: Message, *args, **kwargs):
         stop_typing(chat_id)
 
 
+@request_handler("Command /search")
+async def command_search_stops(message: Message, *args, **kwargs):
+    """Search Stop command handler receives forwarded messages from the Global Message Handler
+    after filtering the user intention.
+    """
+    chat_id = user_id = message.chat.id
+    messages = get_messages()
+
+    search_term = " ".join([chunk for chunk in message.text.split() if not chunk.startswith("/")]).strip()
+    if len(search_term) < 3:
+        logger.debug("Search term is too short or not given")
+        return await message.bot.send_message(
+            chat_id=chat_id,
+            text=messages.search_stops.search_term_too_short
+        )
+
+    await start_typing(bot=message.bot, chat_id=chat_id)
+
+    try:
+        text, markup = await generate_search_stops_message(search_term=search_term, user_id=user_id)
+
+        await message.bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            reply_markup=markup
+        )
+
+    finally:
+        stop_typing(chat_id)
+
+
 @request_handler("Command /cancel")
 async def command_cancel(message: Message, *args, **kwargs):
     """Cancel command handler cancels a ForceReply operation, such as Stop Rename.
@@ -227,9 +259,14 @@ async def global_message_handler(message: Message, *args, **kwargs):
             )
 
     # Get a Stop by Stop ID
-    if message.text.strip().isdigit():
+    message_text = message.text.strip()
+    if message_text.isdigit():
         logger.debug("Requested Stop without command (direct input)")
         return await command_stop(message)
+
+    # Search a Stop by Name
+    if len(message_text) > 2:
+        logger.debug("Requested Search Stops by Name without command (direct input)")
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):
@@ -252,6 +289,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /stop command
     dispatcher.register_message_handler(command_stop, commands=("stop", "parada"))
+
+    # /search command
+    dispatcher.register_message_handler(command_search_stops, commands=("search", "buscar"))
 
     # /cancel command
     dispatcher.register_message_handler(command_cancel, commands=("cancel", "cancelar"))

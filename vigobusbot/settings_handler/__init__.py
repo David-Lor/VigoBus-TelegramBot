@@ -30,6 +30,7 @@ class TelegramSettings(BaseBotSettings):
     user_rate_limit_amount: int = 5
     user_rate_limit_time: int = 1
     typing_safe_limit_time: float = 30
+    inline_cache_time: int = 300
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

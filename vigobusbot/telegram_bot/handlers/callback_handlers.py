@@ -26,16 +26,32 @@ __all__ = ("register_handlers",)
 @request_handler("Button stop_refresh")
 async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_data: dict, *args, **kwargs):
     """Refresh button on Stop messages. Must generate a new Stop message content and edit the original message.
+    The Stop message can be on a private chat or come from Inline Mode.
     """
     try:
-        chat_id = callback_query.message.chat.id
-        message_id = callback_query.message.message_id
+        # Private Chat
+        if not callback_query.inline_message_id:
+            logger.debug("Request comes from private chat")
+            chat_id = callback_query.message.chat.id
+            message_id = callback_query.message.message_id
+            inline_message_id = None
 
-        context = SourceContext(
-            user_id=chat_id,
-            source_message=callback_query.message,
-            **callback_data
-        )
+            context = SourceContext(
+                user_id=chat_id,
+                source_message=callback_query.message,
+                **callback_data
+            )
+
+        # Inline Mode
+        else:
+            logger.debug("Request comes from inline mode")
+            chat_id = message_id = None
+            inline_message_id = callback_query.inline_message_id
+
+            context = SourceContext(
+                from_inline=True,
+                **callback_data
+            )
 
         # For now, not sending "typing" status, since after message is updated it can still show "typing"...
         # await start_typing(bot=callback_query.bot, chat_id=chat_id)
@@ -46,11 +62,12 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
             text=text,
             chat_id=chat_id,
             message_id=message_id,
+            inline_message_id=inline_message_id,
             reply_markup=markup
         )
 
     except MessageNotModified:
-        # MessageNotModified exceptions can trigger when user presses Update button many times too quickly,
+        # MessageNotModified exceptions can be triggered when user presses Update button many times too quickly,
         # resulting on the same message text with the same timestamp. Ignore these errors.
         pass
 
@@ -286,4 +303,9 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     dispatcher.register_callback_query_handler(stop_show_less_buses, StopLessBusesCallbackData.filter())
 
     # Rest of buttons (generic handler for deprecated buttons)
-    dispatcher.register_callback_query_handler(generic_callback_handler)
+    dispatcher.register_callback_query_handler(
+        generic_callback_handler,
+        lambda callback_query: callback_query.data != "None"
+    )
+
+    logger.debug("Registered Callback Handlers")

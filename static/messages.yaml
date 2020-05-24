@@ -129,6 +129,22 @@ saved_stops:
       {stop_custom_name} - {stop_original_name}
     remove:
       X
+search_stops:
+  search_term_too_short: >-
+    :triangular_flag_on_post:No has introducido nada por lo que buscar, o el término de búsqueda es demasiado corto
+  message_stops_found: >-
+    :busstop:<b>Encontrada{plural} {n_stops} parada{plural}</b>
+  message_no_stops: >-
+    :triangular_flag_on_post:<b>¡No se han encontrado paradas!</b>
+  inline:
+    stop_title: >-
+      {stop_name} (#{stop_id})
+    searching: Obteniendo listado de buses...
+  buttons:
+    stop: >-
+      {stop_name} (#{stop_id})
+    stop_custom_name: >-
+      {stop_custom_name} - {stop_original_name}
 feedback:
   request: |-
     :speech_balloon:Si deseas <b>enviar tus comentarios o informar de algún problema</b>, puedes hacerlo respondiendo a este mensaje a continuación.
@@ -158,6 +174,7 @@ commands:
   help: Ayuda
   stop: Buscar una parada por código
   paradas: Ver tus paradas guardadas
+  buscar: Buscar paradas por nombre
   extraer_todo: Extrae todos tus datos (paradas guardadas) en un archivo JSON
   borrar_todo: Borra todos tus datos (paradas guardadas) del bot
   about: Información sobre el bot (Acerca de)
