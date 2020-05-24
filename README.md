@@ -33,6 +33,8 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.2.0
+    - search stops by name (command & inline mode)
 - 2.1.0
     - send bot commands list to Telegram programmatically
     - improve logging
