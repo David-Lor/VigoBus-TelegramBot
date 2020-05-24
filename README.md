@@ -23,6 +23,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
+    - For Inline mode: enable Inline Mode and set Inline Feedback to 100% on Bot Settings
 - A MongoDB database (for both required API)
 
 ### Deployment

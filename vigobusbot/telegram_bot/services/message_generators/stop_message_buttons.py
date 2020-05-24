@@ -49,25 +49,26 @@ def generate_stop_message_buttons(context: SourceContext, is_stop_saved: bool) -
         row1.append(button_less_buses)
 
     # # # Save&Rename/Delete Buttons # # #
-    if not is_stop_saved:
-        # Stop Not saved
-        button_save = aiogram.types.InlineKeyboardButton(
-            text=messages.stop.buttons.save,
-            callback_data=StopSaveCallbackData.new(**common_callback_data)
-        )
-        row1.append(button_save)
-    else:
-        # Stop saved
-        button_delete = aiogram.types.InlineKeyboardButton(
-            text=messages.stop.buttons.delete,
-            callback_data=StopDeleteCallbackData.new(**common_callback_data)
-        )
-        button_rename = aiogram.types.InlineKeyboardButton(
-            text=messages.stop.buttons.rename,
-            callback_data=StopRenameCallbackData.new(**common_callback_data)
-        )
-        row1.append(button_delete)
-        row1.append(button_rename)
+    if not context.from_inline:
+        if not is_stop_saved:
+            # Stop Not saved
+            button_save = aiogram.types.InlineKeyboardButton(
+                text=messages.stop.buttons.save,
+                callback_data=StopSaveCallbackData.new(**common_callback_data)
+            )
+            row1.append(button_save)
+        else:
+            # Stop saved
+            button_delete = aiogram.types.InlineKeyboardButton(
+                text=messages.stop.buttons.delete,
+                callback_data=StopDeleteCallbackData.new(**common_callback_data)
+            )
+            button_rename = aiogram.types.InlineKeyboardButton(
+                text=messages.stop.buttons.rename,
+                callback_data=StopRenameCallbackData.new(**common_callback_data)
+            )
+            row1.append(button_delete)
+            row1.append(button_rename)
 
     markup = aiogram.types.InlineKeyboardMarkup()
     markup.row(*row1)

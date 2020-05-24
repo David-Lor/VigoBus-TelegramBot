@@ -136,6 +136,10 @@ search_stops:
     :busstop:<b>Encontrada{plural} {n_stops} parada{plural}</b>
   message_no_stops: >-
     :triangular_flag_on_post:<b>¡No se han encontrado paradas!</b>
+  inline:
+    stop_title: >-
+      {stop_name} (#{stop_id})
+    searching: Obteniendo listado de buses...
   buttons:
     stop: >-
       {stop_name} (#{stop_id})

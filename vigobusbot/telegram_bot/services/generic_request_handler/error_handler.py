@@ -20,6 +20,7 @@ async def notify_error(request_source: RequestSource, text: str):
     """
     with contextlib.suppress(Exception):
         # TODO Log errors happening here
+        # TODO Errors for Inline queries are not reported to the user
         if isinstance(request_source, CallbackQuery):
             await request_source.bot.answer_callback_query(
                 callback_query_id=request_source.id,

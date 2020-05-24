@@ -15,10 +15,11 @@ from vigobusbot.logger import logger, get_request_id, get_request_verb
 __all__ = ("request_handler",)
 
 
-def request_handler(verb: str):
+def request_handler(verb: str, rate_limit_weight: float = 1):
     """Decorator that must be used by all the bot Request Handler async functions,
     for logging and error handling purposes.
     :param verb: Descriptor of the request being processed
+    :param rate_limit_weight: How many points are added to the user rate limit counter (default=1)
     """
     def _real_decorator(request_handler_function):
         # noinspection PyUnusedLocal
@@ -36,7 +37,7 @@ def request_handler(verb: str):
                     logger.info("Request started")
 
                     async with handle_exceptions(request_source=request_source):
-                        handle_user_rate_limit(user_id=user_id)
+                        handle_user_rate_limit(user_id=user_id, weight=rate_limit_weight)
                         result = await request_handler_function(*args, **kwargs)
 
                     with logger.contextualize(last_record=True):

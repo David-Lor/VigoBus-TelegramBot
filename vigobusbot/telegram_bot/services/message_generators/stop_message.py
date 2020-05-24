@@ -23,15 +23,26 @@ from .stop_message_buttons import generate_stop_message_buttons
 __all__ = ("generate_stop_message",)
 
 
+# noinspection PyUnusedLocal
+async def dummy_get_saved_stops(*args, **kwargs):
+    return None
+
+
 async def generate_stop_message(context: SourceContext) -> Tuple[str, InlineKeyboardMarkup]:
     """Generate the Text body and Markup buttons to send as a Stop message, given a SourceContext
     """
     stop: Stop
     buses_response: BusesResponse
+
+    if context.user_id:
+        get_saved_stops_coro = saved_stops.get_stop(user_id=context.user_id, stop_id=context.stop_id)
+    else:
+        get_saved_stops_coro = dummy_get_saved_stops()
+
     stop, buses_response, user_saved_stop = await asyncio.gather(
         get_stop(context.stop_id),
         get_buses(stop_id=context.stop_id, get_all_buses=context.get_all_buses),
-        saved_stops.get_stop(user_id=context.user_id, stop_id=context.stop_id)
+        get_saved_stops_coro
     )
 
     text = generate_stop_message_text(stop=stop, buses_response=buses_response, user_saved_stop=user_saved_stop)

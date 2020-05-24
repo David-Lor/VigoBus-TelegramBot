@@ -19,16 +19,20 @@ Value=amount of requests
 """
 
 
-def handle_user_rate_limit(user_id: int):
+def handle_user_rate_limit(user_id: int, weight: float):
     """Add +1 to the requests counter of the user (or create the counter if not exists or expired).
     :raises: UserRateLimit if limit exceeded
     """
     try:
-        requests = _user_requests[user_id] + 1
+        requests = _user_requests[user_id] + weight
     except KeyError:
-        requests = 1
+        requests = weight
 
-    with logger.contextualize(current_user_requests=requests, user_requests_limit=settings.user_rate_limit_amount):
+    with logger.contextualize(
+            current_user_requests=requests,
+            user_requests_limit=settings.user_rate_limit_amount,
+            user_request_weight=weight
+    ):
         if requests > settings.user_rate_limit_amount:
             logger.debug("User exceeded rate limit")
             raise UserRateLimit()
