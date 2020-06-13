@@ -27,9 +27,13 @@ class TelegramSettings(BaseBotSettings):
     polling_fast = True
     polling_timeout: float = 30
     force_reply_ttl: int = 3600
+    """Timeout for Force Reply requests until cleanup"""
     user_rate_limit_amount: int = 5
-    user_rate_limit_time: int = 1
+    """Maximum requests performed by users in "user_rate_limit_time" seconds"""
+    user_rate_limit_time: float = 1
+    """Timeout for User Rate counter to reset"""
     typing_safe_limit_time: float = 30
+    """Timeout for a Typing chat action to end"""
     inline_cache_time: int = 300
 
     def __init__(self, **kwargs):
@@ -49,6 +53,8 @@ class APISettings(BaseBotSettings):
 class PersistenceSettings(BaseBotSettings):
     url = "http://localhost:5001"
     salt = "FixedSalt"
+    """Fixed salt value for hashing stored user data (saved stops) in local persistence
+    (cannot change once there is data stored)"""
     timeout: float = 30
     retries: int = 2
     key_cache_size: int = 100
@@ -65,6 +71,7 @@ class MongoSettings(BaseBotSettings):
     uri: str = "mongodb://localhost:27017"
     database: str = "vigobusbot"
     collection_logs: str = "logs"
+    """Collection for log records"""
 
     class Config(BaseBotSettings.Config):
         env_prefix = "MONGO_"
@@ -72,12 +79,19 @@ class MongoSettings(BaseBotSettings):
 
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]
+    """Location of "static" directory (might be required when running from Docker)"""
     log_level: str = "INFO"
+    """Log level for printing system log records"""
     request_logs_persist_enabled: bool = True
+    """If True, enable persisting request log records on Mongo"""
     request_logs_persist_level: str = "ERROR"
+    """Minimum record level to persist all records for a request (at least one record with this level)"""
     request_logs_persist_record_timeout: float = 120
+    """Timeout for request records in logger cache until cleanup"""
     request_logs_print_level: str = "WARNING"
+    """Log level for printing individual request log records"""
     test: bool = False
+    """If True, run the test handlers"""
 
 
 telegram_settings = TelegramSettings()
