@@ -1,9 +1,6 @@
 """SERVICES - GENERIC REQUEST HANDLER - REQUEST HANDLER
 """
 
-# # Native # #
-import uuid
-
 # # Package # #
 from .rate_limit_handler import handle_user_rate_limit
 from .error_handler import handle_exceptions
@@ -11,6 +8,7 @@ from .error_handler import handle_exceptions
 # # Project # #
 from vigobusbot.telegram_bot.entities import RequestSource
 from vigobusbot.logger import logger, get_request_id, get_request_verb
+from vigobusbot.utils import *
 
 __all__ = ("request_handler",)
 
@@ -30,7 +28,7 @@ def request_handler(verb: str, rate_limit_weight: float = 1):
 
             # In most cases the request will not have a defined Request ID
             if not request_id:
-                request_id = str(uuid.uuid4())
+                request_id = get_uuid()
                 user_id = request_source.from_user.id
 
                 with logger.contextualize(request_id=request_id, verb=verb):

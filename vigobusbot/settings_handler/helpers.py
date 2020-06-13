@@ -1,4 +1,4 @@
-"""HELPERS
+"""SETTINGS HANDLER - HELPERS
 Helper functions for setting loading & parsing
 """
 
