@@ -72,6 +72,8 @@ class MongoSettings(BaseBotSettings):
     database: str = "vigobusbot"
     collection_logs: str = "logs"
     """Collection for log records"""
+    collection_user_stops: str = "user_stops"
+    """Collection for user saved stops"""
 
     class Config(BaseBotSettings.Config):
         env_prefix = "MONGO_"
