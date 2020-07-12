@@ -12,8 +12,9 @@ from typing import List
 import aiogram
 
 # # Project # #
-from vigobusbot.vigobus_api import search_stops_by_name
+from vigobusbot.vigobus_api import search_stops_by_name, get_stop
 from vigobusbot.static_handler import get_messages
+from vigobusbot.exceptions import StopNotExist
 
 __all__ = ("generate_search_stops_inline_responses",)
 
@@ -25,7 +26,14 @@ class InputTextMessageContent(aiogram.types.InputTextMessageContent):
 async def generate_search_stops_inline_responses(search_term: str) -> List[aiogram.types.InlineQueryResultArticle]:
     messages = get_messages()
     results = list()
-    found_stops = await search_stops_by_name(search_term)
+
+    if search_term.isdigit():
+        try:
+            found_stops = [await get_stop(stop_id=int(search_term))]
+        except StopNotExist:
+            found_stops = []
+    else:
+        found_stops = await search_stops_by_name(search_term)
 
     if found_stops:
         common_reply_loading_button = aiogram.types.InlineKeyboardButton("Cargando...", callback_data="None")

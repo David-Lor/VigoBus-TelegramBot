@@ -2,9 +2,6 @@
 Callback Handlers for the Inline Queries, produced when users search stops from the inline mode
 """
 
-# # Native # #
-import asyncio
-
 # # Installed # #
 import aiogram
 
@@ -21,10 +18,10 @@ __all__ = ("register_handlers",)
 
 @request_handler("Inline stop search", rate_limit_weight=0.25)
 async def stop_search(inline_query: aiogram.types.InlineQuery, *args, **kwargs):
-    search_term = inline_query.query
+    search_term = inline_query.query.strip()
     if len(search_term) < 3:
         logger.debug("Search term is too short")
-        # TODO Notify user? (in which case this should be verified on the helper)
+        # We do not notify user because this case would match when the user starts using the inline mode
         return
 
     inline_results = await generate_search_stops_inline_responses(search_term)

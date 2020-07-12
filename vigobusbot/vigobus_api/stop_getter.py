@@ -37,7 +37,7 @@ async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Unio
 
 
 async def search_stops_by_name(search_term: str) -> Stops:
-    result = await http_get(endpoint="/stops", query_params={"stop_name": search_term})
+    result = await http_get(endpoint="/stops", query_params={"stop_name": search_term, "limit": 50})
     return [Stop(**single_result) for single_result in result.json()]
 
 
