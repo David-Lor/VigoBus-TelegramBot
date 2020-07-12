@@ -33,6 +33,9 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.4.0
+    - search stop by id through inline mode
+    - limit stop search results to 50 (Telegram Bot API limit for inline query results)
 - 2.3.0
     - add request logs persistence in MongoDB
 - 2.2.0
