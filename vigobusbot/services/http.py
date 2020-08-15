@@ -59,7 +59,6 @@ async def http_request(
                 ).debug("Response received")
 
                 result.raise_for_status()
-                result.encoding = "utf-8"
                 return result
 
             except httpx.Timeout as error:
