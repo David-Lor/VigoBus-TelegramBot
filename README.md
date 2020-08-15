@@ -33,6 +33,9 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.4.1
+    - fix wrong characters from API responses due to bad encoding (switch from `json.loads(response.text)` to `response.json()`)
+    - fix/improve request error handling: log exceptions, improve logging
 - 2.4.0
     - search stop by id through inline mode
     - limit stop search results to 50 (Telegram Bot API limit for inline query results)
