@@ -7,7 +7,6 @@ The persisted stop data is encoded/decoded as following:
 """
 
 # # Native # #
-import json
 import contextlib
 from typing import Optional
 
@@ -30,7 +29,7 @@ async def get_user_saved_stops(user_id: int) -> SavedStops:
         method=Methods.GET,
         endpoint=f"/stops/{encoded_user_id}"
     )
-    stops_json = json.loads(result.text)
+    stops_json = result.json()
     logger.debug(f"Read {len(stops_json)} Saved Stops")
 
     return [

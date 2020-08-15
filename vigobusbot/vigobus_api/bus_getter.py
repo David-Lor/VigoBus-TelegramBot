@@ -2,9 +2,6 @@
 Get Buses using the API
 """
 
-# # Native # #
-import json
-
 # # Package # #
 from .requester import http_get
 from .exceptions import manage_stop_exceptions
@@ -21,7 +18,7 @@ async def get_buses(stop_id: int, get_all_buses=False) -> BusesResponse:
             "get_all_buses": int(get_all_buses)
         }
         result = await http_get(endpoint=f"/buses/{stop_id}", query_params=query_params)
-        data = json.loads(result.text)
+        data = result.json()
 
         buses = [Bus(**bus_data) for bus_data in data["buses"]]
         more_buses_available = data["more_buses_available"]
