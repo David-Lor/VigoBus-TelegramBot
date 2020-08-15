@@ -74,7 +74,7 @@ async def http_request(
                 raise error
 
             except Exception as error:
-                logger.opt(exception=True).warning("Request failed by other error")
+                logger.opt(exception=True).warning("Request failed")
                 raise error
 
     raise last_error
