@@ -1,0 +1,181 @@
+# YAML special string format: https://stackoverflow.com/a/21699210
+# |- each line is new line; no new line at the end
+# >- literal strings, escape characters, allow multiline as single line; no new line at the end
+# Emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
+start:
+  - |-
+    ¡Hola! :wave: Este bot proporciona información sobre los autobuses urbanos de la ciudad de Vigo en tiempo real y por paradas.
+
+    Para empezar, envíame el código de la parada que quieras consultar. Podrás encontrar los números de parada en las marquesinas y paradas de autobús.
+
+    :question:¿Dudas? Para más información y ayuda, envía /ayuda
+help:
+  - |-
+    :question: <b>Ayuda e información</b> :question:
+
+    :point_right:<b>¿Cómo ver el estado de una parada?</b>
+    Simplemente, envía el código de la parada en el chat con el bot. Podrás encontrar los códigos de parada en las marquesinas y paradas de autobús. Al momento, el bot te responderá con el listado de todos los autobuses que pasarán por la parada, así como el tiempo estimado que faltará para su llegada.
+    Los tiempos enviados, además de ser estimados, no se actualizan de forma automática. Para actualizarlos, puedes pulsar sobre el botón Actualizar que aparecerá debajo del mensaje recibido. Al final del mensaje podrás ver la hora y fecha en las que se actualizó la información.
+
+    :point_right:<b>Guardar paradas</b>
+    Puedes guardar tus paradas favoritas o más usadas en una lista que podrás consultar posteriormente. Para guardar una parada, búscala primero, y a continuación, pulsa sobre el botón Guardar, justo debajo del mensaje recibido.
+    Para ver tus paradas guardadas, utiliza el comando /paradas. Todas tus paradas guardadas aparecerán en forma de botones, y pulsando sobre ellos, recibirás las estimaciones de buses de cada una.
+    Cuando recibas la información sobre una parada guardada, verás que el botón Guardar ha sido reemplazado por el botón Eliminar, que te permitirá borrar esa parada de tu lista de paradas guardadas cuando quieras.
+
+    :point_right:<b>¿Problemas? ¿Comentarios?</b>
+    Si tienes cualquier duda o quieres reportar algún problema, o simplemente quieres proponer alguna idea, obtén más información con el comando /feedback.
+
+    :point_right:<b>Recepción de novedades</b>
+    Todas las novedades relacionadas con el bot, como nuevas características implementadas, problemas técnicos, etc. se comunicarán a través de <a href="https://t.me/vigobus">este canal de Telegram</a>.
+
+    :information_source:<b>Lista completa de comandos disponibles</b>
+    :small_orange_diamond:Búsqueda de paradas: envía el código de parada directamente, o precedido por /stop
+    :small_orange_diamond:/paradas: accede a todas tus paradas guardadas
+    :small_orange_diamond:/feedback: envía tus comentarios
+    :small_orange_diamond:/extraer_todo: extrae todos tus datos (paradas guardadas) en un archivo JSON
+    :small_orange_diamond:/borrar_todo: borra todos tus datos (paradas guardadas) del bot
+    :small_orange_diamond:/about: información sobre el bot
+    :small_orange_diamond:/donate: ¿cómo puedes colaborar con el mantenimiento de este bot?
+donate:
+  - |-
+    :coffee:<b>¡Se necesitan donaciones!</b>:coffee:
+    Al contrario que muchas de las aplicaciones para móvil que existen para ver los horarios de los autobuses, los bots de Telegram necesitan funcionar en un servidor de forma constante para que puedan ser utilizados por el público.
+    Además, ciertas aplicaciones no oficiales, sin sufrir ningún gasto en servidores ni mantenimiento, contienen anuncios y publicidad embebida, que este bot no incluye de ninguna de sus maneras.
+
+    Cualquier aportación es de gran ayuda para sufragar el coste que supone mantener el servidor y, por tanto, el bot en funcionamiento, y así mantener este y otros proyectos a flote.
+    :blush:<b>¡Gracias!</b>
+    <a href="https://www.paypal.me/EnforcerZhukov">PayPal</a>
+about:
+  - |-
+    :oncoming_bus:<b>VigoBus Telegram Bot</b>:oncoming_bus: es un bot no oficial para consultar las paradas y autobuses de la red de autobuses urbanos de la ciudad de Vigo desde Telegram. Se trata de un proyecto personal escrito en Python, de código abierto y sin ánimo de lucro.
+
+    <b>La información proporcionada por este bot puede no ser exacta al 100%</b> por motivos técnicos propios o ajenos, por lo que su uso no ofrece ninguna garantía.
+
+    Creado en Vigo con :heart: <a href="https://www.python.org">Python</a>, <a href="https://github.com/aiogram/aiogram">aiogram</a> y otras fantásticas herramientas y librerías.
+    :smiley_cat:<a href="https://github.com/David-Lor/VigoBus-TelegramBot">Repositorio GitHub del proyecto</a>
+
+    :coffee:¡Ayuda a mantener este bot en funcionamiento! /aportar
+
+    <i>Este proyecto no cuenta con soporte de, no está afiliado con, mantenido por, patrocinado por ni de cualquier otra manera oficialmente conectado con la compañía o compañías responsables del sistema de transporte público de la ciudad de Vigo.</i>
+stop:
+  message: |-
+    <b>Parada #{stop_id} ({stop_name})</b>
+    {buses}
+    :clock4:<i>Última actualización: {last_update}</i>
+  stop_custom_name: >-
+    {stop_custom_name} - {stop_original_name}
+  bus_line: >-
+    <pre>  {line} ({route}): {time}</pre>
+  bus_time_remaining: >-
+    {minutes}m
+  bus_time_now: >-
+    &lt;&lt;&lt;
+  time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+    %d/%m %H:%M:%S
+  no_buses_found: >-
+    <pre> ¡No hay buses!</pre>
+  not_exists:
+    :negative_squared_cross_mark:La parada solicitada no existe.
+  not_valid:
+    :negative_squared_cross_mark:La parada solicitada no es válida.
+  buttons:
+    refresh:
+      :arrows_counterclockwise:Actualizar
+    save:
+      :floppy_disk:Guardar
+    delete:
+      :negative_squared_cross_mark:Eliminar
+    rename:
+      :pencil2:Renombrar
+    more_buses:
+      :heavy_plus_sign:Buses
+    less_buses:
+      :heavy_minus_sign:Buses
+stop_rename:
+  request: |-
+    :pencil2:¿Qué nombre deseas darle a la parada <b>#{stop_id} ({stop_name})</b>?
+    <i>Para cancelar la operación, pulsa sobre /cancelar</i>
+  request_unname: >-
+    <i>Para quitar el nombre actual ({current_stop_name}) pulsa sobre /quitarnombre</i>
+  renamed_successfully: >-
+    :white_check_mark:La parada <b>#{stop_id} ({stop_name})</b> ha sido renombrada correctamente a <b>{custom_stop_name}</b>
+  unnamed_successfully: >-
+    :white_check_mark:El nombre personalizado de la parada <b>#{stop_id} ({stop_name})</b> ha sido eliminado correctamente
+  expired_request: |-
+    :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
+    Si estabas intentando renombrar una parada, vuelve a pulsar sobre el botón <b>Renombrar</b> de la parada pertinente.
+    Si estabas enviando un mensaje con /feedback, vuelve a ejecutar el comando y envía nuevamente el mensaje.
+    Si estabas intentando obtener una parada, vuelve a intentarlo.
+  deprecated_command: |-
+    :negative_squared_cross_mark:Disculpas, parece que esta operación ha caducado.
+    Si el mensaje que te pide introducir el nombre de parada o texto te molesta, puedes borrarlo con clic derecho/pulsación larga y Eliminar.
+  regex_sub:
+    # Regex that will remove characters from user input Stop custom name
+    >-
+    [^\w \¡\¿\!\?\,\;\.\:\-\(\)\/\+]
+  currently_deleted:
+    # Sent as a callback query reply (popup) when user press Rename button when the Stop is already deleted
+    >-
+    La parada no está guardada en tu listado de paradas guardadas. Para renombrarla debes volver a guardarla.
+saved_stops:
+  message_has_stops: >-
+    :busstop:<b>Tienes {n_stops} parada{plural} guardada{plural}:</b>
+  message_no_stops: >-
+    :triangular_flag_on_post:<b>¡No tienes ninguna parada guardada!</b> Busca una y pulsa en el botón de Guardar para que aparezca aquí.
+  buttons:
+    stop: >-
+      {stop_name} (#{stop_id})
+    stop_custom_name: >-
+      {stop_custom_name} - {stop_original_name}
+    remove:
+      X
+search_stops:
+  search_term_too_short: >-
+    :triangular_flag_on_post:No has introducido nada por lo que buscar, o el término de búsqueda es demasiado corto
+  message_stops_found: >-
+    :busstop:<b>Encontrada{plural} {n_stops} parada{plural}</b>
+  message_no_stops: >-
+    :triangular_flag_on_post:<b>¡No se han encontrado paradas!</b>
+  inline:
+    stop_title: >-
+      {stop_name} (#{stop_id})
+    searching: Obteniendo listado de buses...
+  buttons:
+    stop: >-
+      {stop_name} (#{stop_id})
+    stop_custom_name: >-
+      {stop_custom_name} - {stop_original_name}
+feedback:
+  request: |-
+    :speech_balloon:Si deseas <b>enviar tus comentarios o informar de algún problema</b>, puedes hacerlo respondiendo a este mensaje a continuación.
+    <b>Tu mensaje no tendrá respuesta.</b> Si quieres que se te responda, envía un correo electrónico a <a href="vigobusbot@protonmail.com">vigobusbot@protonmail.com</a>.
+    <i>Para cancelar la operación actual (si no quieres contactar a través del bot), pulsa sobre /cancelar</i>
+    ¡Gracias!
+  send_admin: |-
+    <b>Nuevo mensaje enviado</b> por usuario {user_id}:
+    {message_text}
+  success: :white_check_mark:Tu mensaje ha sido enviado. ¡Gracias!
+delete_data:
+  ask_confirmation: :question:¿Seguro que deseas eliminar todos los datos? Si es así, pulsa sobre /borrar_todo_si
+  success: :white_check_mark:Tus datos han sido eliminados
+extracted_data:
+  stops:
+    filename: stops.json
+    description: Paradas guardadas
+generic:
+  generic_error: >-
+    :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+  deprecated_inline_keyboard_button: >-
+    :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.
+  rate_limit_error: >-
+    :negative_squared_cross_mark:Parece que has realizado demasiadas peticiones seguidas. Por favor, espera un poco :cold_sweat:
+commands:
+  start: Introducción
+  help: Ayuda
+  stop: Buscar una parada por código
+  paradas: Ver tus paradas guardadas
+  buscar: Buscar paradas por nombre
+  extraer_todo: Extrae todos tus datos (paradas guardadas) en un archivo JSON
+  borrar_todo: Borra todos tus datos (paradas guardadas) del bot
+  about: Información sobre el bot (Acerca de)
+  donate: Colaborar con el desarrollo y mantenimiento del bot

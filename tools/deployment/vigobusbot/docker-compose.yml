@@ -1,0 +1,89 @@
+version: '3.1'
+
+services:
+  mongo:
+    # https://hub.docker.com/_/mongo
+    container_name: mongo
+    image: mongo
+    volumes:
+      - mongo:/data/db
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    networks:
+      - backend
+
+  vigobus_api:
+    container_name: vigobusapi
+    image: davidlor/python-autoclonable-app:latest-dev
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - vigobus_api.env
+    environment:
+      - GIT_REPOSITORY=https://github.com/David-Lor/Python_VigoBusAPI.git
+      - GIT_BRANCH=develop
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - backend
+
+  persistence_api:
+    container_name: vigobus_persistence_api
+    image: davidlor/python-autoclonable-app:latest-dev
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - persistence_api.env
+    environment:
+      - GIT_REPOSITORY=https://github.com/David-Lor/Telegram-BusBot-DataManager.git
+      - GIT_BRANCH=develop
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - backend
+
+  vigobus_bot:
+    container_name: vigobusbot
+    image: davidlor/python-autoclonable-app:latest-dev
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - GIT_REPOSITORY=https://github.com/David-Lor/VigoBus-TelegramBot.git
+      - GIT_BRANCH=development
+      - API_URL=http://vigobusapi:5000
+      - PERSIST_URL=http://vigobus_persistence_api:5000
+    env_file:
+      - vigobus_bot.env
+    secrets:
+      - telegram_token
+      - telegram_persist_salt
+    depends_on:
+      - vigobus_api
+      - persistence_api
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+    internal: false
+  backend:
+    driver: bridge
+    internal: true
+
+secrets:
+  telegram_token:
+    file: telegram_token.txt
+  telegram_persist_salt:
+    file: telegram_persist_salt.txt
+
+volumes:
+  mongo:
