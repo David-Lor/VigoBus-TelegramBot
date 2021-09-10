@@ -28,8 +28,8 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ### Deployment
 
-- Docker recommended for deployment using the [Python-Autoclonable-App](https://github.com/David-Lor/Docker-Python-Autoclonable-App) image
-- Refer to [docker-compose.yml](tools/deployment/vigobusbot) file to deploy all the required services
+- Docker recommended for deployment using the [Docker Python Git App](https://github.com/David-Lor/Docker-Python-Git-App) image
+- Refer to [docker-compose.yml](tools/deployment/vigobusbot) file to deploy all the required services (deploying as-is requires Docker Compose >= 1.27.4)
 
 ## Changelog
 
