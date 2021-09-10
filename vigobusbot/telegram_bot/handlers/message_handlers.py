@@ -118,6 +118,7 @@ async def command_stop(message: Message, *args, **kwargs):
     try:
         stop_id = next(chunk for chunk in message.text.split() if chunk.isdigit())
 
+        # noinspection PyTypeChecker
         context = SourceContext(
             user_id=user_id,
             stop_id=stop_id,
@@ -265,8 +266,7 @@ async def global_message_handler(message: Message, *args, **kwargs):
         return await command_stop(message)
 
     # Search a Stop by Name
-    if len(message_text) > 2:
-        logger.debug("Requested Search Stops by Name without command (direct input)")
+    return await command_search_stops(message)
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):

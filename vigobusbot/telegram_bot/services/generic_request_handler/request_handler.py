@@ -16,7 +16,7 @@ __all__ = ("request_handler",)
 def request_handler(verb: str, rate_limit_weight: float = 1):
     """Decorator that must be used by all the bot Request Handler async functions,
     for logging and error handling purposes.
-    :param verb: Descriptor of the request being processed
+    :param verb: Descriptor of the request being processed (for logging purposes)
     :param rate_limit_weight: How many points are added to the user rate limit counter (default=1)
     """
     def _real_decorator(request_handler_function):

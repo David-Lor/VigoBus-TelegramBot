@@ -28,11 +28,15 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ### Deployment
 
-- Docker recommended for deployment using the [Python-Autoclonable-App](https://github.com/David-Lor/Docker-Python-Autoclonable-App) image
-- Refer to [docker-compose.yml](tools/deployment/vigobusbot) file to deploy all the required services
+- Docker recommended for deployment using the [Docker Python Git App](https://github.com/David-Lor/Docker-Python-Git-App) image
+- Refer to [docker-compose.yml](tools/deployment/vigobusbot) file to deploy all the required services (deploying as-is requires Docker Compose >= 1.27.4)
 
 ## Changelog
 
+- 2.5.0
+  - allow searching stops by name without command
+  - upgrade requirements versions
+  - refactor deployment docker-compose example
 - 2.4.1
     - fix wrong characters from API responses due to bad encoding (switch from `json.loads(response.text)` to `response.json()`)
     - fix/improve request error handling: log exceptions, improve logging

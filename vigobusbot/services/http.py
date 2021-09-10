@@ -8,12 +8,12 @@ from typing import Optional
 
 # # Installed # #
 import httpx
-from httpx import AsyncResponse
+from httpx import Response
 
 # # Project # #
 from vigobusbot.logger import logger
 
-__all__ = ("http_request", "Methods", "AsyncResponse")
+__all__ = ("http_request", "Methods", "Response")
 
 
 class Methods:
@@ -25,8 +25,9 @@ class Methods:
 async def http_request(
         method: str, url: str,
         timeout: float, retries: int,
-        query_params: Optional[dict] = None, body: Optional[dict] = None
-) -> httpx.AsyncResponse:
+        query_params: Optional[dict] = None, body: Optional[dict] = None,
+        raise_status: bool = True
+) -> httpx.Response:
     last_error = None
 
     for retry_count in range(retries):
@@ -40,6 +41,7 @@ async def http_request(
             request_body=body
         ):
             logger.debug("Requesting URL")
+            result: httpx.Response
 
             try:
                 start_time = time.time()
@@ -58,18 +60,19 @@ async def http_request(
                     response_body=result.text
                 ).debug("Response received")
 
-                result.raise_for_status()
+                if raise_status:
+                    result.raise_for_status()
                 return result
 
             except httpx.Timeout as error:
                 logger.warning("Request timed out")
                 last_error = error
 
-            except httpx.HTTPError as error:
+            except httpx.HTTPStatusError as error:
                 logger.bind(
                     response_status_code=error.response.status_code,
-                    response_body=result.text
-                ).warning("Request failed by HTTP Error")
+                    response_body=error.response.text
+                ).warning("Request failed with bad status code")
                 raise error
 
             except Exception as error:
