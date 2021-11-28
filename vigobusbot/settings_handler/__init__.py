@@ -7,6 +7,7 @@ from typing import Optional
 
 # # Installed # #
 import pydantic
+import aiogram.bot.api
 
 # # Package # #
 from .helpers import *
@@ -22,6 +23,7 @@ class BaseBotSettings(pydantic.BaseSettings):
 class TelegramSettings(BaseBotSettings):
     token: str
     admin_userid: int
+    bot_api: str = "https://api.telegram.org"
     method = "polling"
     skip_prev_updates = True
     polling_fast = True
@@ -39,6 +41,10 @@ class TelegramSettings(BaseBotSettings):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.token = load_secrets_file(path=self.token.strip(), path_startswith=True)
+
+    @property
+    def bot_api_server(self):
+        return aiogram.bot.api.TelegramAPIServer.from_base(self.bot_api)
 
 
 class APISettings(BaseBotSettings):
