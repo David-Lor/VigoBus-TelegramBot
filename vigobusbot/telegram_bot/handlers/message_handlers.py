@@ -27,7 +27,6 @@ from vigobusbot.telegram_bot.services.message_generators import generate_search_
 from vigobusbot.persistence_api.saved_stops import delete_all_stops
 from vigobusbot.settings_handler import system_settings
 from vigobusbot.static_handler import get_messages
-from vigobusbot.exceptions import StopNotExist
 from vigobusbot.logger import logger
 
 __all__ = ("register_handlers",)
@@ -137,10 +136,6 @@ async def command_stop(message: Message, *args, **kwargs):
 
     except (ValueError, StopIteration):
         await message.reply(get_messages().stop.not_valid)
-
-    # TODO catch from generic request handler?
-    except StopNotExist:
-        await message.reply(get_messages().stop.not_exists)
 
     finally:
         stop_typing(chat_id)

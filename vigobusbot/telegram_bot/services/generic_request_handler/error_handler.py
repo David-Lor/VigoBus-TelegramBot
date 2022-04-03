@@ -19,7 +19,7 @@ async def notify_error(request_source: RequestSource, text: str, with_request_id
     If `with_request_id` is True, add the `request_id` template on the `request_id_text` placeholder, only if
     `request_source` is a Message.
     """
-    with logger.contextualize(user_error_message_text=text):
+    with logger.contextualize(user_error_message_text=text):  # TODO avoid contextualize (log on first record)
         logger.debug("Notifying user about an error...")
 
         # noinspection PyBroadException
