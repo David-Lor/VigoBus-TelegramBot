@@ -64,7 +64,7 @@ async def http_request(
                     result.raise_for_status()
                 return result
 
-            except httpx.Timeout as error:
+            except httpx.TimeoutException as error:
                 logger.warning("Request timed out")
                 last_error = error
 
