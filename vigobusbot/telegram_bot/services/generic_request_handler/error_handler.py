@@ -6,7 +6,7 @@ Handle errors while processing user requests, notifying the user about the error
 import contextlib
 
 # # Project # #
-from vigobusbot.logger import logger
+from vigobusbot.logger import logger, get_request_id
 from vigobusbot.static_handler import get_messages
 from vigobusbot.exceptions import StopNotExist, UserRateLimit
 from vigobusbot.telegram_bot.entities import RequestSource, Message, CallbackQuery
@@ -14,8 +14,10 @@ from vigobusbot.telegram_bot.entities import RequestSource, Message, CallbackQue
 __all__ = ("handle_exceptions",)
 
 
-async def notify_error(request_source: RequestSource, text: str):
-    """Notify the client about an error while processing its request
+async def notify_error(request_source: RequestSource, text: str, with_request_id: bool = False):
+    """Notify the client about an error while processing its request.
+    If `with_request_id` is True, add the `request_id` template on the `request_id_text` placeholder, only if
+    `request_source` is a Message.
     """
     with logger.contextualize(user_error_message_text=text):
         logger.debug("Notifying user about an error...")
@@ -31,6 +33,11 @@ async def notify_error(request_source: RequestSource, text: str):
                 logger.debug("Sent error to the user as callback query answer")
 
             elif isinstance(request_source, Message):
+                if with_request_id and request_source:
+                    request_id = get_request_id()
+                    request_id_text = get_messages().generic.request_id.format(request_id=request_id)
+                    text = text.format(request_id_text=request_id_text)
+
                 await request_source.bot.send_message(
                     chat_id=request_source.chat.id,
                     text=text,
@@ -62,4 +69,8 @@ async def handle_exceptions(request_source: RequestSource):
 
     except Exception:
         logger.opt(exception=True).error("Unidentified error while processing a client request")
-        await notify_error(text=get_messages().generic.generic_error, request_source=request_source)
+        await notify_error(
+            text=get_messages().generic.generic_error,
+            request_source=request_source,
+            with_request_id=True
+        )

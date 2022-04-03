@@ -165,6 +165,9 @@ extracted_data:
 generic:
   generic_error: >-
     :negative_squared_cross_mark:Disculpas, se ha producido un error. Inténtalo de nuevo más tarde.
+    {request_id_text}
+  request_id: >-
+    <pre>ID: {request_id}</pre>
   deprecated_inline_keyboard_button: >-
     :negative_squared_cross_mark:Parece que el botón que has pulsado ha caducado. Por favor, vuelve a generar el mensaje para poder pulsarlo.
   rate_limit_error: >-
