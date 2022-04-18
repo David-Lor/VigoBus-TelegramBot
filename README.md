@@ -34,9 +34,9 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 ## Changelog
 
 - 2.5.0
-  - allow searching stops by name without command
-  - upgrade requirements versions
-  - refactor deployment docker-compose example
+    - allow searching stops by name without command
+    - upgrade requirements versions
+    - refactor deployment docker-compose example
 - 2.4.1
     - fix wrong characters from API responses due to bad encoding (switch from `json.loads(response.text)` to `response.json()`)
     - fix/improve request error handling: log exceptions, improve logging
@@ -50,17 +50,21 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 - 2.1.0
     - send bot commands list to Telegram programmatically
     - improve logging
-- 2.0.2 - delete original message with ForceReply markup after user sends its Feedback message
+- 2.0.2
+    - delete original message with ForceReply markup after user sends its Feedback message
 - 2.0.1
     - refactor message generators
     - refactor HTTP requester functions, merging in one service
-- 2.0.0 - refactor Telegram Bot request services/helpers
-- 1.2.1 - remove dotenv-settings-handler in favor of pydantic only
+- 2.0.0
+    - refactor Telegram Bot request services/helpers
+- 1.2.1
+    - remove dotenv-settings-handler in favor of pydantic only
 - 1.2.0
     - add one-way feedback communication system (adding "admin_userid" setting)
     - fix error when renaming stop after forcereply timeout (TTL)
     - rename Telegram setting "stop_rename_request_ttl" to "force_reply_ttl"
-- 1.1.1 - fix encoding on extracted user data (saved stops) on JSON file
+- 1.1.1
+    - fix encoding on extracted user data (saved stops) on JSON file
 - 1.1.0
     - extract user data (saved stops) into JSON file
     - delete all persisted user data (saved stops)
@@ -74,18 +78,24 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
     - remove usage of external pybusent library in favor of self-defined classes
     - sort user saved stops by stop custom or real name
     - fix stop rename failing
-- 0.1.6 - Add logging
+- 0.1.6
+    - add logging
 - 0.1.5:
     - fix stop rename crashing
     - add error handler for uncatched global, generic exceptions
     - switch from requests_async to httpx
     - add retries on HTTP requests
     - add user request rate limit (amount per time)
-- 0.1.4 - Button on Stop messages to show More/Less buses
-- 0.1.3 - Support for setting custom stop names on user saved stops
-- 0.1.2 - Support for Saved Stops and working command to list all of them
-- 0.1.1 - Inline keyboard markup with callback support for Refreshing Stop messages
-- 0.1.0 - Initial async version (basic Get Stop messages)
+- 0.1.4
+    - button on Stop messages to show More/Less buses
+- 0.1.3
+    - support for setting custom stop names on user saved stops
+- 0.1.2
+    - support for Saved Stops and working command to list all of them
+- 0.1.1
+    - inline keyboard markup with callback support for Refreshing Stop messages
+- 0.1.0
+    - initial async version (basic Get Stop messages)
 
 ## Disclaimer
 
