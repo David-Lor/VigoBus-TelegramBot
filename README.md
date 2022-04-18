@@ -33,6 +33,10 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.5.1
+    - fix error handling for HTTP timeouts
+    - return the request id on error messages (only normal messages, not inline replies)
+    - support for self-hosted Telegram Bot API
 - 2.5.0
     - allow searching stops by name without command
     - upgrade requirements versions
