@@ -7,16 +7,21 @@ from aiogram.utils.exceptions import MessageNotModified
 
 __all__ = (
     "GetterException", "GetterInternalException", "GetterAPIException", "GetterTimedOut", "StopNotExist",
-    "MessageNotModified", "UserRateLimit"
+    "MessageNotModified", "UserRateLimit", "BusBotException"
 )
 
 
-class StopNotExist(Exception):
+class BusBotException(BaseException):
+    """Base exception for the bot backend"""
+    pass
+
+
+class StopNotExist(BusBotException):
     """A Stop does not exist in reality, as specified by the API"""
     pass
 
 
-class GetterException(Exception):
+class GetterException(BusBotException):
     """A Stop/Bus Getter failed (base Getter Exception)"""
     pass
 
@@ -36,6 +41,6 @@ class GetterTimedOut(TimeoutError, GetterException):
     pass
 
 
-class UserRateLimit(Exception):
+class UserRateLimit(BusBotException):
     """A user exceeded the request rate limit of the bot"""
     pass
