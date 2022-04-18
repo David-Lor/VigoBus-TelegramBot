@@ -13,7 +13,7 @@ from vigobusbot.exceptions import StopNotExist, GetterAPIException, GetterIntern
 
 __all__ = ("manage_stop_exceptions", "TimeoutExceptions")
 
-TimeoutExceptions = (TimeoutError, httpx.Timeout)
+TimeoutExceptions = (TimeoutError, httpx.TimeoutException)
 
 
 @contextlib.contextmanager
