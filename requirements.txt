@@ -1,5 +1,5 @@
 aiogram==2.14.3  # Async Telegram Bot API wrapper
-httpx==0.19.0  # HTTP requests
+httpx==0.23.0  # HTTP requests
 python-dotenv==0.19.0  # .env file loader
 pyyaml==5.4.1  # YAML file parser
 addict==2.4.0  # better dicts (accessible through dot notation)
