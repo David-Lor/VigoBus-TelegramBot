@@ -1,13 +1,13 @@
-aiogram==2.14.3  # Async Telegram Bot API wrapper
-httpx==0.19.0  # HTTP requests
-python-dotenv==0.19.0  # .env file loader
-pyyaml==5.4.1  # YAML file parser
+aiogram==2.25.2  # Async Telegram Bot API wrapper
+httpx==0.24.1  # HTTP requests
+python-dotenv==0.21.1  # .env file loader
+pyyaml==6.0.1  # YAML file parser
 addict==2.4.0  # better dicts (accessible through dot notation)
 watchdog==2.1.5  # watch directories for file changes
-emoji==1.4.2  # replace aliases with emojis
-pydantic==1.8.2  # dataclasses
-cachetools==4.2.2  # cache
-cryptography==3.4.8  # encryption of persisted data
-loguru==0.5.3  # logging
-pymongo==3.12.0  # MongoDB client
-motor==2.5.1  # MongoDB Async client
+emoji==2.11.0  # replace aliases with emojis
+pydantic==1.10.15  # dataclasses
+cachetools==5.3.3  # cache
+cryptography==42.0.5  # encryption of persisted data
+loguru==0.7.2  # logging
+pymongo==4.6.3  # MongoDB client
+motor==3.4.0  # MongoDB Async client
