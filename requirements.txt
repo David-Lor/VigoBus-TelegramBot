@@ -4,10 +4,10 @@ python-dotenv==0.21.1  # .env file loader
 pyyaml==6.0.1  # YAML file parser
 addict==2.4.0  # better dicts (accessible through dot notation)
 watchdog==2.1.5  # watch directories for file changes
-emoji==2.11.0  # replace aliases with emojis
-pydantic==1.10.15  # dataclasses
+emoji==1.4.2  # replace aliases with emojis (!! 2.11.0 breaking, keeping 1.4.2)
+pydantic==1.10.15  # dataclasses (!! below v2)
 cachetools==5.3.3  # cache
 cryptography==42.0.5  # encryption of persisted data
-loguru==0.7.2  # logging
+loguru==0.5.3  # logging (!! 0.7.2 breaking, keeping 0.5.3)
 pymongo==4.6.3  # MongoDB client
 motor==3.4.0  # MongoDB Async client
