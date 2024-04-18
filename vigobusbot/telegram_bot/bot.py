@@ -2,21 +2,16 @@
 Bot class and bot instance getter and generator
 """
 
-# # Native # #
+import asyncio
 from typing import Optional
 
-# # Installed # #
 import aiogram
 
-# # Package # #
 from .handlers import register_handlers
-
-# # Project # #
+from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import stop_messages_deprecation_reminder_worker
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
-
-__all__ = ("Bot", "get_bot")
 
 
 class Bot(aiogram.Bot):
@@ -54,6 +49,10 @@ class Bot(aiogram.Bot):
         except Exception:
             logger.opt(exception=True).warning("Bot commands could not be set")
             return False
+
+    async def start_background_services(self):
+        # noinspection PyAsyncCall
+        asyncio.create_task(stop_messages_deprecation_reminder_worker(self))
 
 
 _bot: Optional[Bot] = None
