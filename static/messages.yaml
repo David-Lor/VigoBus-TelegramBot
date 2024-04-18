@@ -4,9 +4,11 @@
 # Emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
 start:
   - |-
-    ¡Hola! :wave: Este bot proporciona información sobre los autobuses urbanos de la ciudad de Vigo en tiempo real y por paradas.
+    ¡Hola! :wave: Este bot proporciona información sobre los :bus:autobuses urbanos de la ciudad de Vigo en :stopwatch:tiempo real y por :bus_stop:paradas.
 
     Para empezar, envíame el código de la parada que quieras consultar. Podrás encontrar los números de parada en las marquesinas y paradas de autobús.
+    
+    :megaphone:Te puedes suscribir al canal @vigobus para recibir novedades de este bot y notificaciones de servicio.
 
     :question:¿Dudas? Para más información y ayuda, envía /ayuda
 help:
@@ -67,11 +69,13 @@ stop:
   bus_line: >-
     <pre>  {line} ({route}): {time}</pre>
   bus_time_remaining: >-
-    {minutes}m
+    {minutes}m {arrival_time}
   bus_time_now: >-
     &lt;&lt;&lt;
   time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
     %d/%m %H:%M:%S
+  bus_arrival_time_format: >-  # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+    (~%H:%M)
   no_buses_found: >-
     <pre> ¡No hay buses!</pre>
   not_exists:

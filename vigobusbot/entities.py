@@ -1,7 +1,7 @@
 """ENTITIES
 Custom and imported entities used all over the project
 """
-
+import datetime
 # # Native # #
 from typing import Optional, List, Dict
 
@@ -21,7 +21,10 @@ class Stop(pydantic.BaseModel):
 class Bus(pydantic.BaseModel):
     line: str
     route: str
-    time: int
+    time: int  # minutes
+
+    def get_calculated_arrival_time(self) -> datetime.datetime:
+        return datetime.datetime.now() + datetime.timedelta(minutes=self.time)
 
 
 class File(pydantic.BaseModel):
