@@ -2,16 +2,11 @@
 Telegram Bot Message Handlers: functions that handle incoming messages, depending on their command or content.
 """
 
-# # Native # #
 import asyncio
 
-# # Installed # #
 import aiogram
 
-# # Package # #
 from . import test_message_handlers
-
-# # Project # #
 from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
 from vigobusbot.telegram_bot.services.feedback_request_handler import get_feedback_request_context
@@ -24,6 +19,7 @@ from vigobusbot.telegram_bot.entities import Message
 from vigobusbot.telegram_bot.services.message_generators import SourceContext, FeedbackForceReply
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, generate_saved_stops_message
 from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_message
+from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.persistence_api.saved_stops import delete_all_stops
 from vigobusbot.settings_handler import system_settings
 from vigobusbot.static_handler import get_messages
@@ -128,11 +124,12 @@ async def command_stop(message: Message, *args, **kwargs):
         await start_typing(bot=message.bot, chat_id=chat_id)
         text, markup = await generate_stop_message(context)
 
-        await message.bot.send_message(
+        msg = await message.bot.send_message(
             chat_id=chat_id,
             text=text,
             reply_markup=markup
         )
+        await persist_sent_stop_message(msg)
 
     except (ValueError, StopIteration):
         await message.reply(get_messages().stop.not_valid)

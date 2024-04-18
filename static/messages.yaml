@@ -91,6 +91,7 @@ stop:
       :heavy_plus_sign:Buses
     less_buses:
       :heavy_minus_sign:Buses
+  deprecated_warning: :warning:<b>Este mensaje lleva más de 5 minutos desactualizado</b>, pulsa sobre :arrows_counterclockwise:<b>Actualizar</b> para refrescarlo
 stop_rename:
   request: |-
     :pencil2:¿Qué nombre deseas darle a la parada <b>#{stop_id} ({stop_name})</b>?
