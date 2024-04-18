@@ -39,6 +39,9 @@ class TelegramSettings(BaseBotSettings):
     If 0, disable this feature."""
     stop_messages_deprecation_reminder_loop_delay_seconds: int = 60
     """Delay for the loop that checks for deprecated Stop messages."""
+    stop_messages_include_arrival_hour_after_minutes: int = -1
+    """Buses arriving after this amount of minutes will include the calculated hour of arrival.
+    Negative values to disable the feature."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
