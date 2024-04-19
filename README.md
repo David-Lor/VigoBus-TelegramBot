@@ -18,7 +18,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Requirements
 
-- Python >= 3.6
+- Python >= 3.9
 - [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
