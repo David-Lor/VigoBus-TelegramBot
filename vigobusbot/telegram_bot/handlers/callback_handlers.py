@@ -2,17 +2,15 @@
 Callback Handlers for the Callback Queries, produced when users press buttons from the inline keyboards on messages
 """
 
-# # Native # #
 import asyncio
 
-# # Installed # #
 import aiogram
 
-# # Project # #
 from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import StopRenameRequestContext
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import register_stop_rename_request
+from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.telegram_bot.services.message_generators import *
 from vigobusbot.persistence_api import saved_stops
 from vigobusbot.static_handler import get_messages
@@ -53,18 +51,20 @@ async def stop_refresh(callback_query: aiogram.types.CallbackQuery, callback_dat
                 **callback_data
             )
 
+        # TODO Review:
         # For now, not sending "typing" status, since after message is updated it can still show "typing"...
         # await start_typing(bot=callback_query.bot, chat_id=chat_id)
 
         text, markup = await generate_stop_message(context)
 
-        await callback_query.bot.edit_message_text(
+        msg = await callback_query.bot.edit_message_text(
             text=text,
             chat_id=chat_id,
             message_id=message_id,
             inline_message_id=inline_message_id,
             reply_markup=markup
         )
+        await persist_sent_stop_message(msg)
 
     except MessageNotModified:
         # MessageNotModified exceptions can be triggered when user presses Update button many times too quickly,
@@ -89,11 +89,12 @@ async def stop_get(callback_query: aiogram.types.CallbackQuery, callback_data: d
         await start_typing(bot=callback_query.bot, chat_id=chat_id)
         text, markup = await generate_stop_message(context)
 
-        await callback_query.bot.send_message(
+        msg = await callback_query.bot.send_message(
             chat_id=chat_id,
             text=text,
             reply_markup=markup
         )
+        await persist_sent_stop_message(msg)
 
     finally:
         stop_typing(chat_id)

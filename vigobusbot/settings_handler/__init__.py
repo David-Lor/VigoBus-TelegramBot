@@ -2,14 +2,12 @@
 Load settings from dotenv file or environment variables
 """
 
-# # Native # #
+import os
 from typing import Optional
 
-# # Installed # #
 import pydantic
 import aiogram.bot.api
 
-# # Package # #
 from .helpers import *
 
 __all__ = ("telegram_settings", "api_settings", "persistence_settings", "mongo_settings", "system_settings")
@@ -17,7 +15,7 @@ __all__ = ("telegram_settings", "api_settings", "persistence_settings", "mongo_s
 
 class BaseBotSettings(pydantic.BaseSettings):
     class Config:
-        env_file = ".env"
+        env_file = os.getenv("ENV_FILE", ".env")
 
 
 class TelegramSettings(BaseBotSettings):
@@ -37,6 +35,14 @@ class TelegramSettings(BaseBotSettings):
     typing_safe_limit_time: float = 30
     """Timeout for a Typing chat action to end"""
     inline_cache_time: int = 300
+    stop_messages_deprecation_reminder_after_seconds: int = 0
+    """Time for a Stop message to be considered deprecated, thus update with a warning about it being deprecated.
+    If 0, disable this feature."""
+    stop_messages_deprecation_reminder_loop_delay_seconds: int = 60
+    """Delay for the loop that checks for deprecated Stop messages."""
+    stop_messages_include_arrival_hour_after_minutes: int = -1
+    """Buses arriving after this amount of minutes will include the calculated hour of arrival.
+    Negative values to disable the feature."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

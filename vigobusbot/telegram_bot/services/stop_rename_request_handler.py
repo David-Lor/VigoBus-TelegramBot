@@ -2,28 +2,21 @@
 Handler and utils for working with Stop Rename requests, involving Force Reply handling
 """
 
-# # Native # #
 import re
 import contextlib
 from typing import Optional
 
-# # Installed # #
 import aiogram
 import cachetools
 import emoji
 
-# # Project # #
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, SourceContext
 from vigobusbot.vigobus_api import get_stop
 from vigobusbot.persistence_api.saved_stops import save_stop
+from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.static_handler import get_messages
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
-
-__all__ = (
-    "StopRenameRequestContext",
-    "register_stop_rename_request", "handle_stop_rename_request_reply", "get_stop_rename_request_context"
-)
 
 _stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
 """Storage for Stop Rename requests, which must be replied by users in less than the force_reply_ttl
@@ -145,10 +138,13 @@ async def handle_stop_rename_request_reply(user_reply_message: aiogram.types.Mes
         source_message=rename_context.source_message
     )
     text, buttons = await generate_stop_message(context=source_context)
-    await user_reply_message.bot.edit_message_text(
+
+    msg = await user_reply_message.bot.edit_message_text(
         chat_id=chat_id,
         text=text,
         message_id=rename_context.source_message.message_id,
         reply_markup=buttons
     )
+    await persist_sent_stop_message(msg)
+
     logger.debug("Edited the original Stop message after renaming the Stop")

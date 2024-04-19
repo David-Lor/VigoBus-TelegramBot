@@ -18,7 +18,7 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Requirements
 
-- Python >= 3.6
+- Python >= 3.9
 - [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
 - [DataManager (Persistence API)](https://github.com/David-Lor/Telegram-BusBot-DataManager)
 - requirements listed in [requirements.txt](requirements.txt)
@@ -33,6 +33,12 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 
 ## Changelog
 
+- 2.6.0
+  - update deprecated Stop messages with a warning
+  - include calculated arrival time (HH:MM) on buses
+  - avoid logging warnings on 404 HTTP responses
+  - allow loading settings from an arbitrary env file specified by the ENV_FILE env var
+  - upgrade requirements versions
 - 2.5.1
     - fix error handling for HTTP timeouts
     - return the request id on error messages (only normal messages, not inline replies)

@@ -26,9 +26,9 @@ def manage_stop_exceptions(stop_id: int):
         raise GetterTimedOut()
 
     except httpx.HTTPError as ex:
-        response = ex.response
-        code = response.status_code
-        if code == 404:
+        # noinspection PyUnresolvedReferences
+        response: httpx.Response = ex.response
+        if response.status_code == 404 and "Stop not exists" in response.text:
             raise StopNotExist(stop_id)
         else:
             raise GetterAPIException(ex)

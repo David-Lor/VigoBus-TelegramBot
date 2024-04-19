@@ -11,17 +11,16 @@ from vigobusbot.static_handler import load_static_files
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
 
-__all__ = ("run",)
-
 
 def run():
     load_static_files()
     bot = get_bot()
     asyncio.get_event_loop().run_until_complete(bot.set_commands())
+    asyncio.get_event_loop().run_until_complete(bot.start_background_services())
 
     if settings.method == "webhook":
         logger.debug("Starting the bot with the Webhook method...")
-        pass
+        raise Exception("Webhook method not yet implemented")
     else:
         logger.debug("Starting the bot with the Polling method...")
         start_polling(bot)
