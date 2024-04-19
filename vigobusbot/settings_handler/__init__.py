@@ -2,6 +2,7 @@
 Load settings from dotenv file or environment variables
 """
 
+import os
 from typing import Optional
 
 import pydantic
@@ -14,7 +15,7 @@ __all__ = ("telegram_settings", "api_settings", "persistence_settings", "mongo_s
 
 class BaseBotSettings(pydantic.BaseSettings):
     class Config:
-        env_file = ".env"
+        env_file = os.getenv("ENV_FILE", ".env")
 
 
 class TelegramSettings(BaseBotSettings):
