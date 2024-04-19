@@ -69,10 +69,13 @@ async def http_request(
                 last_error = error
 
             except httpx.HTTPStatusError as error:
-                logger.bind(
-                    response_status_code=error.response.status_code,
-                    response_body=error.response.text
-                ).warning("Request failed with bad status code")
+                status_code = error.response.status_code
+                if status_code != 404:
+                    logger.bind(
+                        response_status_code=error.response.status_code,
+                        response_body=error.response.text
+                    ).warning("Request failed with bad status code")
+
                 raise error
 
             except Exception as error:
