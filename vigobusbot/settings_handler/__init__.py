@@ -10,7 +10,7 @@ import aiogram.bot.api
 
 from .helpers import *
 
-__all__ = ("telegram_settings", "api_settings", "persistence_settings", "mongo_settings", "system_settings")
+__all__ = ("telegram_settings", "api_settings", "persistence_settings", "system_settings")
 
 
 class BaseBotSettings(pydantic.BaseSettings):
@@ -79,27 +79,11 @@ class PersistenceSettings(BaseBotSettings):
         self.salt = load_secrets_file(path=self.salt.strip(), path_startswith=True)
 
 
-class MongoSettings(BaseBotSettings):
-    uri: str = "mongodb://localhost:27017"
-    database: str = "vigobusbot"
-    collection_logs: str = "logs"
-    """Collection for log records"""
-
-    class Config(BaseBotSettings.Config):
-        env_prefix = "MONGO_"
-
-
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]
     """Location of "static" directory (might be required when running from Docker)"""
     log_level: str = "INFO"
     """Log level for printing system log records"""
-    request_logs_persist_enabled: bool = True
-    """If True, enable persisting request log records on Mongo"""
-    request_logs_persist_level: str = "ERROR"
-    """Minimum record level to persist all records for a request (at least one record with this level)"""
-    request_logs_persist_record_timeout: float = 120
-    """Timeout for request records in logger cache until cleanup"""
     request_logs_print_level: str = "WARNING"
     """Log level for printing individual request log records"""
     test: bool = False
@@ -109,5 +93,4 @@ class SystemSettings(BaseBotSettings):
 telegram_settings = TelegramSettings()
 api_settings = APISettings()
 persistence_settings = PersistenceSettings()
-mongo_settings = MongoSettings()
 system_settings = SystemSettings()

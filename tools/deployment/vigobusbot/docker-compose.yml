@@ -52,19 +52,6 @@ services:
     networks:
       - backend
 
-  vigobus_telegrambotapi:
-    # https://github.com/lukaszraczylo/tdlib-telegram-bot-api-docker
-    container_name: vigobus_telegrambotapi
-    image: ghcr.io/lukaszraczylo/tdlib-telegram-bot-api-docker/telegram-api-server:latest
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-    env_file:
-      - telegram_botapi.env
-    restart: unless-stopped
-    networks:
-      - frontend
-
   vigobus_bot:
     container_name: vigobus_bot
     image: *python_image
@@ -82,7 +69,6 @@ services:
       - telegram_token
       - telegram_persist_salt
     depends_on:
-      - vigobus_telegrambotapi
       - vigobus_api
       - persistence_api
     restart: unless-stopped

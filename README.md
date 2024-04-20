@@ -14,7 +14,6 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 - VigoBusTelegramBot: this project, serving as the Telegram Bot backend, and connecting to the following API:
 - VigoBusAPI: REST API to fetch stop & real-time estimated time of buses arrival
 - Persistence API: REST API to persist data
-- MongoDB: used by both REST API to persist data - and for bot requests logs persistence
 
 ## Requirements
 
@@ -24,7 +23,6 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 - requirements listed in [requirements.txt](requirements.txt)
 - A Telegram bot created with BotFather
     - For Inline mode: enable Inline Mode and set Inline Feedback to 100% on Bot Settings
-- A MongoDB database (for both required API - and requests log persistence)
 
 ### Deployment
 
