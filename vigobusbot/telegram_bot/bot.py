@@ -3,23 +3,29 @@ Bot class and bot instance getter and generator
 """
 
 import asyncio
-from typing import Optional
 
 import aiogram
 
 from .handlers import register_handlers
 from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import stop_messages_deprecation_reminder_worker
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings_handler import telegram_settings
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
+from vigobusbot.utils import Singleton
 
 
-class Bot(aiogram.Bot):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class Bot(aiogram.Bot, Singleton):
+    def __init__(self):
+        token = telegram_settings.token
+        botapi_server = telegram_settings.bot_api
+
+        super().__init__(
+            token=telegram_settings.token,
+            server=aiogram.bot.api.TelegramAPIServer.from_base(botapi_server)
+        )
         self.dispatcher = aiogram.Dispatcher(self)
-        logger.debug(f"Created new Bot instance with token {kwargs['token'][:4]}...{kwargs['token'][-4:]}, "
-                     f"using Bot API {kwargs['server']}")
+        register_handlers(self.dispatcher)
+        logger.debug(f"Created new Bot instance with token {token[:4]}...{token[-4:]}, using Bot API {botapi_server}")
 
     @staticmethod
     def __set_message_kwargs(kwargs: dict):
@@ -53,16 +59,3 @@ class Bot(aiogram.Bot):
     async def start_background_services(self):
         # noinspection PyAsyncCall
         asyncio.create_task(stop_messages_deprecation_reminder_worker(self))
-
-
-_bot: Optional[Bot] = None
-
-
-def get_bot() -> Bot:
-    """Get the bot instance or generate and return a new one. Register all the handlers on bot instance generation.
-    """
-    global _bot
-    if _bot is None:
-        _bot = Bot(token=settings.token, server=settings.bot_api_server)
-        register_handlers(_bot.dispatcher)
-    return _bot

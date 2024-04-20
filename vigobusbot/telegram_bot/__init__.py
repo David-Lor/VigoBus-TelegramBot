@@ -1,2 +1,2 @@
-from .bot import Bot, get_bot
+from .bot import Bot
 from .polling import start_polling

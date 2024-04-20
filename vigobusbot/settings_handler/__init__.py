@@ -6,11 +6,10 @@ import os
 from typing import Optional
 
 import pydantic
-import aiogram.bot.api
 
 from .helpers import *
 
-__all__ = ("telegram_settings", "api_settings", "persistence_settings", "system_settings")
+__all__ = ("telegram_settings", "api_settings", "persistence_settings", "couchdb_settings", "system_settings")
 
 
 class BaseBotSettings(pydantic.BaseSettings):
@@ -48,10 +47,6 @@ class TelegramSettings(BaseBotSettings):
         super().__init__(**kwargs)
         self.token = load_secrets_file(path=self.token.strip(), path_startswith=True)
 
-    @property
-    def bot_api_server(self):
-        return aiogram.bot.api.TelegramAPIServer.from_base(self.bot_api)
-
 
 class APISettings(BaseBotSettings):
     url = "http://localhost:5000"
@@ -79,6 +74,18 @@ class PersistenceSettings(BaseBotSettings):
         self.salt = load_secrets_file(path=self.salt.strip(), path_startswith=True)
 
 
+class CouchDBSettings(BaseBotSettings):
+    url: pydantic.AnyHttpUrl = "http://localhost:5984"
+    user: str
+    password: pydantic.SecretStr
+    db_sent_messages: str = "vigobusbot_sent_messages"
+    db_stops: str = "vigobusbot_stops"
+    db_user_stops: str = "vigobusbot_userstops"
+
+    class Config(BaseBotSettings.Config):
+        env_prefix = "COUCHDB_"
+
+
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]
     """Location of "static" directory (might be required when running from Docker)"""
@@ -93,4 +100,5 @@ class SystemSettings(BaseBotSettings):
 telegram_settings = TelegramSettings()
 api_settings = APISettings()
 persistence_settings = PersistenceSettings()
+couchdb_settings = CouchDBSettings()
 system_settings = SystemSettings()
