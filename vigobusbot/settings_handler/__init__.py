@@ -59,9 +59,8 @@ class APISettings(BaseBotSettings):
 
 class PersistenceSettings(BaseBotSettings):
     url = "http://localhost:5001"
-    salt = "FixedSalt"
-    """Fixed salt value for hashing stored user data (saved stops) in local persistence
-    (cannot change once there is data stored)"""
+    encryption_key = "GeneralEncryptionKey"
+    """Fixed encryption key for encrypting sensitive values (cannot change once there is data stored)."""
     timeout: float = 30
     retries: int = 2
     key_cache_size: int = 100
@@ -71,7 +70,7 @@ class PersistenceSettings(BaseBotSettings):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.salt = load_secrets_file(path=self.salt.strip(), path_startswith=True)
+        self.encryption_key = load_secrets_file(path=self.encryption_key.strip(), path_startswith=True)
 
 
 class CouchDBSettings(BaseBotSettings):

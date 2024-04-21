@@ -32,7 +32,7 @@ def get_user_key(user_id: int) -> Fernet:
 
     except KeyError:
         md5 = hashlib.md5()
-        md5.update(settings.salt.encode())
+        md5.update(settings.encryption_key.encode())
         md5.update(str(user_id).encode())
 
         key: bytes = base64.urlsafe_b64encode(md5.hexdigest().encode())

@@ -12,7 +12,7 @@ from vigobusbot.settings_handler import persistence_settings as settings
 
 def encode_user_id(user_id: int) -> str:
     sha512 = hashlib.sha512()
-    sha512.update(settings.salt.encode())
+    sha512.update(settings.encryption_key.encode())
     sha512.update(str(user_id).encode())
     return sha512.hexdigest()
 

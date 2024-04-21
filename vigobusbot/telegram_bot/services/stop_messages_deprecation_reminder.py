@@ -6,14 +6,16 @@ import asyncio
 
 import aiogram
 
-from .sent_messages_persistence import sent_messages_cache, sent_messages_cache_lock, MessagePersist, PersistMessageTypes
+from .sent_messages_persistence import MessagePersist, PersistMessageTypes
 from vigobusbot.static_handler import get_messages
 from vigobusbot.settings_handler import telegram_settings
-from vigobusbot.utils import get_datetime_now_utc
 from vigobusbot.logger import logger
 
 
 async def stop_messages_deprecation_reminder_worker(bot: aiogram.Bot):
+    return
+    # TODO Update for couchdb...
+
     if telegram_settings.stop_messages_deprecation_reminder_after_seconds <= 0:
         logger.info("Stop messages deprecation reminder is disabled")
         return
