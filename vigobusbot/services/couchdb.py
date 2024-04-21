@@ -3,10 +3,10 @@ import asyncio
 import aiocouch
 
 from vigobusbot.settings_handler import couchdb_settings
-from vigobusbot.utils import Singleton
+from vigobusbot.utils import Singleton, SetupTeardown
 
 
-class CouchDB(Singleton):
+class CouchDB(Singleton, SetupTeardown):
     connection: aiocouch.CouchDB
     db_sent_messages: aiocouch.Database = None
     db_user_stops: aiocouch.Database = None
@@ -18,14 +18,14 @@ class CouchDB(Singleton):
             password=couchdb_settings.password.get_secret_value(),
         )
 
-    async def initialize(self):
+    async def setup(self):
         await self.connection.check_credentials()
         self.db_sent_messages, self.db_user_stops = await asyncio.gather(
             self.connection.create(couchdb_settings.db_sent_messages, exists_ok=True),
             self.connection.create(couchdb_settings.db_user_stops, exists_ok=True),
         )
 
-    async def close(self):
+    async def teardown(self):
         await self.connection.close()
 
     @classmethod

@@ -25,7 +25,10 @@ class Singleton:
     _instance: T = None
 
     @classmethod
-    def get_instance(cls: Type[T]) -> T:
+    def get_instance(cls: Type[T], initialize: bool = False) -> T:
+        if initialize and not cls._instance:
+            return cls().set_current_as_singleton()
+
         # noinspection PyUnresolvedReferences
         return cls._instance
 
@@ -49,3 +52,14 @@ class SingletonHold(Generic[T]):
 
     def get_value(self) -> Optional[T]:
         return self._instance
+
+
+class SetupTeardown:
+    """Base class with two async methods, setup & teardown.
+    """
+
+    async def setup(self):
+        pass
+
+    async def teardown(self):
+        pass

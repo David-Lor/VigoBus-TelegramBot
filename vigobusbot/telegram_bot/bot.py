@@ -2,19 +2,16 @@
 Bot class and bot instance getter and generator
 """
 
-import asyncio
-
 import aiogram
 
 from .handlers import register_handlers
-from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import stop_messages_deprecation_reminder_worker
 from vigobusbot.settings_handler import telegram_settings
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
-from vigobusbot.utils import Singleton
+from vigobusbot.utils import Singleton, SetupTeardown
 
 
-class Bot(aiogram.Bot, Singleton):
+class Bot(aiogram.Bot, Singleton, SetupTeardown):
     def __init__(self):
         token = telegram_settings.token
         botapi_server = telegram_settings.bot_api
@@ -40,7 +37,7 @@ class Bot(aiogram.Bot, Singleton):
         self.__set_message_kwargs(kwargs)
         return await super().edit_message_text(*args, **kwargs)
 
-    async def set_commands(self) -> bool:
+    async def _set_commands(self) -> bool:
         # noinspection PyBroadException
         try:
             commands_dict: dict = get_messages().commands
@@ -56,6 +53,5 @@ class Bot(aiogram.Bot, Singleton):
             logger.opt(exception=True).warning("Bot commands could not be set")
             return False
 
-    async def start_background_services(self):
-        # noinspection PyAsyncCall
-        asyncio.create_task(stop_messages_deprecation_reminder_worker(self))
+    async def setup(self):
+        await self._set_commands()

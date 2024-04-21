@@ -34,14 +34,14 @@ class TelegramSettings(BaseBotSettings):
     typing_safe_limit_time: float = 30
     """Timeout for a Typing chat action to end"""
     inline_cache_time: int = 300
-    stop_messages_deprecation_reminder_after_seconds: int = 0
-    """Time for a Stop message to be considered deprecated, thus update with a warning about it being deprecated.
-    If 0, disable this feature."""
-    stop_messages_deprecation_reminder_loop_delay_seconds: int = 60
-    """Delay for the loop that checks for deprecated Stop messages."""
+    stop_messages_deprecation_reminder_cron: str = ""
+    """Cron expression for running the Stop messages deprecation reminder loop.
+    Empty to disable this feature."""
+    stop_messages_deprecation_reminder_after_seconds: int = 300  # 300s = 5m
+    """Time for a Stop message to be considered deprecated, thus update with a warning about it being deprecated."""
     stop_messages_include_arrival_hour_after_minutes: int = -1
     """Buses arriving after this amount of minutes will include the calculated hour of arrival.
-    Negative values to disable the feature."""
+    Negative values disable the feature."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

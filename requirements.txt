@@ -10,4 +10,5 @@ cachetools==5.3.3  # cache
 cryptography==42.0.5  # encryption of persisted data
 loguru==0.5.3  # logging (!! 0.7.2 breaking, keeping 0.5.3)
 aiocouch==3.0.0  # couchdb persistence
+aiocron==1.8  # scheduler supporting cron expressions
 contexttimer==0.3.3  # context manager elapsed time counter
