@@ -3,6 +3,7 @@ Load settings from dotenv file or environment variables
 """
 
 import os
+import platform
 from typing import Optional
 
 import pydantic
@@ -92,8 +93,16 @@ class SystemSettings(BaseBotSettings):
     """Log level for printing system log records"""
     request_logs_print_level: str = "WARNING"
     """Log level for printing individual request log records"""
+    node_name: str = ""
+    """Hostname/node name, to be appended to the logs. If equals to 'hostname', use the current hostname."""
     test: bool = False
     """If True, run the test handlers"""
+
+    @pydantic.validator("node_name")
+    def _node_name_set_as_hostname(cls, v):
+        if v == "hostname":
+            v = platform.node()
+        return v
 
 
 telegram_settings = TelegramSettings()

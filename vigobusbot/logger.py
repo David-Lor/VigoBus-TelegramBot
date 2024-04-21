@@ -46,6 +46,8 @@ def _set_request_filter(is_request_logger: bool):
 # Disable default aiogram & loguru loggers
 logging.getLogger("aiogram").disabled = True
 logger.remove()
+if node_name := settings.node_name:
+    logger = logger.bind(node=node_name)
 
 # Create virtual loggers for system logs and request logs
 

@@ -132,7 +132,11 @@ async def command_stop(message: Message, *args, **kwargs):
         await persist_sent_stop_message(msg)
 
     except (ValueError, StopIteration):
-        await message.reply(get_messages().stop.not_valid)
+        await message.bot.send_message(
+            chat_id=message.chat.id,
+            reply_to_message_id=message.message_id,
+            text=get_messages().stop.not_valid,
+        )
 
     finally:
         stop_typing(chat_id)
