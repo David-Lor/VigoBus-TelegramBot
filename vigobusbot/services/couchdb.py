@@ -4,6 +4,7 @@ import aiocouch
 
 from vigobusbot.settings_handler import couchdb_settings
 from vigobusbot.utils import Singleton, SetupTeardown
+from vigobusbot.logger import logger
 
 
 class CouchDB(Singleton, SetupTeardown):
@@ -26,7 +27,9 @@ class CouchDB(Singleton, SetupTeardown):
         )
 
     async def teardown(self):
+        logger.debug("Closing CouchDB connection...")
         await self.connection.close()
+        logger.info("CouchDB closed")
 
     @classmethod
     async def create_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict, exists_ok: bool = False):

@@ -3,11 +3,10 @@ Start Telegram bot using Polling/Webhook methods depending on the settings
 """
 
 import asyncio
-import atexit
 
 from contexttimer import Timer
 
-from vigobusbot.telegram_bot import Bot, start_polling
+from vigobusbot.telegram_bot import Bot, run_bot_polling, run_bot_webhook
 from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import StopMessagesDeprecationReminder
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.static_handler import load_static_files
@@ -15,11 +14,12 @@ from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
 
 
-async def initialize():
+async def async_initialize():
     logger.debug("Initializing the app...")
     with Timer() as timer:
+        bot = Bot().set_current_as_singleton()
         await asyncio.gather(
-            Bot.get_instance(initialize=True).setup(),
+            bot.setup(),
             StopMessagesDeprecationReminder.get_instance(initialize=True).setup(),
             CouchDB.get_instance(initialize=True).setup(),
         )
@@ -27,8 +27,8 @@ async def initialize():
     logger.bind(elapsed=timer.elapsed).info("Initialization completed")
 
 
-async def teardown():
-    logger.debug("Closing the app...")
+async def async_teardown():
+    logger.info("Closing the app...")
     with Timer() as timer:
         # TODO async.gather & loop services
         if couchdb := CouchDB.get_instance():
@@ -43,15 +43,19 @@ async def teardown():
 
 def run():
     load_static_files()
-    asyncio.get_event_loop().run_until_complete(initialize())
-    atexit.register(lambda: asyncio.get_event_loop().run_until_complete(teardown()))
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(async_initialize())
 
-    if settings.method == "webhook":
-        logger.debug("Starting the bot with the Webhook method...")
-        raise Exception("Webhook method not yet implemented")
-    else:
-        logger.debug("Starting the bot with the Polling method...")
-        start_polling()
+    try:
+        if settings.webhook_enabled:
+            run_bot_webhook()
+        else:
+            run_bot_polling()
+    except (SystemExit, KeyboardInterrupt):
+        # TODO Exit with corresponding exit code
+        pass
+
+    loop.run_until_complete(async_teardown())
 
 
 if __name__ == '__main__':

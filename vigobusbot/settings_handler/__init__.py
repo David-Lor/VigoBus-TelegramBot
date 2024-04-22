@@ -22,10 +22,17 @@ class TelegramSettings(BaseBotSettings):
     token: str
     admin_userid: int
     bot_api: str = "https://api.telegram.org"
-    method = "polling"
     skip_prev_updates = True
     polling_fast = True
     polling_timeout: float = 30
+
+    webhook_url: Optional[pydantic.AnyHttpUrl] = None
+    webhook_path: str = "/"
+    webhook_secret: Optional[str] = None
+    webhook_host: str = "0.0.0.0"
+    webhook_port: int = 3000
+    webhook_delete_on_close: bool = False
+
     force_reply_ttl: int = 3600
     """Timeout for Force Reply requests until cleanup"""
     user_rate_limit_amount: int = 5
@@ -35,6 +42,7 @@ class TelegramSettings(BaseBotSettings):
     typing_safe_limit_time: float = 30
     """Timeout for a Typing chat action to end"""
     inline_cache_time: int = 300
+
     stop_messages_deprecation_reminder_cron: str = ""
     """Cron expression for running the Stop messages deprecation reminder loop.
     Empty to disable this feature."""
@@ -47,6 +55,10 @@ class TelegramSettings(BaseBotSettings):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.token = load_secrets_file(path=self.token.strip(), path_startswith=True)
+
+    @property
+    def webhook_enabled(self):
+        return bool(self.webhook_url)
 
 
 class APISettings(BaseBotSettings):

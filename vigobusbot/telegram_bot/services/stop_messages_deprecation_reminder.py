@@ -28,11 +28,14 @@ class StopMessagesDeprecationReminder(Singleton, SetupTeardown):
         )
 
     async def setup(self):
+        logger.debug("Starting Stop messages deprecation reminder...")
         self._scheduler.start()
-        logger.info(f"Stop messages deprecation reminder running with cron expression: {self._scheduler.spec}")
+        logger.bind(cron_expression=self._scheduler.spec).info(f"Stop messages deprecation reminder running")
 
     async def teardown(self):
+        logger.debug("Stopping Stop messages deprecation reminder...")
         self._scheduler.stop()
+        logger.info("Stop messages deprecation reminder stopped")
 
     @classmethod
     async def _worker(cls):
