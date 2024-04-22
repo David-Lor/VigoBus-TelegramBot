@@ -3,7 +3,6 @@ Bot class and bot instance getter and generator
 """
 
 import asyncio
-from typing import Optional
 
 import aiogram
 import aiohttp.web

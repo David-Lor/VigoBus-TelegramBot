@@ -11,18 +11,23 @@ from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import 
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.static_handler import load_static_files
 from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.utils import SetupTeardown, SingletonHold
 from vigobusbot.logger import logger
 
 
-async def async_initialize():
+services: SingletonHold[list[SetupTeardown]] = SingletonHold()
+
+
+async def async_setup():
     logger.debug("Initializing the app...")
     with Timer() as timer:
-        bot = Bot().set_current_as_singleton()
-        await asyncio.gather(
-            bot.setup(),
-            StopMessagesDeprecationReminder.get_instance(initialize=True).setup(),
-            CouchDB.get_instance(initialize=True).setup(),
-        )
+        services.set_value([
+            Bot.get_instance(initialize=True),
+            StopMessagesDeprecationReminder.get_instance(initialize=True),
+            CouchDB.get_instance(initialize=True),
+        ])
+
+        await asyncio.gather(*[service.setup() for service in services.get_value()])
 
     logger.bind(elapsed=timer.elapsed).info("Initialization completed")
 
@@ -30,13 +35,7 @@ async def async_initialize():
 async def async_teardown():
     logger.info("Closing the app...")
     with Timer() as timer:
-        # TODO async.gather & loop services
-        if couchdb := CouchDB.get_instance():
-            await couchdb.teardown()
-        if reminder := StopMessagesDeprecationReminder.get_instance():
-            await reminder.teardown()
-        if bot := Bot.get_instance():
-            await bot.teardown()
+        await asyncio.gather(*[service.teardown() for service in services.get_value()])
 
     logger.bind(elapsed=timer.elapsed).info("Teardown completed")
 
@@ -44,7 +43,7 @@ async def async_teardown():
 def run():
     load_static_files()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(async_initialize())
+    loop.run_until_complete(async_setup())
 
     try:
         if settings.webhook_enabled:
