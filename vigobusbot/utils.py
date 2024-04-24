@@ -19,10 +19,6 @@ def get_uuid():
     return str(uuid4())
 
 
-async def async_noop():
-    pass
-
-
 class Singleton:
     """Inheritable class that holds a single variable (an instance of the same class),
     intended to be accessed as a singleton without initialization."""

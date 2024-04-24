@@ -32,6 +32,7 @@ class TelegramSettings(BaseBotSettings):
     webhook_host: str = "0.0.0.0"
     webhook_port: int = 3000
     webhook_delete_on_close: bool = False
+    webhook_status_path: Optional[str] = None
 
     force_reply_ttl: int = 3600
     """Timeout for Force Reply requests until cleanup"""

@@ -8,7 +8,7 @@ import aiogram
 import aiohttp.web
 
 from .handlers import register_handlers
-from vigobusbot.settings_handler import telegram_settings
+from vigobusbot.settings_handler import telegram_settings, system_settings
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
 from vigobusbot.utils import Singleton, SetupTeardown
@@ -97,7 +97,6 @@ def run_bot_webhook():
     This is a blocking function (bot runs on foreground until shutdown).
     Implements a workaround for using a custom loop in the HTTP server, and avoid closing it on exit.
     """
-    logger.info("Bot webhook starting now")
     bot = Bot.get_instance()
 
     executor = aiogram.executor.set_webhook(
@@ -108,6 +107,11 @@ def run_bot_webhook():
         loop=bot.loop,
     )
 
+    if status_path := telegram_settings.webhook_status_path:
+        logger.info(f"Webhook status path available at {status_path}")
+        executor.web_app.add_routes([aiohttp.web.get(status_path, webhook_status_endpoint_handler)])
+
+    logger.info("Bot webhook starting now")
     # noinspection PyProtectedMember
     bot.loop.run_until_complete(aiohttp.web._run_app(
         app=executor.web_app,
@@ -116,3 +120,11 @@ def run_bot_webhook():
     ))
 
     logger.info("Bot webhook finished")
+
+
+# noinspection PyUnusedLocal
+async def webhook_status_endpoint_handler(*args, **kwargs) -> aiohttp.web.Response:
+    return aiohttp.web.json_response(dict(
+        success=True,
+        node=system_settings.node_name
+    ))
