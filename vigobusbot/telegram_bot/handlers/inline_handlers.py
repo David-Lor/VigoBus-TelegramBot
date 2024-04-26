@@ -9,7 +9,7 @@ import aiogram
 from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_inline_responses
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message
 from vigobusbot.telegram_bot.services.message_generators import SourceContext
-from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_message, PersistMessageTypes
+from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
@@ -48,10 +48,7 @@ async def stop_search_chosen_result(chosen_inline_query: aiogram.types.ChosenInl
         text=text,
         reply_markup=markup
     )
-    persist_sent_message(
-        msg_type=PersistMessageTypes.STOP,
-        message=msg,
-    )
+    await persist_sent_stop_message(msg)
 
 
 def register_handlers(dispatcher: aiogram.Dispatcher):

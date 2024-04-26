@@ -1,10 +1,13 @@
 import asyncio
 
 import aiocouch
+from aiocouch.exception import ConflictError
 
 from vigobusbot.settings_handler import couchdb_settings
 from vigobusbot.utils import Singleton, SetupTeardown
 from vigobusbot.logger import logger
+
+__all__ = ["CouchDB", "ConflictError"]
 
 
 class CouchDB(Singleton, SetupTeardown):
