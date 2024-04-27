@@ -2,6 +2,7 @@
 Misc general utils/helpers
 """
 
+import datetime
 from uuid import uuid4
 from time import time
 from typing import Type, TypeVar, Generic, Optional
@@ -10,8 +11,13 @@ T = TypeVar('T')
 
 
 def get_time(float_precision: bool = False):
-    """Return current time as Unix/Epoch timestamp, seconds precision (unless float_precision is True)"""
+    """Return current time as Unix/Epoch timestamp, UTC, seconds precision (unless float_precision is True)"""
     return time() if float_precision else int(time())
+
+
+def get_datetime():
+    """Return current time as datetime object UTC"""
+    return datetime.datetime.now(tz=datetime.timezone.utc)
 
 
 def get_uuid():

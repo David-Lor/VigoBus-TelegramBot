@@ -54,7 +54,8 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
     async def iter_messages(cls, msg_type: str, max_timestamp: int):
         query = {
             "message_type": msg_type,
-            "published_on": {"$lte": max_timestamp}
+            "metadata.version": SentMessagePersist.get_current_version(),
+            "metadata.created_on.unix": {"$lte": max_timestamp}
         }
 
         async for doc in CouchDB.get_instance().db_sent_messages.find(query):

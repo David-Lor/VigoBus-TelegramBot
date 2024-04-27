@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .base import BaseModel, mapper
+from .base import BaseModel, Metadata, mapper
 from vigobusbot.services import encryption
 
 
@@ -8,23 +8,29 @@ class SentMessageTypes:
     STOP = "stop"
 
 
-class SentMessageBase(BaseModel):
-    message_key: str = ""  # provided from SentMessagePersist
+class _SentMessageBase(BaseModel):
     message_type: str
-    published_on: int  # unix timestamp, UTC, seconds precision
     message_id: int
+
+    # Fields provided from SentMessagePersist
+    metadata: Metadata = None
+    message_key: str = ""
 
     def is_expired(self, now: int, ttl_seconds: int) -> bool:
         return (now - self.published_on) >= ttl_seconds
 
+    @property
+    def published_on(self) -> int:
+        return self.metadata.created_on.unix
 
-class SentMessage(SentMessageBase):
+
+class SentMessage(_SentMessageBase):
     message_text: str
     message_reply_markup_json: Optional[str] = None
     chat_id: int
 
 
-class SentMessagePersist(SentMessageBase):
+class SentMessagePersist(_SentMessageBase):
     message_text_encrypted: str
     message_reply_markup_json_encrypted: Optional[str] = None
     chat_id_encoded: str
@@ -37,6 +43,12 @@ class SentMessagePersist(SentMessageBase):
     def complete_fields(self):
         if not self.message_key:
             self.message_key = f"{self.message_type}_{self.chat_id_encoded}_{self.message_id}"
+        if not self.metadata:
+            self.metadata = Metadata(version=self.get_current_version())
+
+    @classmethod
+    def get_current_version(cls):
+        return 1
 
 
 @mapper.register(SentMessage, SentMessagePersist)

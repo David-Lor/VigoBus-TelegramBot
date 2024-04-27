@@ -1,2 +1,2 @@
 from .base import BaseModel, mapper
-from .messages import SentMessage, SentMessagePersist, SentMessageTypes
+from .sent_messages import SentMessage, SentMessagePersist, SentMessageTypes
