@@ -2,10 +2,8 @@
 Handle errors while processing user requests, notifying the user about the error
 """
 
-# # Native # #
 import contextlib
 
-# # Project # #
 from vigobusbot.logger import logger, get_request_id
 from vigobusbot.static_handler import get_messages
 from vigobusbot.exceptions import StopNotExist, UserRateLimit

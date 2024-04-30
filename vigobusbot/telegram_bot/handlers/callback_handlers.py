@@ -142,6 +142,7 @@ async def _stop_save_delete(
 
         if persisted:
             is_stop_saved = await saved_stops.is_stop_saved(user_id=chat_id, stop_id=data.stop_id)
+            # TODO Replace assert with canonical raise
             assert is_stop_saved == save_stop
 
         markup = generate_stop_message_buttons(context=context, is_stop_saved=is_stop_saved)

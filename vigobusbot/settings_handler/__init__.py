@@ -72,11 +72,8 @@ class APISettings(BaseBotSettings):
 
 
 class PersistenceSettings(BaseBotSettings):
-    url = "http://localhost:5001"
-    encryption_key = "GeneralEncryptionKey"
+    encryption_key: str = "GeneralEncryptionKey"
     """Fixed encryption key for encrypting sensitive values (cannot change once there is data stored)."""
-    timeout: float = 30
-    retries: int = 2
     key_cache_size: int = 100
 
     class Config(BaseBotSettings.Config):

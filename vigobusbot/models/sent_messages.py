@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .base import BaseModel, Metadata, mapper
+from .base import BaseModel, BaseMetadataedModel, Metadata, mapper
 from vigobusbot.services import encryption
 
 
@@ -8,7 +8,7 @@ class SentMessageTypes:
     STOP = "stop"
 
 
-class _SentMessageBase(BaseModel):
+class _SentMessageBase(BaseModel, ):
     message_type: str
     message_id: int
 
@@ -30,21 +30,16 @@ class SentMessage(_SentMessageBase):
     chat_id: int
 
 
-class SentMessagePersist(_SentMessageBase):
+class SentMessagePersist(_SentMessageBase, BaseMetadataedModel):
     message_text_encrypted: str
     message_reply_markup_json_encrypted: Optional[str] = None
     chat_id_encoded: str
     chat_id_encrypted: str
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.complete_fields()
-
     def complete_fields(self):
+        super().complete_fields()
         if not self.message_key:
             self.message_key = f"{self.message_type}_{self.chat_id_encoded}_{self.message_id}"
-        if not self.metadata:
-            self.metadata = Metadata(version=self.get_current_version())
 
     @classmethod
     def get_current_version(cls):

@@ -29,7 +29,10 @@ class UserDataExtractors:
         messages = get_messages()
         saved_stops = await get_user_saved_stops(user_id)
         await fill_saved_stops_info(saved_stops)
-        stops_dict = [stop.dict() for stop in saved_stops]
+        stops_dict = [dict(
+            stop_id=stop.stop_id,
+            stop_name=stop.stop_name,
+        ) for stop in saved_stops]
 
         filename = f"/tmp/{user_id}_{messages.extracted_data.stops.filename}"
         with open(filename, "w") as file:

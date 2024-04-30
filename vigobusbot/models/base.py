@@ -10,7 +10,13 @@ mapper = classmapper.ClassMapper()
 
 
 class BaseModel(pydantic.BaseModel):
-    pass
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.complete_fields()
+
+    def complete_fields(self):
+        pass
 
 
 class Timestamp(BaseModel):
@@ -48,3 +54,15 @@ class Metadata(BaseModel):
             self.created_by_node = system_settings.node_name
         if not self.created_on:
             self.created_on = Timestamp()
+
+
+class BaseMetadataedModel(BaseModel):
+    metadata: Metadata = None
+
+    def complete_fields(self):
+        if not self.metadata:
+            self.metadata = Metadata(version=self.get_current_version())
+
+    @classmethod
+    def get_current_version(cls):
+        return 0

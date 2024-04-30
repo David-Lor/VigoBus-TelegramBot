@@ -2,18 +2,13 @@
 Get Stop information using the API
 """
 
-# # Native # #
-import json
 import asyncio
-from typing import Union
+from typing import Union, List
 
-# # Package # #
 from .requester import http_get
 from .exceptions import manage_stop_exceptions
-
-# # Project # #
 from vigobusbot.entities import Stop, Stops, StopsDict
-from ..persistence_api.saved_stops.entities import *
+from vigobusbot.models import SavedUserStop
 
 __all__ = ("get_stop", "get_multiple_stops", "search_stops_by_name", "fill_saved_stops_info")
 
@@ -26,6 +21,7 @@ async def get_stop(stop_id: int) -> Stop:
 
 
 async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Union[Stops, StopsDict]:
+    # noinspection PyTypeChecker
     result: Stops = await asyncio.gather(
         *[get_stop(stop_id) for stop_id in stops_ids]
     )
@@ -41,7 +37,7 @@ async def search_stops_by_name(search_term: str) -> Stops:
     return [Stop(**single_result) for single_result in result.json()]
 
 
-async def fill_saved_stops_info(saved_stops: SavedStops) -> SavedStops:
+async def fill_saved_stops_info(saved_stops: List[SavedUserStop]):
     """Given multiple SavedStops read from database, modify these SavedStops in-place with the remaining stop info
     (the original stop name) that is not persisted on DB, but on the Bus API.
     """
@@ -49,6 +45,4 @@ async def fill_saved_stops_info(saved_stops: SavedStops) -> SavedStops:
 
     for saved_stop in saved_stops:
         real_stop = real_stops[saved_stop.stop_id]
-        saved_stop.stop_original_name = real_stop.name
-
-    return saved_stops
+        saved_stop.stop = real_stop
