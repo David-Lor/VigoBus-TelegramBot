@@ -32,8 +32,8 @@ class Timestamp(BaseModel):
         if not self.unix:
             self.unix = int(self.iso.timestamp())
 
-    def dict(self, *args, **kwargs):
-        d = super().dict(*args, **kwargs)
+    def dict(self, **kwargs):
+        d = super().dict(**kwargs)
         d["iso"] = self.iso.isoformat()
         return d
 

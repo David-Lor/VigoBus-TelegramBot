@@ -10,7 +10,7 @@ class SentMessageTypes:
     STOP = "stop"
 
 
-class _SentMessageBase(BaseModel, ):
+class _SentMessageBase(BaseModel):
     message_type: str
     message_id: int
 

@@ -8,10 +8,12 @@ from vigobusbot.services import encryption
 __all__ = ("SavedUserStop", "SavedUserStopPersist")
 
 
-class SavedUserStop(BaseModel):
+class _SavedUserStopBase(BaseModel):
     stop_id: int
     stop_name: Optional[str] = None
 
+
+class SavedUserStop(_SavedUserStopBase):
     # Fields not always passed
     user_id: Optional[int] = None
     """Only passed on create, since it is encoded and cannot be decoded."""
@@ -19,13 +21,13 @@ class SavedUserStop(BaseModel):
     """Associated Stop object. Assigned after retrieving from the repository, for formatting the message."""
 
 
-class SavedUserStopPersist(SavedUserStop, BaseMetadataedModel):
+class SavedUserStopPersist(_SavedUserStopBase, BaseMetadataedModel):
     stop_id: int
-    """Stop ID, raw/original."""
+    """Stop ID; raw/original."""
     user_id: str
-    """User ID, encoded"""
+    """User ID; encoded"""
     stop_name: Optional[str] = None
-    """Custom user stop name, if any, encrypted"""
+    """Custom user stop name, if any; encrypted"""
 
     @property
     def key(self) -> str:
