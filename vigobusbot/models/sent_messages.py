@@ -3,6 +3,8 @@ from typing import Optional
 from .base import BaseModel, BaseMetadataedModel, Metadata, mapper
 from vigobusbot.services import encryption
 
+__all__ = ("SentMessage", "SentMessagePersist", "SentMessageTypes")
+
 
 class SentMessageTypes:
     STOP = "stop"

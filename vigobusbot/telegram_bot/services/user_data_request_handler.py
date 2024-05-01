@@ -2,17 +2,14 @@
 Handler and utils for working with User Data Extraction requests
 """
 
-# # Native # #
 import os
 import json
 
-# # Installed # #
 import aiogram
 
-# # Project # #
 from vigobusbot.vigobus_api.stop_getter import fill_saved_stops_info
 from vigobusbot.persistence_api.saved_stops import get_user_saved_stops
-from vigobusbot.entities import File, Files
+from vigobusbot.models import File, Files
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
 

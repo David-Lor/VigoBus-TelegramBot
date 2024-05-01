@@ -6,6 +6,8 @@ import classmapper
 from vigobusbot.utils import get_datetime
 from vigobusbot.settings_handler import system_settings
 
+__all__ = ("BaseModel", "mapper", "Timestamp", "Metadata", "BaseMetadataedModel")
+
 mapper = classmapper.ClassMapper()
 
 
@@ -24,11 +26,7 @@ class Timestamp(BaseModel):
     unix: int = None
     """Unix timestamp, UTC, seconds"""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.initialize()
-
-    def initialize(self):
+    def complete_fields(self):
         if not self.iso:
             self.iso = get_datetime()
         if not self.unix:
@@ -45,11 +43,7 @@ class Metadata(BaseModel):
     created_on: Timestamp = None
     created_by_node: str = None
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.initialize()
-
-    def initialize(self):
+    def complete_fields(self):
         if not self.created_by_node:
             self.created_by_node = system_settings.node_name
         if not self.created_on:

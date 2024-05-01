@@ -1,24 +1,19 @@
-"""ENTITIES
-Custom and imported entities used all over the project
-"""
 import datetime
-# # Native # #
 from typing import Optional, List, Dict
 
-# # Installed # #
-import pydantic
+from .base import BaseModel
 
 __all__ = ("Stop", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse", "File", "Files")
 
 
-class Stop(pydantic.BaseModel):
+class Stop(BaseModel):
     stop_id: int
     name: str
     lat: Optional[float]
     lon: Optional[float]
 
 
-class Bus(pydantic.BaseModel):
+class Bus(BaseModel):
     line: str
     route: str
     time: int  # minutes
@@ -27,7 +22,7 @@ class Bus(pydantic.BaseModel):
         return datetime.datetime.now() + datetime.timedelta(minutes=self.time)
 
 
-class File(pydantic.BaseModel):
+class File(BaseModel):
     filename: str
     description: str
 
@@ -38,7 +33,7 @@ StopsDict = Dict[int, Stop]
 Files = List[File]
 
 
-class BusesResponse(pydantic.BaseModel):
+class BusesResponse(BaseModel):
     """Response given by the Bus API when querying for the buses of a Stop"""
     buses: Buses
     """List of Bus objects (if no buses available, is empty array)"""

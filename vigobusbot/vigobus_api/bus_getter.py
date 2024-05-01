@@ -2,12 +2,9 @@
 Get Buses using the API
 """
 
-# # Package # #
 from .requester import http_get
 from .exceptions import manage_stop_exceptions
-
-# # Project # #
-from vigobusbot.entities import Bus, BusesResponse
+from vigobusbot.models import Bus, BusesResponse
 
 __all__ = ("get_buses",)
 

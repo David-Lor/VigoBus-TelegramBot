@@ -2,8 +2,10 @@ import hashlib
 from typing import Optional
 
 from .base import mapper, BaseModel, BaseMetadataedModel
+from .stops_buses import Stop
 from vigobusbot.services import encryption
-from vigobusbot.entities import Stop
+
+__all__ = ("SavedUserStop", "SavedUserStopPersist")
 
 
 class SavedUserStop(BaseModel):

@@ -7,8 +7,7 @@ from typing import Union, List
 
 from .requester import http_get
 from .exceptions import manage_stop_exceptions
-from vigobusbot.entities import Stop, Stops, StopsDict
-from vigobusbot.models import SavedUserStop
+from vigobusbot.models import SavedUserStop, Stop, Stops, StopsDict
 
 __all__ = ("get_stop", "get_multiple_stops", "search_stops_by_name", "fill_saved_stops_info")
 

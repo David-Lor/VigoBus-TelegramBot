@@ -5,9 +5,8 @@ Helper to generate the Stop Message text body
 import datetime
 from typing import Optional, List
 
-from vigobusbot.models import SavedUserStop
+from vigobusbot.models import SavedUserStop, Stop, BusesResponse, Bus
 from vigobusbot.static_handler import get_messages
-from vigobusbot.entities import Stop, BusesResponse, Bus
 from vigobusbot.settings_handler import telegram_settings
 
 __all__ = ("generate_stop_message_text",)

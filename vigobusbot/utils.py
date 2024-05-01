@@ -25,6 +25,13 @@ def get_uuid():
     return str(uuid4())
 
 
+# noinspection PyUnusedLocal
+async def async_noop(*args, **kwargs):
+    """Async function that does nothing on purpose.
+    """
+    pass
+
+
 class Singleton:
     """Inheritable class that holds a single variable (an instance of the same class),
     intended to be accessed as a singleton without initialization."""
