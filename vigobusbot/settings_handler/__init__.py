@@ -88,6 +88,9 @@ class CouchDBSettings(BaseBotSettings):
     url: pydantic.AnyHttpUrl = "http://localhost:5984"
     user: str
     password: pydantic.SecretStr
+    create_databases: bool = True
+    """If True, issue command to create the databases if not exist. This requires the user provided to be admin."""
+
     db_sent_messages: str = "vigobusbot_sent_messages"
     db_stops: str = "vigobusbot_stops"
     db_user_stops: str = "vigobusbot_userstops"

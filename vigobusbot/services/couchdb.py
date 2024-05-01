@@ -25,14 +25,20 @@ class CouchDB(Singleton, SetupTeardown):
     async def setup(self):
         await self.connection.check_credentials()
         self.db_sent_messages, self.db_user_stops = await asyncio.gather(
-            self.connection.create(couchdb_settings.db_sent_messages, exists_ok=True),
-            self.connection.create(couchdb_settings.db_user_stops, exists_ok=True),
+            self._get_db(couchdb_settings.db_sent_messages),
+            self._get_db(couchdb_settings.db_user_stops),
         )
 
     async def teardown(self):
         logger.debug("Closing CouchDB connection...")
         await self.connection.close()
         logger.info("CouchDB closed")
+
+    async def _get_db(self, name: str) -> aiocouch.Database:
+        if couchdb_settings.create_databases:
+            return await self.connection.create(name, exists_ok=True)
+        # noinspection PyUnresolvedReferences
+        return await self.connection[name]
 
     @classmethod
     async def create_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict, exists_ok: bool = False):
