@@ -17,7 +17,7 @@ __all__ = ("logger", "get_request_id", "get_request_verb")
 
 LoggerFormat = "<green>{time:YY-MM-DD HH:mm:ss}</green> | " \
                "<level>{level}</level> | " \
-               "{function}: <level>{message}</level> | " \
+               "<level>{message}</level> | " \
                "{extra}"
 
 
