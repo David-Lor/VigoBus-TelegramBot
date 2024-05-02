@@ -10,7 +10,7 @@ import pydantic
 
 from .helpers import *
 
-__all__ = ("telegram_settings", "api_settings", "persistence_settings", "couchdb_settings", "system_settings")
+__all__ = ("telegram_settings", "persistence_settings", "couchdb_settings", "system_settings")
 
 
 class BaseBotSettings(pydantic.BaseSettings):
@@ -43,6 +43,8 @@ class TelegramSettings(BaseBotSettings):
     typing_safe_limit_time: float = 30
     """Timeout for a Typing chat action to end"""
     inline_cache_time: int = 300
+
+    stop_updater_cron: str = ""
 
     stop_messages_deprecation_reminder_cron: str = ""
     """Cron expression for running the Stop messages deprecation reminder loop.
@@ -119,7 +121,6 @@ class SystemSettings(BaseBotSettings):
 
 
 telegram_settings = TelegramSettings()
-api_settings = APISettings()
 persistence_settings = PersistenceSettings()
 couchdb_settings = CouchDBSettings()
 system_settings = SystemSettings()

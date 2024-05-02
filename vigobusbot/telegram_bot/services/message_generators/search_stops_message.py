@@ -31,7 +31,7 @@ async def generate_search_stops_message(search_term: str, user_id: int) -> Tuple
 
         for found_stop in found_stops:
             try:
-                found_stop_user_saved = user_saved_stops_dict[found_stop.stop_id]
+                found_stop_user_saved = user_saved_stops_dict[found_stop.id]
             except KeyError:
                 continue
 
@@ -56,9 +56,9 @@ async def generate_search_stops_message(search_term: str, user_id: int) -> Tuple
         button = InlineKeyboardButton(
             text=messages.search_stops.buttons.stop.format(
                 stop_name=stop.name,
-                stop_id=stop.stop_id
+                stop_id=stop.id
             ),
-            callback_data=StopGetCallbackData.new(stop_id=stop.stop_id)
+            callback_data=StopGetCallbackData.new(stop_id=stop.id)
         )
         markup.row(button)
 

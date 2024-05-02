@@ -1,3 +1,4 @@
+import json
 import datetime
 
 import pydantic
@@ -20,6 +21,11 @@ class BaseModel(pydantic.BaseModel):
     def complete_fields(self):
         pass
 
+    def jsonable_dict(self, **kwargs):
+        # TODO Use ujson lib, or other way of converting (iterating dict and converting values? if faster)
+        d = self.json(**kwargs)
+        return json.loads(d)
+
 
 class Timestamp(BaseModel):
     iso: datetime.datetime = None
@@ -31,11 +37,6 @@ class Timestamp(BaseModel):
             self.iso = get_datetime()
         if not self.unix:
             self.unix = int(self.iso.timestamp())
-
-    def dict(self, **kwargs):
-        d = super().dict(**kwargs)
-        d["iso"] = self.iso.isoformat()
-        return d
 
 
 class Metadata(BaseModel):

@@ -76,7 +76,7 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
     async def save_user_stop(cls, stop: SavedUserStop):
         stop_persist: SavedUserStopPersist = mapper.map(stop, SavedUserStopPersist)
         doc_id = stop_persist.key
-        doc = stop_persist.dict()
+        doc = stop_persist.jsonable_dict()
 
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:

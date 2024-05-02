@@ -2,10 +2,17 @@
 Misc general utils/helpers
 """
 
+import json
 import datetime
 from uuid import uuid4
 from time import time
 from typing import Type, TypeVar, Generic, Optional
+
+__all__ = [
+    "json", "get_time", "get_datetime", "get_uuid", "async_noop",
+    "Singleton", "SingletonHold", "SetupTeardown",
+    "Type", "TypeVar", "T"
+]
 
 T = TypeVar('T')
 
@@ -52,6 +59,10 @@ class Singleton:
     def set_current_as_singleton(self: T) -> T:
         self.__class__.set_instance(self)
         return self.get_instance()
+
+    @classmethod
+    def get_class_name(cls):
+        return cls.__name__
 
 
 class SingletonHold(Generic[T]):

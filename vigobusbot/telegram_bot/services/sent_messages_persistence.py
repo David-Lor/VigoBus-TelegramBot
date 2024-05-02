@@ -8,13 +8,11 @@ from aiogram.types.message import Message
 
 from vigobusbot.models import SentMessageTypes, SentMessage
 from vigobusbot.persistence import SentMessagesRepository
-from vigobusbot.utils import get_time
 
 
 async def persist_sent_message(msg_type: str, message: Message):
     message_persist = SentMessage(
         message_type=msg_type,
-        published_on=get_time(),
         chat_id=message.chat.id,
         message_id=message.message_id,
         message_text=message.html_text,

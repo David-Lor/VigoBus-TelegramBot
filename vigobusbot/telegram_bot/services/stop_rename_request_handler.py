@@ -109,13 +109,13 @@ async def handle_stop_rename_request_reply(user_reply_message: aiogram.types.Mes
 
     if not remove_custom_name:
         text = messages.stop_rename.renamed_successfully.format(
-            stop_id=stop.stop_id,
+            stop_id=stop.id,
             stop_name=stop.name,
             custom_stop_name=new_stop_name
         )
     else:
         text = messages.stop_rename.unnamed_successfully.format(
-            stop_id=stop.stop_id,
+            stop_id=stop.id,
             stop_name=stop.name
         )
 

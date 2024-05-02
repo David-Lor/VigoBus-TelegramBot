@@ -5,35 +5,38 @@ Get Stop information using the API
 import asyncio
 from typing import Union, List
 
-from .requester import http_get
-from .exceptions import manage_stop_exceptions
-from vigobusbot.models import SavedUserStop, Stop, Stops, StopsDict
+from vigobusbot.persistence import StopsRepository
+from vigobusbot.models import SavedUserStop, Stop, StopsDict
+from vigobusbot.exceptions import StopNotExist
 
 __all__ = ("get_stop", "get_multiple_stops", "search_stops_by_name", "fill_saved_stops_info")
 
 
 async def get_stop(stop_id: int) -> Stop:
-    with manage_stop_exceptions(stop_id):
-        result = await http_get(endpoint=f"/stop/{stop_id}")
-        stop = Stop(**result.json())
-        return stop
+    stop = await StopsRepository.get_repository().get_stop_by_id(stop_id)
+    if not stop:
+        raise StopNotExist
+    return stop
 
 
-async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Union[Stops, StopsDict]:
+async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Union[List[Stop], StopsDict]:
     # noinspection PyTypeChecker
-    result: Stops = await asyncio.gather(
+    stops: List[Stop] = await asyncio.gather(
         *[get_stop(stop_id) for stop_id in stops_ids]
     )
 
+    # Remove None values
+    stops = [stop for stop in stops if stop]
+
     if return_dict:
-        return {stop.stop_id: stop for stop in result}
+        return {stop.id: stop for stop in stops}
     else:
-        return result
+        return stops
 
 
-async def search_stops_by_name(search_term: str) -> Stops:
-    result = await http_get(endpoint="/stops", query_params={"stop_name": search_term, "limit": 50})
-    return [Stop(**single_result) for single_result in result.json()]
+async def search_stops_by_name(search_term: str) -> List[Stop]:
+    # TODO ...
+    return []
 
 
 async def fill_saved_stops_info(saved_stops: List[SavedUserStop]):

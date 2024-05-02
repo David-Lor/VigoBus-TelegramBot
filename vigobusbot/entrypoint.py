@@ -9,6 +9,8 @@ from contexttimer import Timer
 from vigobusbot.telegram_bot import Bot, run_bot_polling, run_bot_webhook
 from vigobusbot.telegram_bot.services.stop_messages_deprecation_reminder import StopMessagesDeprecationReminder
 from vigobusbot.services.couchdb import CouchDB
+from vigobusbot.vigobus_api import VigoBusAPI
+from vigobusbot.services.schedulers import StopUpdaterService
 from vigobusbot.static_handler import load_static_files
 from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.utils import SetupTeardown
@@ -23,10 +25,15 @@ class App(SetupTeardown):
     async def setup(self):
         logger.debug("Initializing the app...")
         with Timer() as timer:
+            # Services that do not require setup/teardown
+            VigoBusAPI.get_instance(initialize=True)
+
+            # Services with setup/teardown
             self.services = [
                 Bot.get_instance(initialize=True),
                 StopMessagesDeprecationReminder.get_instance(initialize=True),
                 CouchDB.get_instance(initialize=True),
+                StopUpdaterService(settings.stop_messages_deprecation_reminder_cron, limit_concurrency=True),
             ]
 
             load_static_files()

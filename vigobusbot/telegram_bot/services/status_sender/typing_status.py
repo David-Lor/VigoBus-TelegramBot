@@ -49,7 +49,8 @@ async def _typing_service(bot: aiogram.Bot, chat_id: int, stop_event: asyncio.Ev
 
 async def start_typing(bot: aiogram.Bot, chat_id: int):
     stop_event = asyncio.Event()
-    asyncio.get_running_loop().create_task(_typing_service(bot=bot, chat_id=chat_id, stop_event=stop_event))
+    # noinspection PyAsyncCall
+    asyncio.create_task(_typing_service(bot=bot, chat_id=chat_id, stop_event=stop_event))
     stop_typing(chat_id=chat_id)  # ensure multiple typing actions are not running at the same time
     _typing_chats[chat_id] = stop_event
 

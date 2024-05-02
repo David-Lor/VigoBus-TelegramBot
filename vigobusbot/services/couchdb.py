@@ -14,6 +14,7 @@ class CouchDB(Singleton, SetupTeardown):
     connection: aiocouch.CouchDB
     db_sent_messages: aiocouch.Database = None
     db_user_stops: aiocouch.Database = None
+    db_stops: aiocouch.Database = None
 
     def __init__(self):
         self.connection = aiocouch.CouchDB(
@@ -24,9 +25,10 @@ class CouchDB(Singleton, SetupTeardown):
 
     async def setup(self):
         await self.connection.check_credentials()
-        self.db_sent_messages, self.db_user_stops = await asyncio.gather(
+        self.db_sent_messages, self.db_user_stops, self.db_stops = await asyncio.gather(
             self._get_db(couchdb_settings.db_sent_messages),
             self._get_db(couchdb_settings.db_user_stops),
+            self._get_db(couchdb_settings.db_stops),
         )
 
     async def teardown(self):

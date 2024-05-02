@@ -10,7 +10,6 @@ from typing import Optional, List
 
 from vigobusbot.persistence import SavedUserStopsRepository
 from vigobusbot.models import SavedUserStop
-from vigobusbot.logger import logger
 
 __all__ = ("get_user_saved_stops", "get_stop", "save_stop", "delete_stop", "is_stop_saved", "delete_all_stops")
 

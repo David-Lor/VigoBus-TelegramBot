@@ -37,9 +37,9 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
 
     @classmethod
     async def save_message(cls, message: SentMessage):
-        message_persist = mapper.map(message, SentMessagePersist)
+        message_persist: SentMessagePersist = mapper.map(message, SentMessagePersist)
         doc_id = message_persist.message_key
-        doc = message_persist.dict(exclude={"message_key"})
+        doc = message_persist.jsonable_dict(exclude={"message_key"})
 
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:

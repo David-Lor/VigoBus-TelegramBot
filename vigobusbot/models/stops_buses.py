@@ -1,25 +1,10 @@
-import datetime
-from typing import Optional, List, Dict
+from typing import List, Dict
 
-from .base import BaseModel
+from vigobus.models import Stop, Bus, BusesResponse, StopMetadata
 
-__all__ = ("Stop", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse", "File", "Files")
+from .base import BaseModel, BaseMetadataedModel, mapper
 
-
-class Stop(BaseModel):
-    stop_id: int
-    name: str
-    lat: Optional[float]
-    lon: Optional[float]
-
-
-class Bus(BaseModel):
-    line: str
-    route: str
-    time: int  # minutes
-
-    def get_calculated_arrival_time(self) -> datetime.datetime:
-        return datetime.datetime.now() + datetime.timedelta(minutes=self.time)
+__all__ = ("Stop", "StopPersist", "Bus", "Stops", "Buses", "StopsDict", "BusesResponse", "File", "Files")
 
 
 class File(BaseModel):
@@ -33,9 +18,22 @@ StopsDict = Dict[int, Stop]
 Files = List[File]
 
 
-class BusesResponse(BaseModel):
-    """Response given by the Bus API when querying for the buses of a Stop"""
-    buses: Buses
-    """List of Bus objects (if no buses available, is empty array)"""
-    more_buses_available: bool = False
-    """If True, more buses are available to fetch"""
+class StopPersist(BaseMetadataedModel, Stop):
+    id: str
+    stop_metadata: StopMetadata
+
+
+@mapper.register(Stop, StopPersist)
+def _mapper_to_persist(_from: Stop) -> StopPersist:
+    return StopPersist(
+        **_from.dict(exclude={"metadata"}),
+        stop_metadata=_from.metadata,
+    )
+
+
+@mapper.register(StopPersist, Stop)
+def _mapper_from_persist(_from: StopPersist) -> Stop:
+    return Stop(
+        **_from.dict(exclude={"metadata"}),
+        metadata=_from.stop_metadata,
+    )

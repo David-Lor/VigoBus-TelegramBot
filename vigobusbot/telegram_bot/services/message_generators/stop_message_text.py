@@ -32,7 +32,7 @@ def generate_stop_message_text(
     last_update_text = datetime.datetime.now().strftime(messages.stop.time_format)
 
     return messages.stop.message.format(
-        stop_id=stop.stop_id,
+        stop_id=stop.id,
         stop_name=stop_name_text,
         buses=buses_text,
         last_update=last_update_text
@@ -48,16 +48,16 @@ def _generate_buses_text_lines(buses: List[Bus]) -> List[str]:
 
 def _generate_bus_text_line(bus: Bus) -> str:
     messages = get_messages()
-    if bus.time == 0:
+    if bus.time_minutes == 0:
         time_text = messages.stop.bus_time_now
     else:
-        if bus.time > telegram_settings.stop_messages_include_arrival_hour_after_minutes:
-            arrival_time = bus.get_calculated_arrival_time().strftime(messages.stop.bus_arrival_time_format)
+        if bus.time_minutes > telegram_settings.stop_messages_include_arrival_hour_after_minutes:
+            arrival_time = _calculate_bus_arrival_time(bus).strftime(messages.stop.bus_arrival_time_format)
         else:
             arrival_time = ""
 
         time_text = messages.stop.bus_time_remaining.format(
-            minutes=bus.time,
+            minutes=bus.time_minutes,
             arrival_time=arrival_time
         ).strip()
 
@@ -66,3 +66,9 @@ def _generate_bus_text_line(bus: Bus) -> str:
         route=bus.route,
         time=time_text
     )
+
+
+def _calculate_bus_arrival_time(bus: Bus) -> datetime.datetime:
+    # noinspection PyTypeChecker
+    minutes: float = bus.time_minutes
+    return datetime.datetime.now() + datetime.timedelta(minutes=minutes)

@@ -42,15 +42,15 @@ async def generate_search_stops_inline_responses(search_term: str) -> List[aiogr
 
         for found_stop in found_stops:
             loading_message_text = messages.stop.message.format(
-                stop_id=found_stop.stop_id,
+                stop_id=found_stop.id,
                 stop_name=found_stop.name,
                 buses=messages.search_stops.inline.searching,
                 last_update=datetime.now().strftime(messages.stop.time_format)
             )
             results.append(aiogram.types.InlineQueryResultArticle(
-                id=str(found_stop.stop_id),
+                id=str(found_stop.id),
                 title=found_stop.name,
-                description=f"#{found_stop.stop_id}",
+                description=f"#{found_stop.id}",
                 input_message_content=aiogram.types.InputTextMessageContent(loading_message_text, parse_mode="HTML"),
                 reply_markup=common_reply_markup
             ))
