@@ -4,12 +4,13 @@ Misc general utils/helpers
 
 import json
 import datetime
+import asyncio
 from uuid import uuid4
 from time import time
 from typing import Type, TypeVar, Generic, Optional
 
 __all__ = [
-    "json", "get_time", "get_datetime", "get_uuid", "async_noop",
+    "json", "get_time", "get_datetime", "get_uuid", "async_noop", "async_gather_limited",
     "Singleton", "SingletonHold", "SetupTeardown",
     "Type", "TypeVar", "T"
 ]
@@ -37,6 +38,18 @@ async def async_noop(*args, **kwargs):
     """Async function that does nothing on purpose.
     """
     pass
+
+
+async def async_gather_limited(*coros, limit: int):
+    """Similar to asyncio.gather, but limiting concurrency to `limit` parallel coroutines.
+    """
+    semaphore = asyncio.Semaphore(limit)
+
+    async def sem_coro(coro):
+        async with semaphore:
+            return await coro
+
+    return await asyncio.gather(*(sem_coro(c) for c in coros))
 
 
 class Singleton:
