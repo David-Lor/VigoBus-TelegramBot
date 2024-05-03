@@ -7,12 +7,22 @@ Telegram Bot that serves bus stops and real-time estimated time of arrival for t
 
 _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a las mismas -junto a su tiempo restante de llegada, en tiempo real-, en la red de transporte urbano de la ciudad de Vigo._
 
-## Microservice structure
+## Project structure
 
-![VigoBusBot microservice structure](VigoBusTelegramBot_Structure.svg)
+```mermaid
+graph TD;
+TelegramBotAPI[\Telegram Bot API/]
+VigoBusBot(VigoBusBot)
+VigoBusAPI[VigoBusAPI Wrapper]
+OfficialDataSources[/Official DataSources\]
+CouchDB[(CouchDB)]
 
-- VigoBusTelegramBot: this project, serving as the Telegram Bot backend, and connecting to the following API:
-- VigoBusAPI: REST API to fetch stop & real-time estimated time of buses arrival
+TelegramBotAPI <-- Webhook\nUpdates --> VigoBusBot
+VigoBusAPI -- Stops\nBuses --> VigoBusBot
+OfficialDataSources -- Stops\nBuses --> VigoBusAPI
+
+VigoBusBot <-- Persistence --> CouchDB
+```
 
 ## Requirements
 
