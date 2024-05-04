@@ -26,17 +26,18 @@ class App(SetupTeardown):
         with Timer() as timer:
             # Services that do not require setup/teardown
             VigoBusAPI.get_instance(initialize=True)
+            load_static_files()
 
             # Services with setup/teardown
-            self.services = [
+            # Initialize in different blocks based on the dependencies between services
+            await self._init_services(
                 Bot.get_instance(initialize=True),
                 CouchDB.get_instance(initialize=True),
-                StopUpdaterService(settings.stop_updater_cron, limit_concurrency=True).set_current_as_singleton(),
+            )
+            await self._init_services(
+                StopUpdaterService(settings.stop_updater_cron, first_run=settings.stop_updater_first_run, limit_concurrency=True).set_current_as_singleton(),
                 StopMessagesDeprecationReminder(settings.stop_messages_deprecation_reminder_cron).set_current_as_singleton()
-            ]
-
-            load_static_files()
-            await asyncio.gather(*[service.setup() for service in self.services])
+            )
 
         logger.bind(elapsed=timer.elapsed).info("Initialization completed")
 
@@ -60,6 +61,10 @@ class App(SetupTeardown):
             pass
 
         self.loop.run_until_complete(self.teardown())
+
+    async def _init_services(self, *services: SetupTeardown):
+        await asyncio.gather(*[service.setup() for service in services])
+        self.services.extend(services)
 
 
 def run():

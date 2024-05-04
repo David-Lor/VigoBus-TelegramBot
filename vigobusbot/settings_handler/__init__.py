@@ -45,6 +45,7 @@ class TelegramSettings(BaseBotSettings):
     inline_cache_time: int = 300
 
     stop_updater_cron: str = ""
+    stop_updater_first_run: bool = False
 
     stop_messages_deprecation_reminder_cron: str = ""
     """Cron expression for running the Stop messages deprecation reminder loop.

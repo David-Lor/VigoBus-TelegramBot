@@ -1,4 +1,5 @@
 import abc
+import asyncio
 
 import aiocron
 
@@ -12,12 +13,13 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
     _scheduler: aiocron.Cron = None
     _worker_locked: bool = None
 
-    def __init__(self, cron_schedule: str, limit_concurrency: bool = False):
+    def __init__(self, cron_schedule: str, first_run: bool = False, limit_concurrency: bool = False):
         if not cron_schedule:
             logger.info(f"Scheduled {self.get_class_name()} is disabled")
             return
 
         self.limit_concurrency = limit_concurrency
+        self.first_run = first_run
         self._worker_locked = False
         self._scheduler = aiocron.crontab(
             spec=cron_schedule,
@@ -32,6 +34,9 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
         self._scheduler.start()
         logger.bind(cron_expression=self._scheduler.spec).info(f"Scheduled {self.get_class_name()} running")
 
+        if self.first_run:
+            await self.run_now_background()
+
     async def teardown(self):
         if not self._scheduler:
             return
@@ -39,6 +44,12 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
         logger.debug(f"Stopping scheduled {self.get_class_name()}...")
         self._scheduler.stop()
         logger.info(f"Scheduled {self.get_class_name()} stopped")
+
+    async def run_now(self):
+        await self._worker_wrapper()
+
+    async def run_now_background(self):
+        await asyncio.create_task(self.run_now())
 
     async def _worker_wrapper(self):
         if self.limit_concurrency and self._worker_locked:
