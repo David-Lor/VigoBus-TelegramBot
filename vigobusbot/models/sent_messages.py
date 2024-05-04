@@ -1,5 +1,7 @@
 from typing import Optional
 
+import aiocouch
+
 from .base import BaseModel, BaseMetadataedModel, Metadata, mapper
 from vigobusbot.services import encryption
 
@@ -63,6 +65,14 @@ def _mapper_to_persist(_from: SentMessage) -> SentMessagePersist:
     )
 
 
+@mapper.register(SentMessage, tuple)
+def _mapper_to_document(_from: SentMessage) -> tuple:
+    message_persist: SentMessagePersist = mapper.map(_from, SentMessagePersist)
+    doc_id = message_persist.message_key
+    doc_data = message_persist.jsonable_dict(exclude={"message_key"})
+    return doc_id, doc_data
+
+
 @mapper.register(SentMessagePersist, SentMessage)
 def _mapper_from_persist(_from: SentMessagePersist) -> SentMessage:
     user_id = int(encryption.decrypt_general_data(_from.chat_id_encrypted))
@@ -72,3 +82,12 @@ def _mapper_from_persist(_from: SentMessagePersist) -> SentMessage:
         message_text=encryption.decrypt_user_data(user_id, _from.message_text_encrypted),
         message_reply_markup_json=encryption.decrypt_user_data(user_id, _from.message_reply_markup_json_encrypted),
     )
+
+
+@mapper.register(aiocouch.Document, SentMessage)
+def _mapper_from_document(_from: aiocouch.Document) -> SentMessage:
+    message_persist = SentMessagePersist(
+        message_key=_from.id,
+        **_from.data,
+    )
+    return mapper.map(message_persist, SentMessage)

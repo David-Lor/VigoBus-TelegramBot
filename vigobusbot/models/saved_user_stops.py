@@ -1,6 +1,8 @@
 import hashlib
 from typing import Optional
 
+import aiocouch
+
 from .base import mapper, BaseModel, BaseMetadataedModel
 from .stops_buses import Stop
 from vigobusbot.services import encryption
@@ -50,9 +52,23 @@ def _mapper_to_persist(_from: SavedUserStop) -> SavedUserStopPersist:
     )
 
 
+@mapper.register(SavedUserStop, tuple)
+def _mapper_to_document(_from: SavedUserStop):
+    stop_persist: SavedUserStopPersist = mapper.map(_from, SavedUserStopPersist)
+    doc_id = stop_persist.key
+    doc_data = stop_persist.jsonable_dict()
+    return doc_id, doc_data
+
+
 @mapper.register(SavedUserStopPersist, SavedUserStop)
 def _mapper_from_persist(_from: SavedUserStopPersist, user_id: int) -> SavedUserStop:
     return SavedUserStop(
         stop_id=_from.stop_id,
         stop_name=encryption.decrypt_user_data(user_id, _from.stop_name) if _from.stop_name else None
     )
+
+
+@mapper.register(aiocouch.Document, SavedUserStop)
+def _mapper_from_document(_from: aiocouch.Document, user_id: int) -> SavedUserStop:
+    stop_persist = SavedUserStopPersist(**_from.data)
+    return mapper.map(stop_persist, SavedUserStop, user_id=user_id)

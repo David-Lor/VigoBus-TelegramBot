@@ -37,18 +37,16 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
 
     @classmethod
     async def save_message(cls, message: SentMessage):
-        message_persist: SentMessagePersist = mapper.map(message, SentMessagePersist)
-        doc_id = message_persist.message_key
-        doc = message_persist.jsonable_dict(exclude={"message_key"})
+        doc_id, doc_data = mapper.map(message, tuple)
 
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 await CouchDB.update_doc(
                     db=CouchDB.get_instance().db_sent_messages,
                     doc_id=doc_id,
-                    doc_data=doc
+                    doc_data=doc_data,
                 )
-                logger.bind(message_key=message_persist.message_key).debug("Persisted SentMessage in CouchDB")
+                logger.bind(message_key=doc_id).debug("Persisted SentMessage in CouchDB")
 
     @classmethod
     async def iter_messages(cls, msg_type: str, max_timestamp: int):
@@ -59,11 +57,7 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
         }
 
         async for doc in CouchDB.get_instance().db_sent_messages.find(query):
-            message_read = SentMessagePersist(
-                message_key=doc.id,
-                **doc.data
-            )
-            yield mapper.map(message_read, SentMessage)
+            yield mapper.map(doc, SentMessage)
 
     @classmethod
     async def delete_message(cls, msg_key: str) -> bool:

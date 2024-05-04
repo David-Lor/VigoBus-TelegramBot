@@ -61,10 +61,10 @@ class StopsCouchDBRepository(StopsRepository):
 
     @classmethod
     async def _get_stop_by_id_doc(cls, stop_id: int) -> Optional[aiocouch.Document]:
-        return await CouchDB.get_single_doc(
-            db=CouchDB.get_instance().db_stops,
-            doc_id=str(stop_id)
-        )
+        try:
+            return await CouchDB.get_instance().db_stops.get(id=str(stop_id))
+        except aiocouch.NotFoundError:
+            return None
 
     @classmethod
     async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
@@ -126,10 +126,10 @@ class StopsCouchDBRepository(StopsRepository):
 
     @classmethod
     async def get_stops_etag(cls) -> Optional[str]:
-        doc = await CouchDB.get_single_doc(
-            db=CouchDB.get_instance().db_stops,
-            doc_id=StopsEtagKV.get_key(),
-        )
-        if doc:
-            kv: StopsEtagKV = mapper.map(doc, StopsEtagKV)
-            return kv.value
+        try:
+            doc = await CouchDB.get_instance().db_stops.get(id=StopsEtagKV.get_key())
+        except aiocouch.NotFoundError:
+            return None
+
+        kv: StopsEtagKV = mapper.map(doc, StopsEtagKV)
+        return kv.value

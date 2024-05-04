@@ -50,15 +50,6 @@ class CouchDB(Singleton, SetupTeardown):
         return doc
 
     @classmethod
-    async def get_single_doc(cls, db: aiocouch.Database, doc_id: str) -> Optional[aiocouch.Document]:
-        query = {"_id": doc_id}
-
-        try:
-            return await db.find(query, limit=1).__anext__()
-        except (aiocouch.exception.NotFoundError, StopAsyncIteration):
-            return None
-
-    @classmethod
     async def update_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict):
         """Update the doc matching by id, with the given data.
         Any data given is overriden in the found document.

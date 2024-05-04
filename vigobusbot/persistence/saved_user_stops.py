@@ -7,7 +7,7 @@ import aiocouch.exception
 from .base import BaseRepository
 from vigobusbot.services import encryption
 from vigobusbot.services.couchdb import CouchDB
-from vigobusbot.models import mapper, SavedUserStop, SavedUserStopPersist
+from vigobusbot.models import mapper, SavedUserStop
 
 
 class SavedUserStopsRepository(BaseRepository):
@@ -53,12 +53,7 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
             "user_id": encryption.encode_user_id(user_id)
         }
 
-        results = list()
-        async for doc in CouchDB.get_instance().db_user_stops.find(query):
-            stop_read = SavedUserStopPersist(**doc.data)
-            results.append(mapper.map(stop_read, SavedUserStop, user_id=user_id))
-
-        return results
+        return [mapper.map(doc, SavedUserStop, user_id=user_id) async for doc in CouchDB.get_instance().db_user_stops.find(query)]
 
     @classmethod
     async def get_user_single_stop(cls, user_id: int, stop_id: int, return_existence: bool = False):
@@ -69,21 +64,18 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
         if not found:
             return None
 
-        stop_read = SavedUserStopPersist(**doc.data)
-        return mapper.map(stop_read, SavedUserStop, user_id=user_id)
+        return mapper.map(doc, SavedUserStop, user_id=user_id)
 
     @classmethod
     async def save_user_stop(cls, stop: SavedUserStop):
-        stop_persist: SavedUserStopPersist = mapper.map(stop, SavedUserStopPersist)
-        doc_id = stop_persist.key
-        doc = stop_persist.jsonable_dict()
+        doc_id, doc_data = mapper.map(stop, tuple)
 
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 await CouchDB.update_doc(
                     db=CouchDB.get_instance().db_user_stops,
                     doc_id=doc_id,
-                    doc_data=doc
+                    doc_data=doc_data,
                 )
 
     @classmethod
