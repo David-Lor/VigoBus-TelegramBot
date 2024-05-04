@@ -24,6 +24,10 @@ class StopPersist(BaseMetadataedModel, Stop):
     id: str
     stop_metadata: StopMetadata
 
+    @classmethod
+    def get_current_version(cls):
+        return 1
+
 
 class StopsEtagKV(KeyValue):
     value: str
