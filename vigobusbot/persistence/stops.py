@@ -5,7 +5,7 @@ import tenacity
 import aiocouch.exception
 
 from .base import BaseRepository
-from vigobusbot.models import Stop, StopPersist, mapper
+from vigobusbot.models import Stop, StopPersist, StopsEtagKV, mapper
 from vigobusbot.services.couchdb import CouchDB
 
 
@@ -40,6 +40,16 @@ class StopsRepository(BaseRepository):
         raise NotImplementedError
 
     @classmethod
+    @abc.abstractmethod
+    async def save_stops_etag(cls, etag: str):
+        raise NotImplementedError
+
+    @classmethod
+    @abc.abstractmethod
+    async def get_stops_etag(cls) -> Optional[str]:
+        raise NotImplementedError
+
+    @classmethod
     async def get_all_stops(cls) -> List[Stop]:
         # noinspection PyTypeChecker
         return [s async for s in cls.iter_all_stops()]
@@ -51,27 +61,20 @@ class StopsCouchDBRepository(StopsRepository):
 
     @classmethod
     async def _get_stop_by_id_doc(cls, stop_id: int) -> Optional[aiocouch.Document]:
-        query = {
-            "_id": str(stop_id)
-        }
-
-        try:
-            return await CouchDB.get_instance().db_stops.find(query, limit=1).__anext__()
-        except (aiocouch.exception.NotFoundError, StopAsyncIteration):
-            return None
+        return await CouchDB.get_single_doc(
+            db=CouchDB.get_instance().db_stops,
+            doc_id=str(stop_id)
+        )
 
     @classmethod
     async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
         doc = await cls._get_stop_by_id_doc(stop_id)
-
-        stop_read = StopPersist(
-            id=doc.id,
-            **doc.data
-        )
-        return mapper.map(stop_read, Stop)
+        return mapper.map(doc, Stop)
 
     @classmethod
     async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
+        # TODO Try this
+        # TODO Add text index for better search
         # TODO Sanitize search_term, only letters and numbers
         query = {
             "name": {
@@ -79,15 +82,7 @@ class StopsCouchDBRepository(StopsRepository):
             }
         }
 
-        results: List[Stop] = list()
-        async for doc in CouchDB.get_instance().db_stops.find(query):
-            stop_read = StopPersist(
-                id=doc.id,
-                **doc.data,
-            )
-            results.append(mapper.map(stop_read, Stop))
-
-        return results
+        return [mapper.map(doc, Stop) async for doc in CouchDB.get_instance().db_stops.find(query)]
 
     @classmethod
     async def save_stop(cls, stop: Stop):
@@ -106,11 +101,7 @@ class StopsCouchDBRepository(StopsRepository):
     @classmethod
     async def iter_all_stops(cls):
         async for doc in CouchDB.get_instance().db_stops.find(selector={}):
-            stop_read = StopPersist(
-                id=doc.id,
-                **doc.data,
-            )
-            yield mapper.map(stop_read, Stop)
+            yield mapper.map(doc, Stop)
 
     @classmethod
     async def delete_stop(cls, stop_id: int):
@@ -119,3 +110,26 @@ class StopsCouchDBRepository(StopsRepository):
                 # TODO Add a "deleted" field and set to True, instead of deleting the document
                 doc = await cls._get_stop_by_id_doc(stop_id)
                 await doc.delete(discard_changes=True)
+
+    @classmethod
+    async def save_stops_etag(cls, etag: str):
+        kv = StopsEtagKV(value=etag)
+        doc = kv.jsonable_dict()
+
+        async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
+            with attempt:
+                await CouchDB.update_doc(
+                    db=CouchDB.get_instance().db_stops,
+                    doc_id=kv.get_key(),
+                    doc_data=doc,
+                )
+
+    @classmethod
+    async def get_stops_etag(cls) -> Optional[str]:
+        doc = await CouchDB.get_single_doc(
+            db=CouchDB.get_instance().db_stops,
+            doc_id=StopsEtagKV.get_key(),
+        )
+        if doc:
+            kv: StopsEtagKV = mapper.map(doc, StopsEtagKV)
+            return kv.value

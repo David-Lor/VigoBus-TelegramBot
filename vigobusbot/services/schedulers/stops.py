@@ -11,21 +11,24 @@ __all__ = ["StopUpdaterService"]
 
 
 class StopUpdaterService(BaseScheduler):
-    last_etag: str = ""
 
     async def _worker(self):
-        stops_etag = await VigoBusAPI.get_instance().get_all_stops_etag()
-        # TODO Persist ETag in repository
-        if stops_etag == self.last_etag:
-            logger.bind(stops_etag=stops_etag).debug("Stops ETag not changed")
+        prev_stops_etag, current_stops_etag = await asyncio.gather(
+            StopsRepository.get_repository().get_stops_etag(),
+            VigoBusAPI.get_instance().get_all_stops_etag(),
+        )
+
+        if prev_stops_etag == current_stops_etag:
+            logger.bind(stops_etag=current_stops_etag).debug("Stops ETag not changed")
             return
 
-        logger.bind(stops_etag=stops_etag).debug("Stops ETag changed, requesting stops and updating...")
-        self.last_etag = stops_etag
+        logger.bind(stops_etag_prev=prev_stops_etag, stops_etag_new=current_stops_etag).\
+            debug("Stops ETag changed, requesting stops and updating...")
 
-        current_stops, saved_stops = await asyncio.gather(
+        current_stops, saved_stops, _ = await asyncio.gather(
             VigoBusAPI.get_instance().get_all_stops(),
             StopsRepository.get_repository().get_all_stops(),
+            StopsRepository.get_repository().save_stops_etag(current_stops_etag)
         )
         current_stops = {stop.id: stop for stop in current_stops}
         current_stops_ids = set(current_stops.keys())

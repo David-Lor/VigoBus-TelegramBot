@@ -2,6 +2,8 @@ import abc
 
 from vigobusbot.utils import Type, T
 
+__all__ = ["BaseRepository"]
+
 
 class BaseRepository(abc.ABC):
 

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 import aiocouch
 from aiocouch.exception import ConflictError
@@ -43,10 +44,19 @@ class CouchDB(Singleton, SetupTeardown):
         return await self.connection[name]
 
     @classmethod
-    async def create_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict, exists_ok: bool = False):
+    async def create_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict, exists_ok: bool = False) -> aiocouch.Document:
         doc = await db.create(id=doc_id, data=doc_data, exists_ok=exists_ok)
         await doc.save()
         return doc
+
+    @classmethod
+    async def get_single_doc(cls, db: aiocouch.Database, doc_id: str) -> Optional[aiocouch.Document]:
+        query = {"_id": doc_id}
+
+        try:
+            return await db.find(query, limit=1).__anext__()
+        except (aiocouch.exception.NotFoundError, StopAsyncIteration):
+            return None
 
     @classmethod
     async def update_doc(cls, db: aiocouch.Database, doc_id: str, doc_data: dict):
