@@ -69,7 +69,8 @@ class StopsCouchDBRepository(StopsRepository):
     @classmethod
     async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
         doc = await cls._get_stop_by_id_doc(stop_id)
-        return mapper.map(doc, Stop)
+        if doc and doc.exists:
+            return mapper.map(doc, Stop)
 
     @classmethod
     async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
@@ -101,7 +102,8 @@ class StopsCouchDBRepository(StopsRepository):
     @classmethod
     async def iter_all_stops(cls):
         async for doc in CouchDB.get_instance().db_stops.find(selector={}):
-            yield mapper.map(doc, Stop)
+            if doc.id.isdigit():
+                yield mapper.map(doc, Stop)
 
     @classmethod
     async def delete_stop(cls, stop_id: int):
