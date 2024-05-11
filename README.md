@@ -24,6 +24,31 @@ OfficialDataSources -- Stops\nBuses --> VigoBusAPI
 VigoBusBot <-- Persistence --> CouchDB
 ```
 
+### Replicated bot with webhook structure
+
+```mermaid
+flowchart TD;
+  Telegram[Telegram Webhook POST]
+  Domain[Domain]
+  Cloudflare["Cloudflare\n<i>(proxy ON, multiple A records)</i>"]
+  subgraph Replicated Telegram Bot
+    VigoBusBot1[VigoBusBot 1]
+    VigoBusBot2[VigoBusBot 2]
+    VigoBusBotN[VigoBusBot N]
+  end
+  subgraph Replicated Database
+    CouchDB1[(CouchDB 1)]
+    CouchDB2[(CouchDB 2)]
+    CouchDBN[(CouchDB N)]
+  end
+
+  Telegram --> Domain
+  Domain --> Cloudflare
+  Cloudflare --> VigoBusBot1 --> CouchDB1
+  Cloudflare --> VigoBusBot2 --> CouchDB2
+  Cloudflare --> VigoBusBotN --> CouchDBN
+```
+
 ## Requirements
 
 - Python >= 3.9
