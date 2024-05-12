@@ -34,6 +34,7 @@ class TelegramSettings(BaseBotSettings):
     webhook_delete_on_close: bool = False
     webhook_status_path: Optional[str] = None
 
+    buses_shortmessage_limit: int = 5
     force_reply_ttl: int = 3600
     """Timeout for Force Reply requests until cleanup"""
     user_rate_limit_amount: int = 5
