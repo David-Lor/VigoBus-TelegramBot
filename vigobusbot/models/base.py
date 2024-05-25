@@ -4,7 +4,7 @@ import datetime
 import pydantic
 import classmapper
 
-from vigobusbot.utils import get_datetime
+from vigobusbot.utils import get_datetime, jsonable_dict
 from vigobusbot.settings_handler import system_settings
 
 __all__ = ("BaseModel", "mapper", "Timestamp", "Metadata", "BaseMetadataedModel")
@@ -21,10 +21,8 @@ class BaseModel(pydantic.BaseModel):
     def complete_fields(self):
         pass
 
-    def jsonable_dict(self, **kwargs):
-        # TODO Use ujson lib, or other way of converting (iterating dict and converting values? if faster)
-        d = self.json(**kwargs)
-        return json.loads(d)
+    def jsonable_dict(self, **kwargs) -> dict:
+        return jsonable_dict(self, **kwargs)
 
 
 class Timestamp(BaseModel):

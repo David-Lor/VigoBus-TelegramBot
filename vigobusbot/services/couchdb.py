@@ -1,5 +1,4 @@
 import asyncio
-from typing import Optional
 
 import aiocouch
 from aiocouch.exception import ConflictError
@@ -25,12 +24,14 @@ class CouchDB(Singleton, SetupTeardown):
         )
 
     async def setup(self):
+        logger.debug("Initializing CouchDB...")
         await self.connection.check_credentials()
         self.db_sent_messages, self.db_user_stops, self.db_stops = await asyncio.gather(
             self._get_db(couchdb_settings.db_sent_messages),
             self._get_db(couchdb_settings.db_user_stops),
             self._get_db(couchdb_settings.db_stops),
         )
+        logger.info("CouchDB initialized")
 
     async def teardown(self):
         logger.debug("Closing CouchDB connection...")

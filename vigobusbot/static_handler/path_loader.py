@@ -1,5 +1,5 @@
 """PATH LOADER
-Path Loader to get the 'static' path, getting it from the settings or finding in parent directories
+Path Loader to get the 'static' path, getting it from the telegram_settings or finding in parent directories
 """
 
 # # Native # #

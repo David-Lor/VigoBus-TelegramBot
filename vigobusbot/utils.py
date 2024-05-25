@@ -5,13 +5,14 @@ Misc general utils/helpers
 import json
 import datetime
 import asyncio
-import threading
 from uuid import uuid4
 from time import time
 from typing import Type, TypeVar, Generic, Optional
 
+import pydantic
+
 __all__ = [
-    "json", "get_time", "get_datetime", "get_uuid", "async_noop", "async_gather_limited",
+    "json", "get_time", "get_datetime", "get_uuid", "jsonable_dict", "async_noop", "async_gather_limited",
     "Singleton", "SingletonHold", "SetupTeardown",
     "Type", "TypeVar", "T"
 ]
@@ -32,6 +33,13 @@ def get_datetime():
 def get_uuid():
     """Return an unique UUID4"""
     return str(uuid4())
+
+
+def jsonable_dict(obj: pydantic.BaseModel, **kwargs):
+    """Convert a pydantic object to dict, but using native JSON data types."""
+    # TODO Use ujson lib, or other way of converting (iterating dict and converting values? if faster)
+    d = obj.json(**kwargs)
+    return json.loads(d)
 
 
 # noinspection PyUnusedLocal

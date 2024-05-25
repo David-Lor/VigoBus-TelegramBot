@@ -16,13 +16,20 @@ VigoBusBot(VigoBusBot)
 VigoBusAPI[VigoBusAPI Wrapper]
 OfficialDataSources[/Official DataSources\]
 CouchDB[(CouchDB)]
+ElasticSearch[(ElasticSearch)]
 
 TelegramBotAPI <-- Webhook\nUpdates --> VigoBusBot
 VigoBusAPI -- Stops\nBuses --> VigoBusBot
 OfficialDataSources -- Stops\nBuses --> VigoBusAPI
 
 VigoBusBot <-- Persistence --> CouchDB
+VigoBusBot <-- Stops Search --> ElasticSearch
 ```
+
+- VigoBusBot: the current project, the Telegram Bot API backend
+- [VigoBusAPI Wrapper](https://github.com/David-Lor/VigoBusAPI): a library that provides the information regarding Stops and Buses from the official datasources (source of truth).
+- [CouchDB](https://couchdb.apache.org/): main persistence database for Stops, User-Saved Stops, etc. With CouchDB it is possible to create a cluster that can work with less than 3 replicas (although is not ideal).
+- ElasticSearch: used for text-based search of Stops. Synchronized with the Stops from CouchDB.
 
 ### Replicated bot with webhook structure
 

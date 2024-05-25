@@ -1,5 +1,5 @@
 """SETTINGS HANDLER
-Load settings from dotenv file or environment variables
+Load telegram_settings from dotenv file or environment variables
 """
 
 import os
@@ -10,7 +10,7 @@ import pydantic
 
 from .helpers import *
 
-__all__ = ("telegram_settings", "persistence_settings", "couchdb_settings", "system_settings")
+__all__ = ("telegram_settings", "persistence_settings", "couchdb_settings", "elastic_settings", "system_settings")
 
 
 class BaseBotSettings(pydantic.BaseSettings):
@@ -103,6 +103,26 @@ class CouchDBSettings(BaseBotSettings):
         env_prefix = "COUCHDB_"
 
 
+class ElasticSearchSettings(BaseBotSettings):
+    url: Optional[pydantic.AnyHttpUrl] = None
+    user: Optional[str]
+    password: Optional[pydantic.SecretStr]
+    stops_index: str = "vigobus_stops"
+    create_indexes: bool = True
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.url)
+
+    @property
+    def basic_auth_tuple(self) -> Optional[tuple]:
+        if self.user and self.password:
+            return self.user, self.password.get_secret_value()
+
+    class Config(BaseBotSettings.Config):
+        env_prefix = "ELASTIC_"
+
+
 class SystemSettings(BaseBotSettings):
     static_path: Optional[str]
     """Location of "static" directory (might be required when running from Docker)"""
@@ -125,4 +145,5 @@ class SystemSettings(BaseBotSettings):
 telegram_settings = TelegramSettings()
 persistence_settings = PersistenceSettings()
 couchdb_settings = CouchDBSettings()
+elastic_settings = ElasticSearchSettings()
 system_settings = SystemSettings()

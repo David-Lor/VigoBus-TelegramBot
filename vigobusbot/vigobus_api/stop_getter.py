@@ -38,8 +38,7 @@ async def get_multiple_stops(*stops_ids: int, return_dict: bool = False) -> Unio
 
 
 async def search_stops_by_name(search_term: str) -> List[Stop]:
-    # TODO Complete when implemented in repository
-    return []
+    return await StopsRepository.get_repository().search_stops_by_name(search_term)
 
 
 async def fill_saved_stops_info(saved_stops: List[SavedUserStop]):

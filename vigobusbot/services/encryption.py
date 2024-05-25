@@ -67,7 +67,7 @@ def _get_user_encryption_key(user_id: int) -> Fernet:
 
 def _get_general_encryption_key() -> Fernet:
     """Generate/get the Fernet key object for general values.
-    The key is generated from the key configured in settings.
+    The key is generated from the key configured in telegram_settings.
     Generated key is stored on a local cached variable.
     """
     if (fernet_key := _general_key_cache.get_value()) is None:

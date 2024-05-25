@@ -7,6 +7,9 @@ import aiocouch.exception
 from .base import BaseRepository
 from vigobusbot.models import Stop, StopPersist, StopsEtagKV, mapper
 from vigobusbot.services.couchdb import CouchDB
+from vigobusbot.services.elasticsearch import ElasticSearch
+from vigobusbot.settings_handler import elastic_settings
+from vigobusbot.utils import jsonable_dict
 
 
 class StopsRepository(BaseRepository):
@@ -74,16 +77,7 @@ class StopsCouchDBRepository(StopsRepository):
 
     @classmethod
     async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
-        # TODO Try this
-        # TODO Add text index for better search
-        # TODO Sanitize search_term, only letters and numbers
-        query = {
-            "name": {
-                "$regex": f"(?i).*{search_term}.*"
-            }
-        }
-
-        return [mapper.map(doc, Stop) async for doc in CouchDB.get_instance().db_stops.find(query)]
+        return await StopsElasticSearchRepository.search_stops_by_name(search_term)
 
     @classmethod
     async def save_stop(cls, stop: Stop):
@@ -135,3 +129,58 @@ class StopsCouchDBRepository(StopsRepository):
 
         kv: StopsEtagKV = mapper.map(doc, StopsEtagKV)
         return kv.value
+
+
+class StopsElasticSearchRepository(StopsRepository):
+
+    @classmethod
+    async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
+        raise NotImplementedError
+
+    @classmethod
+    async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
+        result = await ElasticSearch.get_instance().client.search(
+            index=elastic_settings.stops_index,
+            query={
+                "match": {
+                    "name": {
+                        "query": search_term,
+                        "fuziness": "AUTO"
+                    }
+                }
+            }
+        )
+
+        hits = result.body.get("hits", {}).get("hits", [])
+        stops = list()
+        for hit in hits:
+            if stop_dict := hit.get("_source"):
+                stops.append(Stop.parse_obj(stop_dict))
+
+        return stops
+
+    @classmethod
+    async def save_stop(cls, stop: Stop):
+        await ElasticSearch.get_instance().client.index(
+            index=elastic_settings.stops_index,
+            id=str(stop.id),
+            document=jsonable_dict(stop)
+        )
+
+    @classmethod
+    async def iter_all_stops(cls) -> AsyncGenerator[Stop, None]:
+        # TODO Complete
+        raise NotImplementedError
+
+    @classmethod
+    async def delete_stop(cls, stop_id: int):
+        # TODO complete
+        raise NotImplementedError
+
+    @classmethod
+    async def save_stops_etag(cls, etag: str):
+        raise NotImplementedError
+
+    @classmethod
+    async def get_stops_etag(cls) -> Optional[str]:
+        raise NotImplementedError
