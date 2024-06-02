@@ -2,6 +2,7 @@ import abc
 import asyncio
 
 import aiocron
+import contexttimer
 
 from vigobusbot.utils import Singleton, SetupTeardown
 from vigobusbot.logger import logger
@@ -53,14 +54,15 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
 
     async def _worker_wrapper(self):
         if self.limit_concurrency and self._worker_locked:
-            logger.debug(f"Scheduled {self.get_class_name()} worker already running, not executing new iteration")
+            logger.info(f"Scheduled {self.get_class_name()} worker already running, not executing new iteration")
             return
 
         try:
-            self._worker_locked = True
-            logger.trace(f"Scheduled {self.get_class_name()} running iteration...")
-            await self._worker()
-            logger.trace(f"Scheduled {self.get_class_name()} iteration completed")
+            with contexttimer.Timer() as timer:
+                self._worker_locked = True
+                logger.debug(f"Scheduled {self.get_class_name()} running iteration...")
+                await self._worker()
+                logger.bind(elapsed=timer.elapsed).debug(f"Scheduled {self.get_class_name()} iteration completed")
         except Exception as ex:
             logger.opt(exception=ex).error(f"Scheduled {self.get_class_name()} iteration failed")
         finally:

@@ -10,7 +10,7 @@ from vigobusbot.telegram_bot import Bot, run_bot_polling, run_bot_webhook
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.services.elasticsearch import ElasticSearch
 from vigobusbot.vigobus_api import VigoBusAPI
-from vigobusbot.services.schedulers import StopUpdaterService, StopMessagesDeprecationReminder
+from vigobusbot.services import schedulers
 from vigobusbot.static_handler import load_static_files
 from vigobusbot.settings_handler import telegram_settings, elastic_settings
 from vigobusbot.utils import SetupTeardown, async_noop
@@ -37,8 +37,19 @@ class App(SetupTeardown):
                 ElasticSearch.get_instance(initialize=True) if elastic_settings.enabled else async_noop(),
             )
             await self._init_services(
-                StopUpdaterService(telegram_settings.stop_updater_cron, first_run=telegram_settings.stop_updater_first_run, limit_concurrency=True).set_current_as_singleton(),
-                StopMessagesDeprecationReminder(telegram_settings.stop_messages_deprecation_reminder_cron).set_current_as_singleton()
+                schedulers.StopUpdaterService(
+                    cron_schedule=telegram_settings.stop_updater_cron,
+                    first_run=telegram_settings.stop_updater_first_run,
+                    limit_concurrency=True,
+                ).set_current_as_singleton(),
+                schedulers.StopMessagesDeprecationReminder(
+                    cron_schedule=telegram_settings.stop_messages_deprecation_reminder_cron,
+                ).set_current_as_singleton(),
+                schedulers.StopSyncToElasticService(
+                    cron_schedule=telegram_settings.stop_elastic_sync_cron,
+                    first_run=telegram_settings.stop_elastic_sync_first_run,
+                    limit_concurrency=True,
+                ),
             )
 
         logger.bind(elapsed=timer.elapsed).info("Initialization completed")

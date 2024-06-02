@@ -57,6 +57,9 @@ class TelegramSettings(BaseBotSettings):
     """Buses arriving after this amount of minutes will include the calculated hour of arrival.
     Negative values disable the feature."""
 
+    stop_elastic_sync_cron: str = ""
+    stop_elastic_sync_first_run: bool = False
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.token = load_secrets_file(path=self.token.strip(), path_startswith=True)
@@ -105,8 +108,9 @@ class CouchDBSettings(BaseBotSettings):
 
 class ElasticSearchSettings(BaseBotSettings):
     url: Optional[pydantic.AnyHttpUrl] = None
-    user: Optional[str]
-    password: Optional[pydantic.SecretStr]
+    user: Optional[str] = None
+    password: Optional[pydantic.SecretStr] = None
+    stops_search_limit: int = 20
     stops_index: str = "vigobus_stops"
     create_indexes: bool = True
 

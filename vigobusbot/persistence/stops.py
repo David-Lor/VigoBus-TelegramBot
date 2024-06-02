@@ -1,4 +1,5 @@
 import abc
+import asyncio
 from typing import Type, List, AsyncGenerator, Optional
 
 import tenacity
@@ -10,6 +11,8 @@ from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.services.elasticsearch import ElasticSearch
 from vigobusbot.settings_handler import elastic_settings
 from vigobusbot.utils import jsonable_dict
+
+__all__ = ["StopsRepository", "StopsCouchDBRepository", "StopsElasticSearchRepository"]
 
 
 class StopsRepository(BaseRepository):
@@ -57,6 +60,10 @@ class StopsRepository(BaseRepository):
         # noinspection PyTypeChecker
         return [s async for s in cls.iter_all_stops()]
 
+    @classmethod
+    async def stop_exists(cls, stop_id: int) -> bool:
+        return bool(await cls.get_stop_by_id(stop_id))
+
 
 class StopsCouchDBRepository(StopsRepository):
     _conflict_retry = tenacity.retry_if_exception_type(aiocouch.exception.ConflictError)
@@ -77,7 +84,15 @@ class StopsCouchDBRepository(StopsRepository):
 
     @classmethod
     async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
-        return await StopsElasticSearchRepository.search_stops_by_name(search_term)
+        # TODO Decidir si obtener de Elastic solo IDs o Stops completas
+        stops_ids = await StopsElasticSearchRepository.search_stops_by_name(search_term)
+        return sorted(
+            await asyncio.gather(*[
+                cls.get_stop_by_id(stop_id)
+                for stop_id in stops_ids
+            ]),
+            key=lambda stop: stop.name,
+        )
 
     @classmethod
     async def save_stop(cls, stop: Stop):
@@ -94,7 +109,7 @@ class StopsCouchDBRepository(StopsRepository):
                 )
 
     @classmethod
-    async def iter_all_stops(cls):
+    async def iter_all_stops(cls) -> AsyncGenerator[Stop, None]:
         async for doc in CouchDB.get_instance().db_stops.find(selector={}):
             if doc.id.isdigit():
                 yield mapper.map(doc, Stop)
@@ -130,15 +145,45 @@ class StopsCouchDBRepository(StopsRepository):
         kv: StopsEtagKV = mapper.map(doc, StopsEtagKV)
         return kv.value
 
+    @classmethod
+    async def stop_exists(cls, stop_id: int) -> bool:
+        try:
+            result = await CouchDB.get_instance().db_stops.get(id=str(stop_id))
+            return result.exists
+        except aiocouch.NotFoundError:
+            return False
+
 
 class StopsElasticSearchRepository(StopsRepository):
+    """ElasticSarch is only used for storing Stop names.
+    The rest of the information is acquired from the other repositories.
+    """
+
+    @classmethod
+    def get_repository(cls) -> Type["StopsRepository"]:
+        return StopsElasticSearchRepository
 
     @classmethod
     async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
-        raise NotImplementedError
+        # ZincSearch seems to not be compatible with client.get() method, so we have to use client.search().
+        result = await ElasticSearch.get_instance().client.search(
+            index=elastic_settings.stops_index,
+            query={
+                "match": {
+                    "_id": str(stop_id)
+                }
+            },
+            size=1,
+        )
+
+        hits = result.body.get("hits", {}).get("hits", [])
+        if hits:
+            hit = hits[0]
+            doc = hit["_source"]
+            return mapper.map(doc, Stop)
 
     @classmethod
-    async def search_stops_by_name(cls, search_term: str) -> List[Stop]:
+    async def search_stops_by_name(cls, search_term: str) -> list[int]:
         result = await ElasticSearch.get_instance().client.search(
             index=elastic_settings.stops_index,
             query={
@@ -148,16 +193,18 @@ class StopsElasticSearchRepository(StopsRepository):
                         "fuziness": "AUTO"
                     }
                 }
-            }
+            },
+            source_includes=["id"],
+            size=elastic_settings.stops_search_limit,
         )
 
         hits = result.body.get("hits", {}).get("hits", [])
-        stops = list()
+        stops_ids = list()
         for hit in hits:
-            if stop_dict := hit.get("_source"):
-                stops.append(Stop.parse_obj(stop_dict))
+            stop_dict = hit["_source"]
+            stops_ids.append(stop_dict["id"])
 
-        return stops
+        return stops_ids
 
     @classmethod
     async def save_stop(cls, stop: Stop):
@@ -169,13 +216,22 @@ class StopsElasticSearchRepository(StopsRepository):
 
     @classmethod
     async def iter_all_stops(cls) -> AsyncGenerator[Stop, None]:
-        # TODO Complete
-        raise NotImplementedError
+        # Scroll API seems to not be working in ZincSearch
+        result = await ElasticSearch.get_instance().client.search(
+            index=elastic_settings.stops_index,
+            query={"match_all": {}},
+            size=1000000,
+        )
+        hits = result.body.get("hits", {}).get("hits", [])
+        for hit in hits:
+            yield mapper.map(hit["_source"], Stop)
 
     @classmethod
     async def delete_stop(cls, stop_id: int):
-        # TODO complete
-        raise NotImplementedError
+        await ElasticSearch.get_instance().client.delete(
+            index=elastic_settings.stops_index,
+            id=str(stop_id),
+        )
 
     @classmethod
     async def save_stops_etag(cls, etag: str):

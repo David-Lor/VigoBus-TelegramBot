@@ -62,6 +62,11 @@ def _mapper_from_document(_from: aiocouch.Document) -> Stop:
     return mapper.map(stop_persist, Stop)
 
 
+@mapper.register(dict, Stop)
+def _mapper_from_dict(_from: dict) -> Stop:
+    return Stop.parse_obj(_from)
+
+
 @mapper.register(aiocouch.Document, StopsEtagKV)
 def _mapper_stopsetagkv_from_document(_from: aiocouch.Document) -> StopsEtagKV:
     return StopsEtagKV(**_from.data)
