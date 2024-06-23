@@ -3,6 +3,7 @@ Bot class and bot instance getter and generator
 """
 
 import asyncio
+import logging
 
 import aiogram
 import aiohttp.web
@@ -68,6 +69,9 @@ class Bot(aiogram.Bot, Singleton, SetupTeardown):
 
     async def setup(self):
         await self._setup_commands()
+        if telegram_settings.disable_dispatcher_logger:
+            # TODO Unify aiogram logger with our logger
+            logging.getLogger("aiogram.dispatcher.dispatcher").disabled = True
 
     async def teardown(self):
         if telegram_settings.webhook_enabled and telegram_settings.webhook_delete_on_close:

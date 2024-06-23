@@ -25,6 +25,7 @@ class TelegramSettings(BaseBotSettings):
     skip_prev_updates = True
     polling_fast = True
     polling_timeout: float = 30
+    disable_dispatcher_logger: bool = False
 
     webhook_url: Optional[pydantic.AnyHttpUrl] = None
     webhook_path: str = "/"
