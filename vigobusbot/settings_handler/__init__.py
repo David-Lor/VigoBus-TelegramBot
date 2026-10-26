@@ -7,23 +7,26 @@ import platform
 from typing import Optional
 
 import pydantic
+import pydantic_settings
 
 from .helpers import *
 
 __all__ = ("telegram_settings", "persistence_settings", "couchdb_settings", "elastic_settings", "system_settings")
 
 
-class BaseBotSettings(pydantic.BaseSettings):
-    class Config:
-        env_file = os.getenv("ENV_FILE", ".env")
+class BaseBotSettings(pydantic_settings.BaseSettings):
+    model_config = pydantic_settings.SettingsConfigDict(
+        extra='ignore',
+        env_file=os.getenv("ENV_FILE", ".env"),
+    )
 
 
 class TelegramSettings(BaseBotSettings):
     token: str
     admin_userid: int
     bot_api: str = "https://api.telegram.org"
-    skip_prev_updates = True
-    polling_fast = True
+    skip_prev_updates: bool = True
+    polling_fast: bool = True
     polling_timeout: float = 30
     disable_dispatcher_logger: bool = False
 
@@ -71,12 +74,11 @@ class TelegramSettings(BaseBotSettings):
 
 
 class APISettings(BaseBotSettings):
-    url = "http://localhost:5000"
+    url: str = "http://localhost:5000"
     timeout: float = 30
     retries: int = 2
 
-    class Config(BaseBotSettings.Config):
-        env_prefix = "API_"
+    model_config = pydantic_settings.SettingsConfigDict(env_prefix="API_")
 
 
 class PersistenceSettings(BaseBotSettings):
@@ -84,8 +86,7 @@ class PersistenceSettings(BaseBotSettings):
     """Fixed encryption key for encrypting sensitive values (cannot change once there is data stored)."""
     key_cache_size: int = 100
 
-    class Config(BaseBotSettings.Config):
-        env_prefix = "PERSIST_"
+    model_config = pydantic_settings.SettingsConfigDict(env_prefix="PERSIST_")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -93,7 +94,7 @@ class PersistenceSettings(BaseBotSettings):
 
 
 class CouchDBSettings(BaseBotSettings):
-    url: pydantic.AnyHttpUrl = "http://localhost:5984"
+    url: str = "http://localhost:5984"
     user: str
     password: pydantic.SecretStr
     create_databases: bool = True
@@ -103,8 +104,7 @@ class CouchDBSettings(BaseBotSettings):
     db_stops: str = "vigobusbot_stops"
     db_user_stops: str = "vigobusbot_userstops"
 
-    class Config(BaseBotSettings.Config):
-        env_prefix = "COUCHDB_"
+    model_config = pydantic_settings.SettingsConfigDict(env_prefix="COUCHDB_")
 
 
 class ElasticSearchSettings(BaseBotSettings):
@@ -124,8 +124,7 @@ class ElasticSearchSettings(BaseBotSettings):
         if self.user and self.password:
             return self.user, self.password.get_secret_value()
 
-    class Config(BaseBotSettings.Config):
-        env_prefix = "ELASTIC_"
+    model_config = pydantic_settings.SettingsConfigDict(env_prefix="ELASTIC_")
 
 
 class SystemSettings(BaseBotSettings):
@@ -140,7 +139,7 @@ class SystemSettings(BaseBotSettings):
     test: bool = False
     """If True, run the test handlers"""
 
-    @pydantic.validator("node_name")
+    @pydantic.field_validator("node_name")
     def _node_name_set_as_hostname(cls, v):
         if v == "hostname":
             v = platform.node()
