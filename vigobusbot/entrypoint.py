@@ -1,18 +1,18 @@
 """ENTRYPOINT
-Start Telegram bot using Polling/Webhook methods depending on the telegram_settings
+Start Telegram bot using the Polling method.
 """
 
 import asyncio
 
 from contexttimer import Timer
 
-from vigobusbot.telegram_bot import Bot, run_bot_polling, run_bot_webhook
+from vigobusbot.telegram_bot import Bot, run_bot_polling
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.services.elasticsearch import ElasticSearch
 from vigobusbot.vigobus_api import VigoBusAPI
 from vigobusbot.services import schedulers
 from vigobusbot.static_handler import load_static_files
-from vigobusbot.settings_handler import telegram_settings, elastic_settings
+from vigobusbot.settings import Settings, load_settings
 from vigobusbot.utils import SetupTeardown, async_noop
 from vigobusbot.logger import logger
 
@@ -25,17 +25,28 @@ class App(SetupTeardown):
     async def setup(self):
         logger.debug("Initializing the app...")
         with Timer() as timer:
+            load_settings()
+
+            elastic_settings = Settings.get().elasticsearch
+            telegram_settings = Settings.get().telegram
+
             # Services that do not require setup/teardown
             VigoBusAPI.get_instance(initialize=True)
             load_static_files()
 
             # Services with setup/teardown
             # Initialize in different blocks based on the dependencies between services
-            await self._init_services(
+
+            # Block 1
+            services = [
                 Bot.get_instance(initialize=True),
                 CouchDB.get_instance(initialize=True),
-                ElasticSearch.get_instance(initialize=True) if elastic_settings.enabled else async_noop(),
-            )
+            ]
+            if elastic_settings.enabled:
+                services.append(ElasticSearch.get_instance(initialize=True))
+            await self._init_services(*services)
+
+            # Block 2
             await self._init_services(
                 schedulers.StopUpdaterService(
                     cron_schedule=telegram_settings.stop_updater_cron,
@@ -65,10 +76,7 @@ class App(SetupTeardown):
         self.loop.run_until_complete(self.setup())
 
         try:
-            if telegram_settings.webhook_enabled:
-                run_bot_webhook()
-            else:
-                run_bot_polling()
+            run_bot_polling()
         except (SystemExit, KeyboardInterrupt):
             # TODO Exit with corresponding exit code
             pass

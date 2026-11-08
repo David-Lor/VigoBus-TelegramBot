@@ -9,7 +9,7 @@ from .base import BaseRepository
 from vigobusbot.models import Stop, StopPersist, StopsEtagKV, mapper
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.services.elasticsearch import ElasticSearch
-from vigobusbot.settings_handler import elastic_settings
+from vigobusbot.settings import ElasticSearchSettings
 from vigobusbot.utils import jsonable_dict
 
 __all__ = ["StopsRepository", "StopsCouchDBRepository", "StopsElasticSearchRepository"]
@@ -167,7 +167,7 @@ class StopsElasticSearchRepository(StopsRepository):
     async def get_stop_by_id(cls, stop_id: int) -> Optional[Stop]:
         # ZincSearch seems to not be compatible with client.get() method, so we have to use client.search().
         result = await ElasticSearch.get_instance().client.search(
-            index=elastic_settings.stops_index,
+            index=ElasticSearchSettings.get().stops_index,
             query={
                 "match": {
                     "_id": str(stop_id)
@@ -185,7 +185,7 @@ class StopsElasticSearchRepository(StopsRepository):
     @classmethod
     async def search_stops_by_name(cls, search_term: str) -> list[int]:
         result = await ElasticSearch.get_instance().client.search(
-            index=elastic_settings.stops_index,
+            index=ElasticSearchSettings.get().stops_index,
             query={
                 "match": {
                     "name": {
@@ -195,7 +195,7 @@ class StopsElasticSearchRepository(StopsRepository):
                 }
             },
             source_includes=["id"],
-            size=elastic_settings.stops_search_limit,
+            size=ElasticSearchSettings.get().stops_search_limit,
         )
 
         hits = result.body.get("hits", {}).get("hits", [])
@@ -209,7 +209,7 @@ class StopsElasticSearchRepository(StopsRepository):
     @classmethod
     async def save_stop(cls, stop: Stop):
         await ElasticSearch.get_instance().client.index(
-            index=elastic_settings.stops_index,
+            index=ElasticSearchSettings.get().stops_index,
             id=str(stop.id),
             document=jsonable_dict(stop)
         )
@@ -218,7 +218,7 @@ class StopsElasticSearchRepository(StopsRepository):
     async def iter_all_stops(cls) -> AsyncGenerator[Stop, None]:
         # Scroll API seems to not be working in ZincSearch
         result = await ElasticSearch.get_instance().client.search(
-            index=elastic_settings.stops_index,
+            index=ElasticSearchSettings.get().stops_index,
             query={"match_all": {}},
             size=1000000,
         )
@@ -229,7 +229,7 @@ class StopsElasticSearchRepository(StopsRepository):
     @classmethod
     async def delete_stop(cls, stop_id: int):
         await ElasticSearch.get_instance().client.delete(
-            index=elastic_settings.stops_index,
+            index=ElasticSearchSettings.get().stops_index,
             id=str(stop_id),
         )
 

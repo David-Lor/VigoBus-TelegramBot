@@ -11,7 +11,7 @@ from loguru import logger
 # noinspection PyProtectedMember
 from loguru._logger import context as loguru_context
 
-from vigobusbot.settings_handler import system_settings as settings
+from vigobusbot.settings import SystemSettings
 
 __all__ = ("logger", "get_request_id", "get_request_verb")
 
@@ -46,22 +46,27 @@ def _set_request_filter(is_request_logger: bool):
 # Disable default aiogram & loguru loggers
 logging.getLogger("aiogram").disabled = True
 logger.remove()
-if node_name := settings.node_name:
-    logger = logger.bind(node=node_name)
+# TODO Load node name from settings
+# if node_name := SystemSettings.get().node_name:
+#     logger = logger.bind(node=node_name)
 
 # Create virtual loggers for system logs and request logs
 
 # System logger
 logger.add(
     sys.stderr,
-    level=settings.log_level.upper(),
+    # TODO Load level from settings
+    # level=SystemSettings.get().log_level.upper(),
+    level="INFO",
     filter=_set_request_filter(is_request_logger=False),
     format=LoggerFormat
 )
 # Request logger (print)
 logger.add(
     sys.stderr,
-    level=settings.request_logs_print_level.upper(),
+    # TODO Load level from settings
+    # level=SystemSettings.get().request_logs_print_level.upper(),
+    level="INFO",
     filter=_set_request_filter(is_request_logger=True),
     format=LoggerFormat
 )

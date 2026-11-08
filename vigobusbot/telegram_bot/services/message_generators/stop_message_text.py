@@ -7,7 +7,7 @@ from typing import Optional, List
 
 from vigobusbot.models import SavedUserStop, Stop, BusesResponse, Bus
 from vigobusbot.static_handler import get_messages
-from vigobusbot.settings_handler import telegram_settings
+from vigobusbot.settings import TelegramSettings
 
 __all__ = ("generate_stop_message_text",)
 
@@ -51,7 +51,7 @@ def _generate_bus_text_line(bus: Bus) -> str:
     if bus.time_minutes == 0:
         time_text = messages.stop.bus_time_now
     else:
-        if bus.time_minutes > telegram_settings.stop_messages_include_arrival_hour_after_minutes:
+        if bus.time_minutes > TelegramSettings.get().stop_messages_include_arrival_hour_after_minutes:
             arrival_time = _calculate_bus_arrival_time(bus).strftime(messages.stop.bus_arrival_time_format)
         else:
             arrival_time = ""

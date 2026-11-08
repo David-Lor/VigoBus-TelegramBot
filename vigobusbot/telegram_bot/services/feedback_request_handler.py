@@ -2,19 +2,16 @@
 Handler and utils for working with Feedback requests, involving Force Reply handling
 """
 
-# # Native # #
 import asyncio
 import contextlib
 from typing import Optional
 
-# # Installed # #
 import cachetools
 import pydantic
 import aiogram
 
-# # Project # #
 from vigobusbot.static_handler import get_messages
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings import TelegramSettings
 from vigobusbot.logger import logger
 
 __all__ = (
@@ -22,7 +19,8 @@ __all__ = (
     "get_feedback_request_context", "handle_feedback_request_reply"
 )
 
-_feedback_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
+# TODO Load ttl from TelegramSettings.force_reply_ttl
+_feedback_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=3600)
 """Storage for Feedback requests, which must be replied by users in less than the force_reply_ttl
 Key=force_reply_message_id
 Value=FeedbackRequestContext
@@ -80,7 +78,7 @@ async def handle_feedback_request_reply(user_reply_message: aiogram.types.Messag
     logger.bind(user_id=user_id, message_text=message_text).info("Received Feedback message")
 
     await user_reply_message.bot.send_message(
-        chat_id=settings.admin_userid,
+        chat_id=TelegramSettings.get().admin_userid,
         text=messages.feedback.send_admin.format(user_id=chat_id, message_text=message_text)
     )
 

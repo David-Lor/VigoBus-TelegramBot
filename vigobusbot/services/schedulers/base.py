@@ -16,7 +16,7 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
 
     def __init__(self, cron_schedule: str, first_run: bool = False, limit_concurrency: bool = False):
         if not cron_schedule:
-            logger.info(f"Scheduled {self.get_class_name()} is disabled")
+            logger.info(f"Scheduler {self.get_class_name()} is disabled")
             return
 
         self.limit_concurrency = limit_concurrency
@@ -31,9 +31,9 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
         if not self._scheduler:
             return
 
-        logger.debug(f"Starting scheduled {self.get_class_name()}...")
+        logger.debug(f"Starting scheduler {self.get_class_name()}...")
         self._scheduler.start()
-        logger.bind(cron_expression=self._scheduler.spec).info(f"Scheduled {self.get_class_name()} running")
+        logger.bind(cron_expression=self._scheduler.spec).info(f"Scheduler {self.get_class_name()} running")
 
         if self.first_run:
             await self.run_now_background()
@@ -42,9 +42,9 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
         if not self._scheduler:
             return
 
-        logger.debug(f"Stopping scheduled {self.get_class_name()}...")
+        logger.debug(f"Stopping scheduler {self.get_class_name()}...")
         self._scheduler.stop()
-        logger.info(f"Scheduled {self.get_class_name()} stopped")
+        logger.info(f"Scheduler {self.get_class_name()} stopped")
 
     async def run_now(self):
         await self._worker_wrapper()
@@ -54,17 +54,17 @@ class BaseScheduler(abc.ABC, Singleton, SetupTeardown):
 
     async def _worker_wrapper(self):
         if self.limit_concurrency and self._worker_locked:
-            logger.info(f"Scheduled {self.get_class_name()} worker already running, not executing new iteration")
+            logger.info(f"Scheduler {self.get_class_name()} already running, not executing new iteration")
             return
 
         try:
             with contexttimer.Timer() as timer:
                 self._worker_locked = True
-                logger.debug(f"Scheduled {self.get_class_name()} running iteration...")
+                logger.debug(f"Scheduler {self.get_class_name()} running iteration...")
                 await self._worker()
-                logger.bind(elapsed=timer.elapsed).debug(f"Scheduled {self.get_class_name()} iteration completed")
+                logger.bind(elapsed=timer.elapsed).debug(f"Scheduler {self.get_class_name()} iteration completed")
         except Exception as ex:
-            logger.opt(exception=ex).error(f"Scheduled {self.get_class_name()} iteration failed")
+            logger.opt(exception=ex).error(f"Scheduler {self.get_class_name()} iteration failed")
         finally:
             self._worker_locked = False
 

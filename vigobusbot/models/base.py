@@ -1,11 +1,10 @@
-import json
 import datetime
 
 import pydantic
 import classmapper
 
 from vigobusbot.utils import get_datetime, jsonable_dict
-from vigobusbot.settings_handler import system_settings
+from vigobusbot.settings import SystemSettings
 
 __all__ = ("BaseModel", "mapper", "Timestamp", "Metadata", "BaseMetadataedModel")
 
@@ -44,7 +43,7 @@ class Metadata(BaseModel):
 
     def complete_fields(self):
         if not self.created_by_node:
-            self.created_by_node = system_settings.node_name
+            self.created_by_node = SystemSettings.get().node_name
         if not self.created_on:
             self.created_on = Timestamp()
 

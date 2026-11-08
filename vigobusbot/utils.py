@@ -67,6 +67,10 @@ class Singleton(Generic[T]):
     _instance: T = None
 
     @classmethod
+    def get(cls) -> T:
+        return cls.get_instance()
+
+    @classmethod
     def get_instance(cls: Type[T], initialize: bool = False) -> T:
         if initialize and not cls._instance:
             return cls().set_current_as_singleton()

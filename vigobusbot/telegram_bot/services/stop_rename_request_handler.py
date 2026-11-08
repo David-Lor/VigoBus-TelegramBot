@@ -15,10 +15,10 @@ from vigobusbot.vigobus_api import get_stop
 from vigobusbot.persistence_api.saved_stops import save_stop
 from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.static_handler import get_messages
-from vigobusbot.settings_handler import telegram_settings as settings
 from vigobusbot.logger import logger
 
-_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
+# TODO Load ttl from TelegramSettings.force_reply_ttl
+_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=3600)
 """Storage for Stop Rename requests, which must be replied by users in less than the force_reply_ttl
 Key=force_reply_message_id
 Value=StopRenameRequestContext

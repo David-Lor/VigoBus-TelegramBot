@@ -1,10 +1,7 @@
 # Python version: 3.11
 
-# TODO Actualizar aiogram a v3, pydantic a v2
-aiogram>=3,<4  # Async Telegram Bot API wrapper
+aiogram>=2,<3  # Async Telegram Bot API wrapper
 httpx>=0,<1  # HTTP requests
-python-dotenv>=1,<2  # .env file loader
-pydantic-settings>=2,<3  # settings management
 pyyaml>=6,<7  # YAML file parser
 addict>=2,<3  # better dicts (accessible through dot notation)
 watchdog>=2,<3  # watch directories for file changes

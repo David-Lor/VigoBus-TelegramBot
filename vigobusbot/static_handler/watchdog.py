@@ -10,7 +10,7 @@ import watchdog.observers
 import watchdog.events
 
 # # Package # #
-from .loader import load_messages, static_path
+from .loader import load_messages, get_static_path
 from .files import MESSAGES_FILENAME
 
 # # Project # #
@@ -33,7 +33,7 @@ def watchdog_start():
     observer = watchdog.observers.Observer()
     observer.schedule(
         event_handler=WatchdogHandler,
-        path=str(static_path),
+        path=str(get_static_path()),
         recursive=False
     )
 

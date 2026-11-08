@@ -2,17 +2,16 @@
 Handle the request rate limits for incoming user requests
 """
 
-# # Installed # #
 import cachetools
 
-# # Project # #
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings import TelegramSettings
 from vigobusbot.exceptions import UserRateLimit
 from vigobusbot.logger import logger
 
 __all__ = ("handle_user_rate_limit",)
 
-_user_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.user_rate_limit_time)
+# TODO Load ttl from TelegramSettings.user_rate_limit_time
+_user_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=1)
 """Storage for Users and their amount of requests.
 Key=user_id
 Value=amount of requests
@@ -30,10 +29,10 @@ def handle_user_rate_limit(user_id: int, weight: float):
 
     with logger.contextualize(
             current_user_requests=requests,
-            user_requests_limit=settings.user_rate_limit_amount,
+            user_requests_limit=TelegramSettings.get().user_rate_limit_amount,
             user_request_weight=weight
     ):
-        if requests > settings.user_rate_limit_amount:
+        if requests > TelegramSettings.get().user_rate_limit_amount:
             logger.debug("User exceeded rate limit")
             raise UserRateLimit()
         else:

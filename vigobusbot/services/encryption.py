@@ -11,11 +11,12 @@ import base64
 import cachetools
 from cryptography.fernet import Fernet
 
-from vigobusbot.settings_handler import persistence_settings
+from vigobusbot.settings import PersistenceSettings
 from vigobusbot.utils import SingletonHold
 
 
-_user_keys_cache = cachetools.LFUCache(maxsize=persistence_settings.key_cache_size)
+# TODO Load maxsize from PersistenceSettings.key_cache_size
+_user_keys_cache = cachetools.LFUCache(maxsize=100)
 """Local cache for keys generated for the users.
 Key=user_id (raw - int)
 Value=Fernet object
@@ -27,7 +28,7 @@ _general_key_cache: SingletonHold[Fernet] = SingletonHold()
 
 def encode_user_id(user_id: int) -> str:
     sha512 = hashlib.sha512()
-    sha512.update(persistence_settings.encryption_key.encode())
+    sha512.update(PersistenceSettings.get().encryption_key.encode())
     sha512.update(str(user_id).encode())
     return sha512.hexdigest()
 
@@ -57,7 +58,7 @@ def _get_user_encryption_key(user_id: int) -> Fernet:
         return fernet_key
 
     md5 = hashlib.md5()
-    md5.update(persistence_settings.encryption_key.encode())
+    md5.update(PersistenceSettings.get().encryption_key.encode())
     md5.update(str(user_id).encode())
 
     fernet_key = _generate_fernet_key(md5.hexdigest())
@@ -67,12 +68,12 @@ def _get_user_encryption_key(user_id: int) -> Fernet:
 
 def _get_general_encryption_key() -> Fernet:
     """Generate/get the Fernet key object for general values.
-    The key is generated from the key configured in telegram_settings.
+    The key is generated from the key configured in PersistenceSettings.
     Generated key is stored on a local cached variable.
     """
     if (fernet_key := _general_key_cache.get_value()) is None:
         md5 = hashlib.md5()
-        md5.update(persistence_settings.encryption_key.encode())
+        md5.update(PersistenceSettings.get().encryption_key.encode())
 
         fernet_key = _generate_fernet_key(md5.hexdigest())
         _general_key_cache.set_value(fernet_key)

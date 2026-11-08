@@ -21,7 +21,7 @@ from vigobusbot.telegram_bot.services.message_generators import generate_stop_me
 from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_message
 from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.persistence_api.saved_stops import delete_all_stops
-from vigobusbot.settings_handler import system_settings
+from vigobusbot.settings import SystemSettings
 from vigobusbot.static_handler import get_messages
 from vigobusbot.logger import logger
 
@@ -308,7 +308,7 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
     dispatcher.register_message_handler(command_feedback, commands=("feedback", "comentarios"))
 
     # Test handlers
-    if system_settings.test:
+    if SystemSettings.get().test:
         test_message_handlers.register_handlers(dispatcher)
 
     # Rest of text messages

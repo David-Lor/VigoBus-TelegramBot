@@ -1,7 +1,7 @@
 import elasticsearch
 
 from vigobusbot.utils import Singleton, SetupTeardown
-from vigobusbot.settings_handler import elastic_settings
+from vigobusbot.settings import ElasticSearchSettings
 from vigobusbot.logger import logger
 
 
@@ -9,15 +9,15 @@ class ElasticSearch(Singleton, SetupTeardown):
 
     def __init__(self):
         self.client = elasticsearch.AsyncElasticsearch(
-            hosts=str(elastic_settings.url),
-            basic_auth=elastic_settings.basic_auth_tuple,
+            hosts=str(ElasticSearchSettings.get().url),
+            basic_auth=ElasticSearchSettings.get().basic_auth_tuple,
         )
 
     async def setup(self):
         logger.debug("Initializing ElasticSearch...")
         # Create Stops index
         await self.create_index(
-            name=elastic_settings.stops_index,
+            name=ElasticSearchSettings.get().stops_index,
             mappings={
                 "properties": {
                     "name": {
