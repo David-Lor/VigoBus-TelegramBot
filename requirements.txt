@@ -16,6 +16,7 @@ aiocron>=1,<2  # scheduler supporting cron expressions
 contexttimer>=0,<1  # context manager elapsed time counter
 tenacity>=8,<9  # retry code blocks
 classmapper<1  # helper to define conversion between classes
+blinker>=1,<2  # event signaling
 
 # VigoBusAPI as lib
 vigobus @ git+https://github.com/David-Lor/VigoBusAPI.git@feature/v1

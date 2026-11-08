@@ -4,26 +4,36 @@ Handle the request rate limits for incoming user requests
 
 import cachetools
 
-from vigobusbot.settings import TelegramSettings
+from vigobusbot.settings import TelegramSettings, SettingsLoadedSignal
 from vigobusbot.exceptions import UserRateLimit
 from vigobusbot.logger import logger
+from vigobusbot.utils import SingletonHold
 
 __all__ = ("handle_user_rate_limit",)
 
-# TODO Load ttl from TelegramSettings.user_rate_limit_time
-_user_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=1)
+_user_requests: SingletonHold[cachetools.Cache[int, float]] = SingletonHold()
 """Storage for Users and their amount of requests.
 Key=user_id
 Value=amount of requests
 """
 
 
+@SettingsLoadedSignal.connect
+def _on_settings_loaded(*_, **__):
+    cache = cachetools.TTLCache(maxsize=float("inf"), ttl=TelegramSettings.get().user_rate_limit_time)
+    _user_requests.set_value(cache)
+    logger.bind(cache_ttl=cache.ttl).debug("Initialized RateLimiter-UserRequests cache")
+
+
 def handle_user_rate_limit(user_id: int, weight: float):
     """Add +1 to the requests counter of the user (or create the counter if not exists or expired).
     :raises: UserRateLimit if limit exceeded
     """
+    if (cache := _user_requests.get_value()) is None:
+        return
+
     try:
-        requests = _user_requests[user_id] + weight
+        requests = cache[user_id] + weight
     except KeyError:
         requests = weight
 
@@ -37,4 +47,4 @@ def handle_user_rate_limit(user_id: int, weight: float):
             raise UserRateLimit()
         else:
             logger.debug(f"Request counter for the user")
-            _user_requests[user_id] = requests
+            cache[user_id] = requests

@@ -13,7 +13,7 @@ from vigobusbot.vigobus_api import VigoBusAPI
 from vigobusbot.services import schedulers
 from vigobusbot.static_handler import load_static_files
 from vigobusbot.settings import Settings, load_settings
-from vigobusbot.utils import SetupTeardown, async_noop
+from vigobusbot.utils import SetupTeardown
 from vigobusbot.logger import logger
 
 

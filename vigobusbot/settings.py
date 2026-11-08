@@ -2,11 +2,13 @@ import os
 import platform
 
 import yaml
+import blinker
 import pydantic
 
 from .utils import Singleton
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.yaml")
+SettingsLoadedSignal = blinker.Signal("SettingsLoaded")
 
 
 class BaseSetting(pydantic.BaseModel, Singleton):
@@ -117,3 +119,5 @@ def load_settings():
     settings.couchdb.set_current_as_singleton()
     settings.elasticsearch.set_current_as_singleton()
     settings.persistence.set_current_as_singleton()
+
+    SettingsLoadedSignal.send()

@@ -49,7 +49,7 @@ class Metadata(BaseModel):
 
 
 class BaseMetadataedModel(BaseModel):
-    metadata: Metadata = None
+    metadata: Metadata | None = None
 
     def complete_fields(self):
         if not self.metadata:

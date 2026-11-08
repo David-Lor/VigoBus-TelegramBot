@@ -49,9 +49,8 @@ class StopMessagesDeprecationReminder(BaseScheduler):
             )
             logger.debug("Deprecated Stop message updated with warning")
 
-        # TODO update:
-        #except aiogram.exceptions.MessageToEditNotFound:
-        #    logger.debug("Deprecated Stop message deleted by the user")
+        except aiogram.exceptions.MessageToEditNotFound:
+            logger.debug("Deprecated Stop message deleted by the user")
 
         except Exception:
             logger.opt(exception=True).error("Failed updating deprecated Stop message")
