@@ -17,7 +17,7 @@ class _SentMessageBase(BaseModel):
     message_id: int
 
     # Fields provided from SentMessagePersist
-    metadata: Metadata = None
+    metadata: Metadata | None = None
     message_key: str = ""
 
     def is_expired(self, now: int, ttl_seconds: int) -> bool:
@@ -56,13 +56,15 @@ def _mapper_to_persist(_from: SentMessage) -> SentMessagePersist:
     message_text = _from.message_text
     reply_markup_json = _from.message_reply_markup_json
 
-    return SentMessagePersist(
-        **_from.dict(),
+    persist = SentMessagePersist(
+        **_from.model_dump(),
         message_text_encrypted=encryption.encrypt_user_data(user_id, message_text),
         message_reply_markup_json_encrypted=encryption.encrypt_user_data(user_id, reply_markup_json) if reply_markup_json else None,
         chat_id_encoded=encryption.encode_user_id(user_id),
         chat_id_encrypted=encryption.encrypt_general_data(str(user_id)),
     )
+    persist.complete_fields()
+    return persist
 
 
 @mapper.register(SentMessage, tuple)

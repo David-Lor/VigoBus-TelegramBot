@@ -7,7 +7,7 @@ from vigobusbot.static_handler import get_messages
 from vigobusbot.models import SentMessage, SentMessageTypes
 from vigobusbot.persistence import SentMessagesRepository
 from vigobusbot.telegram_bot import Bot
-from vigobusbot.settings_handler import telegram_settings
+from vigobusbot.settings import Settings
 from vigobusbot.logger import logger
 from vigobusbot.utils import json, get_time
 
@@ -18,7 +18,7 @@ class StopMessagesDeprecationReminder(BaseScheduler):
 
     # noinspection PyAsyncCall
     async def _worker(self):
-        max_timestamp = get_time() - telegram_settings.stop_messages_deprecation_reminder_after_seconds
+        max_timestamp = get_time() - Settings.get().telegram.stop_messages_deprecation_reminder_after_seconds
 
         # noinspection PyTypeChecker
         async for message in SentMessagesRepository.get_repository().iter_messages(

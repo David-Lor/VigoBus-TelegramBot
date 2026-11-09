@@ -15,14 +15,23 @@ from vigobusbot.vigobus_api import get_stop
 from vigobusbot.persistence_api.saved_stops import save_stop
 from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.static_handler import get_messages
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings import TelegramSettings, SettingsLoadedSignal
 from vigobusbot.logger import logger
+from vigobusbot.utils import SingletonHold
 
-_stop_rename_requests = cachetools.TTLCache(maxsize=float("inf"), ttl=settings.force_reply_ttl)
+# TODO Migrate to database
+_stop_rename_requests: SingletonHold[cachetools.Cache[int, "StopRenameRequestContext"]] = SingletonHold()
 """Storage for Stop Rename requests, which must be replied by users in less than the force_reply_ttl
 Key=force_reply_message_id
 Value=StopRenameRequestContext
 """
+
+
+@SettingsLoadedSignal.connect
+def _on_settings_loaded(*_, **__):
+    cache = cachetools.TTLCache(maxsize=float("inf"), ttl=TelegramSettings.get().force_reply_ttl)
+    _stop_rename_requests.set_value(cache)
+    logger.bind(cache_ttl=cache.ttl).debug("Initialized StopRenameRequests cache")
 
 
 class StopRenameRequestContext(SourceContext):
@@ -34,9 +43,10 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     The key is the Message ID of the Force Reply message sent by the bot.and
     The value is the StopRenameRequestContext object.
     """
-    force_reply_message_id = context.force_reply_message_id
-    _stop_rename_requests[force_reply_message_id] = context
-    logger.bind(force_reply_message_id=force_reply_message_id).debug("Registered Stop Rename Request for message")
+    if cache := _stop_rename_requests.get_value():
+        force_reply_message_id = context.force_reply_message_id
+        cache[force_reply_message_id] = context
+        logger.bind(force_reply_message_id=force_reply_message_id).debug("Registered Stop Rename Request for message")
 
 
 def get_stop_rename_request_context(
@@ -46,6 +56,9 @@ def get_stop_rename_request_context(
     OR the User ID that requested it - In this last case the context is searched on the local cache,
     supposing only one request exists per user, since the first result is acquired; if not found, return None.
     """
+    if not (cache := _stop_rename_requests.get_value()):
+        return None
+
     result: Optional[StopRenameRequestContext] = None
 
     if user_id and not force_reply_message_id:
@@ -53,16 +66,16 @@ def get_stop_rename_request_context(
             force_reply_message_id = next(
                 force_reply_message_id
                 for force_reply_message_id, context
-                in _stop_rename_requests.items()
+                in cache.items()
                 if context.user_id == user_id
             )
 
     if force_reply_message_id:
         with contextlib.suppress(KeyError):
             if pop:
-                result = _stop_rename_requests.pop(force_reply_message_id)
+                result = cache.pop(force_reply_message_id)
             else:
-                result = _stop_rename_requests[force_reply_message_id]
+                result = cache[force_reply_message_id]
 
     logger.bind(
         force_reply_message_id=force_reply_message_id,

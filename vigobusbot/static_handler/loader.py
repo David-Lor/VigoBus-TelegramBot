@@ -7,13 +7,11 @@ from .path_loader import get_static_path
 from .parsers import parse_yaml_file, parse_emojis
 from vigobusbot.logger import logger
 
-__all__ = ("load_messages", "static_path")
-
-static_path = get_static_path()
+__all__ = ("load_messages",)
 
 
 def load_messages():
-    file_path = static_path.joinpath(MESSAGES_FILENAME)
+    file_path = get_static_path().joinpath(MESSAGES_FILENAME)
     logger.debug(f"Found Messages file at {file_path}")
 
     with open(str(file_path), "r") as file:
