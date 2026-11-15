@@ -26,5 +26,5 @@ async def persist_sent_stop_message(message: Message):
     """When any Stop message is sent or edited, it must be passed to this method.
     The persistence will be performed in background.
     """
-    # noinspection PyAsyncCall
-    asyncio.create_task(persist_sent_message(msg_type=SentMessageTypes.STOP, message=message))
+    if isinstance(message, Message):
+        asyncio.create_task(persist_sent_message(msg_type=SentMessageTypes.STOP, message=message))
