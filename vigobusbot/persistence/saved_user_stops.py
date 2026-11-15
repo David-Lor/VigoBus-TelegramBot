@@ -4,7 +4,7 @@ from typing import Type, Optional, List, Union
 import tenacity
 import aiocouch.exception
 
-from .base import BaseRepository
+from .base import BaseRepository, BaseCouchDBRepository
 from vigobusbot.services import encryption
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.models import mapper, SavedUserStop
@@ -43,10 +43,7 @@ class SavedUserStopsRepository(BaseRepository):
         raise NotImplementedError
 
 
-class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
-    _conflict_retry = tenacity.retry_if_exception_type(aiocouch.exception.ConflictError)  # type: ignore
-    _retry_stop = tenacity.stop_after_attempt(5)  # type: ignore
-
+class SavedUserStopsCouchDBRepository(SavedUserStopsRepository, BaseCouchDBRepository):
     @classmethod
     async def get_user_all_stops(cls, user_id: int) -> List[SavedUserStop]:
         query = {

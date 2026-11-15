@@ -4,7 +4,7 @@ from typing import Type, AsyncGenerator
 import tenacity
 import aiocouch.exception
 
-from .base import BaseRepository
+from .base import BaseRepository, BaseCouchDBRepository
 from vigobusbot.models import mapper, SentMessagePersist, SentMessage
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.logger import logger
@@ -31,14 +31,12 @@ class SentMessagesRepository(BaseRepository):
         raise NotImplementedError
 
 
-class SentMessagesCouchDBRepository(SentMessagesRepository):
-    _conflict_retry = tenacity.retry_if_exception_type(aiocouch.exception.ConflictError)
-    _retry_stop = tenacity.stop_after_attempt(5)
-
+class SentMessagesCouchDBRepository(SentMessagesRepository, BaseCouchDBRepository):
     @classmethod
     async def save_message(cls, message: SentMessage):
         doc_id, doc_data = mapper.map(message, tuple)
 
+        # noinspection argument-list
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 await CouchDB.update_doc(
@@ -61,6 +59,7 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
 
     @classmethod
     async def delete_message(cls, msg_key: str) -> bool:
+        # noinspection argument-list
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 try:
@@ -69,3 +68,4 @@ class SentMessagesCouchDBRepository(SentMessagesRepository):
                     return True
                 except aiocouch.exception.NotFoundError:
                     return False
+        return False
