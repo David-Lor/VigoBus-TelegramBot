@@ -38,11 +38,11 @@ def get_uuid():
 def jsonable_dict(obj: pydantic.BaseModel, **kwargs):
     """Convert a pydantic object to dict, but using native JSON data types."""
     # TODO Use ujson lib, or other way of converting (iterating dict and converting values? if faster)
-    d = obj.json(**kwargs)
+    d = obj.model_dump_json(**kwargs)
     return json.loads(d)
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,unused-parameter
 async def async_noop(*args, **kwargs):
     """Async function that does nothing on purpose.
     """
@@ -61,10 +61,14 @@ async def async_gather_limited(*coros, limit: int):
     return await asyncio.gather(*(sem_coro(c) for c in coros))
 
 
-class Singleton:
+class Singleton(Generic[T]):
     """Inheritable class that holds a single variable (an instance of the same class),
     intended to be accessed as a singleton without initialization."""
     _instance: T = None
+
+    @classmethod
+    def get(cls) -> T:
+        return cls.get_instance()
 
     @classmethod
     def get_instance(cls: Type[T], initialize: bool = False) -> T:

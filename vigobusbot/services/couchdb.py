@@ -3,7 +3,7 @@ import asyncio
 import aiocouch
 from aiocouch.exception import ConflictError
 
-from vigobusbot.settings_handler import couchdb_settings
+from vigobusbot.settings import CouchDBSettings
 from vigobusbot.utils import Singleton, SetupTeardown
 from vigobusbot.logger import logger
 
@@ -17,19 +17,20 @@ class CouchDB(Singleton, SetupTeardown):
     db_stops: aiocouch.Database = None
 
     def __init__(self):
+        self.couchdb_settings = CouchDBSettings.get()
         self.connection = aiocouch.CouchDB(
-            server=couchdb_settings.url,
-            user=couchdb_settings.user,
-            password=couchdb_settings.password.get_secret_value(),
+            server=self.couchdb_settings.url,
+            user=self.couchdb_settings.user,
+            password=self.couchdb_settings.password.get_secret_value(),
         )
 
     async def setup(self):
         logger.debug("Initializing CouchDB...")
         await self.connection.check_credentials()
         self.db_sent_messages, self.db_user_stops, self.db_stops = await asyncio.gather(
-            self._get_db(couchdb_settings.db_sent_messages),
-            self._get_db(couchdb_settings.db_user_stops),
-            self._get_db(couchdb_settings.db_stops),
+            self._get_db(self.couchdb_settings.db_sent_messages),
+            self._get_db(self.couchdb_settings.db_user_stops),
+            self._get_db(self.couchdb_settings.db_stops),
         )
         logger.info("CouchDB initialized")
 
@@ -39,7 +40,7 @@ class CouchDB(Singleton, SetupTeardown):
         logger.info("CouchDB closed")
 
     async def _get_db(self, name: str) -> aiocouch.Database:
-        if couchdb_settings.create_databases:
+        if self.couchdb_settings.create_databases:
             return await self.connection.create(name, exists_ok=True)
         # noinspection PyUnresolvedReferences
         return await self.connection[name]

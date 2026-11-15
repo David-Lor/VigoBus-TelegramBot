@@ -2,16 +2,14 @@
 Callback Handlers for the Inline Queries, produced when users search stops from the inline mode
 """
 
-# # Installed # #
 import aiogram
 
-# # Project # #
 from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_inline_responses
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message
 from vigobusbot.telegram_bot.services.message_generators import SourceContext
 from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
 from vigobusbot.telegram_bot.services import request_handler
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings import TelegramSettings
 from vigobusbot.logger import logger
 
 __all__ = ("register_handlers",)
@@ -29,7 +27,7 @@ async def stop_search(inline_query: aiogram.types.InlineQuery, *args, **kwargs):
     await inline_query.bot.answer_inline_query(
         inline_query_id=inline_query.id,
         results=inline_results,
-        cache_time=settings.inline_cache_time
+        cache_time=TelegramSettings.get().inline_cache_time
     )
 
 

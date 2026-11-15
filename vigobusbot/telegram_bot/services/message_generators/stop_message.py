@@ -32,6 +32,8 @@ async def generate_stop_message(context: SourceContext) -> Tuple[str, InlineKeyb
         get_saved_stops_coro
     )
 
+    # TODO Check if "stop" exists
+
     text = generate_stop_message_text(stop=stop, buses_response=buses_response, user_saved_stop=user_saved_stop)
     context.more_buses_available = buses_response.more_buses_available
     buttons = generate_stop_message_buttons(context=context, is_stop_saved=bool(user_saved_stop))

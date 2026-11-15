@@ -2,18 +2,15 @@
 Send "Typing..." status to clients while their requests are being processed
 """
 
-# # Native # #
 import asyncio
 import contextlib
 from time import time
 from typing import Dict
 
-# # Installed # #
 import aiogram
 from aiogram.types import ChatActions
 
-# # Project # #
-from vigobusbot.settings_handler import telegram_settings as settings
+from vigobusbot.settings import TelegramSettings
 from vigobusbot.logger import logger
 
 __all__ = ("start_typing", "stop_typing")
@@ -39,7 +36,7 @@ async def _typing_service(bot: aiogram.Bot, chat_id: int, stop_event: asyncio.Ev
         await asyncio.sleep(4.5)
 
         time_diff = time() - started
-        if time_diff >= settings.typing_safe_limit_time:
+        if time_diff >= TelegramSettings.get().typing_safe_limit_time:
             logger.bind(typing_action_time=time_diff).warning("Ended Typing chat action due to time exceed")
             stop_typing(chat_id=chat_id)
             return

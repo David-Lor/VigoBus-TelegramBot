@@ -6,7 +6,7 @@ Path Loader to get the 'static' path, getting it from the telegram_settings or f
 import pathlib
 
 # # Project # #
-from vigobusbot.settings_handler import system_settings as settings
+from vigobusbot.settings import SystemSettings
 from vigobusbot.logger import logger
 
 __all__ = ("get_static_path",)
@@ -15,8 +15,8 @@ STATIC_PATH_LEVEL_LIMIT = 5
 
 
 def get_static_path() -> pathlib.Path:
-    if settings.static_path is not None:
-        static_path = pathlib.Path(settings.static_path)
+    if static_path := SystemSettings.get().static_path:
+        static_path = pathlib.Path(static_path)
         logger.debug(f"Static files path is {static_path}")
         return static_path
 

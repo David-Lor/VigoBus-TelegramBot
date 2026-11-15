@@ -4,7 +4,7 @@ from typing import Type, Optional, List, Union
 import tenacity
 import aiocouch.exception
 
-from .base import BaseRepository
+from .base import BaseRepository, BaseCouchDBRepository
 from vigobusbot.services import encryption
 from vigobusbot.services.couchdb import CouchDB
 from vigobusbot.models import mapper, SavedUserStop
@@ -43,17 +43,15 @@ class SavedUserStopsRepository(BaseRepository):
         raise NotImplementedError
 
 
-class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
-    _conflict_retry = tenacity.retry_if_exception_type(aiocouch.exception.ConflictError)
-    _retry_stop = tenacity.stop_after_attempt(5)
-
+class SavedUserStopsCouchDBRepository(SavedUserStopsRepository, BaseCouchDBRepository):
     @classmethod
     async def get_user_all_stops(cls, user_id: int) -> List[SavedUserStop]:
         query = {
             "user_id": encryption.encode_user_id(user_id)
         }
 
-        return [mapper.map(doc, SavedUserStop, user_id=user_id) async for doc in CouchDB.get_instance().db_user_stops.find(query)]
+        return [mapper.map(doc, SavedUserStop, user_id=user_id)
+                async for doc in CouchDB.get_instance().db_user_stops.find(query)]
 
     @classmethod
     async def get_user_single_stop(cls, user_id: int, stop_id: int, return_existence: bool = False):
@@ -70,6 +68,7 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
     async def save_user_stop(cls, stop: SavedUserStop):
         doc_id, doc_data = mapper.map(stop, tuple)
 
+        # noinspection argument-list
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 await CouchDB.update_doc(
@@ -80,6 +79,7 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
 
     @classmethod
     async def delete_user_single_stop(cls, user_id: int, stop_id: int) -> bool:
+        # noinspection argument-list
         async for attempt in tenacity.AsyncRetrying(stop=cls._retry_stop, retry=cls._conflict_retry):
             with attempt:
                 doc = await cls._get_user_single_stop_document(user_id, stop_id)
@@ -88,6 +88,7 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
 
                 await doc.delete(discard_changes=True)
                 return True
+        return False
 
     @classmethod
     async def delete_user_all_stops(cls, user_id: int):
@@ -106,3 +107,4 @@ class SavedUserStopsCouchDBRepository(SavedUserStopsRepository):
 
         async for doc in CouchDB.get_instance().db_user_stops.find(query, limit=1):
             return doc
+        return None

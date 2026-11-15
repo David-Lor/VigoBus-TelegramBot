@@ -9,7 +9,7 @@ import aiogram
 from vigobusbot.telegram_bot.entities import Message
 from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.telegram_bot.services.status_sender import start_typing
-from vigobusbot.settings_handler import system_settings
+from vigobusbot.settings import SystemSettings
 from vigobusbot.logger import logger
 
 
@@ -29,7 +29,7 @@ async def command_fail(message: Message, *args, **kwargs):
 
 @request_handler("Test Command /test_info")
 async def command_info(message: Message, *args, **kwargs):
-    text = f"<b>Bot server info:</b>\n<b>Node:</b> <code>{system_settings.node_name}</code>"
+    text = f"<b>Bot server info:</b>\n<b>Node:</b> <code>{SystemSettings.get().node_name}</code>"
     await message.bot.send_message(
         chat_id=message.chat.id,
         reply_to_message_id=message.message_id,

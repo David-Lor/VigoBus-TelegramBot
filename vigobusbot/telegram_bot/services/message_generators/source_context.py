@@ -17,8 +17,8 @@ class SourceContext(pydantic.BaseModel):
     For example, by pressing the inline buttons to Refresh the message.
     """
     stop_id: int
-    user_id: Optional[int]
-    source_message: Optional[aiogram.types.Message]
+    user_id: int | None = None
+    source_message: aiogram.types.Message | None = None
     """Message object if message come from a private chat"""
     get_all_buses: bool = False
     """True if user wants to get the complete list of available buses"""
