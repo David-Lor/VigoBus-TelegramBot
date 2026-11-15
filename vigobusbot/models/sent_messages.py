@@ -79,7 +79,7 @@ def _mapper_to_document(_from: SentMessage) -> tuple:
 def _mapper_from_persist(_from: SentMessagePersist) -> SentMessage:
     user_id = int(encryption.decrypt_general_data(_from.chat_id_encrypted))
     return SentMessage(
-        **_from.dict(),
+        **_from.model_dump(),
         chat_id=user_id,
         message_text=encryption.decrypt_user_data(user_id, _from.message_text_encrypted),
         message_reply_markup_json=encryption.decrypt_user_data(user_id, _from.message_reply_markup_json_encrypted),

@@ -61,8 +61,8 @@ class StopUpdaterService(BaseScheduler):
     async def _process_existing_stop(cls, saved_stop: Stop, current_stop: Stop):
         # noinspection PyBroadException
         try:
-            saved_stop_dict = saved_stop.dict(exclude={"metadata"})
-            current_stop_dict = current_stop.dict(exclude={"metadata"})
+            saved_stop_dict = saved_stop.model_dump(exclude={"metadata"})
+            current_stop_dict = current_stop.model_dump(exclude={"metadata"})
 
             if saved_stop_dict == current_stop_dict:
                 logger.bind(stop_data=saved_stop_dict).trace("Stop not changed")
@@ -77,7 +77,7 @@ class StopUpdaterService(BaseScheduler):
     async def _process_new_stop(cls, stop: Stop):
         # noinspection PyBroadException
         try:
-            logger.bind(stop_data=stop.dict()).info("New Stop detected")
+            logger.bind(stop_data=stop.model_dump()).info("New Stop detected")
             await StopsRepository.get_repository().save_stop(stop)
         except Exception:
             logger.opt(exception=True).bind(stop_id=stop.id).error("Failed processing new stop")

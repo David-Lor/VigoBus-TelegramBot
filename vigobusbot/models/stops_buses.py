@@ -40,7 +40,7 @@ class StopsEtagKV(KeyValue):
 @mapper.register(Stop, StopPersist)
 def _mapper_to_persist(_from: Stop) -> StopPersist:
     return StopPersist(
-        **_from.dict(exclude={"metadata"}),
+        **_from.model_dump(exclude={"metadata"}),
         stop_metadata=_from.metadata,
     )
 
@@ -48,7 +48,7 @@ def _mapper_to_persist(_from: Stop) -> StopPersist:
 @mapper.register(StopPersist, Stop)
 def _mapper_from_persist(_from: StopPersist) -> Stop:
     return Stop(
-        **_from.dict(exclude={"metadata"}),
+        **_from.model_dump(exclude={"metadata"}),
         metadata=_from.stop_metadata,
     )
 
@@ -57,16 +57,16 @@ def _mapper_from_persist(_from: StopPersist) -> Stop:
 def _mapper_from_document(_from: aiocouch.Document) -> Stop:
     stop_persist = StopPersist(
         id=_from.id,
-        **_from.data,
+        **_from.data,  # TODO Review if may be None
     )
     return mapper.map(stop_persist, Stop)
 
 
 @mapper.register(dict, Stop)
 def _mapper_from_dict(_from: dict) -> Stop:
-    return Stop.parse_obj(_from)
+    return Stop.model_validate(_from)
 
 
 @mapper.register(aiocouch.Document, StopsEtagKV)
 def _mapper_stopsetagkv_from_document(_from: aiocouch.Document) -> StopsEtagKV:
-    return StopsEtagKV(**_from.data)
+    return StopsEtagKV(**_from.data)  # TODO Review if may be None
