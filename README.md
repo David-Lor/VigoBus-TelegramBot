@@ -13,17 +13,17 @@ _Bot de Telegram que permite consultar las paradas y autobuses que se dirigen a 
 graph TD;
 TelegramBotAPI[\Telegram Bot API/]
 VigoBusBot(VigoBusBot)
-VigoBusAPI[VigoBusAPI Wrapper]
+VigoBusAPI["VigoBusAPI\n(wrapper library)"]
 OfficialDataSources[/Official DataSources\]
 CouchDB[(CouchDB)]
 ElasticSearch[(ElasticSearch)]
 
-TelegramBotAPI <-- Webhook\nUpdates --> VigoBusBot
-VigoBusAPI -- Stops\nBuses --> VigoBusBot
-OfficialDataSources -- Stops\nBuses --> VigoBusAPI
+TelegramBotAPI <-- Rx Webhook updates,\nTx responses --> VigoBusBot
+VigoBusAPI -- Stops,\nBuses --> VigoBusBot
+OfficialDataSources -- Stops,\nBuses --> VigoBusAPI
 
-VigoBusBot <-- Persistence --> CouchDB
-VigoBusBot <-- Stops Search --> ElasticSearch
+VigoBusBot <-- Saved stops --> CouchDB
+VigoBusBot <-- Stops search --> ElasticSearch
 ```
 
 - VigoBusBot: the current project, the Telegram Bot API backend
@@ -36,9 +36,11 @@ VigoBusBot <-- Stops Search --> ElasticSearch
 ```mermaid
 flowchart TD;
   Telegram[Telegram Webhook POST]
-  Domain[Domain]
-  Cloudflare["Cloudflare\n<i>(proxy ON, multiple A records)</i>"]
+  Cloudflare["Cloudflare tunnel\n(custom domain)"]
   subgraph Replicated Telegram Bot
+    cloudflared1[cloudflared 1]
+    cloudflared2[cloudflared 2]
+    cloudflaredN[cloudflared N]
     VigoBusBot1[VigoBusBot 1]
     VigoBusBot2[VigoBusBot 2]
     VigoBusBotN[VigoBusBot N]
@@ -47,13 +49,18 @@ flowchart TD;
     CouchDB1[(CouchDB 1)]
     CouchDB2[(CouchDB 2)]
     CouchDBN[(CouchDB N)]
+    
+    dbReplicas([<i>All databases connect\nwith each other</i>])
   end
 
-  Telegram --> Domain
-  Domain --> Cloudflare
-  Cloudflare --> VigoBusBot1 --> CouchDB1
-  Cloudflare --> VigoBusBot2 --> CouchDB2
-  Cloudflare --> VigoBusBotN --> CouchDBN
+  Telegram --> Cloudflare
+  Cloudflare --> cloudflared1 --> VigoBusBot1 <--> CouchDB1
+  Cloudflare --> cloudflared2 --> VigoBusBot2 <--> CouchDB2
+  Cloudflare --> cloudflaredN --> VigoBusBotN <--> CouchDBN
+  
+  CouchDB1 --- dbReplicas
+  CouchDB2 --- dbReplicas
+  CouchDBN --- dbReplicas
 ```
 
 ## Requirements
