@@ -43,7 +43,7 @@ def register_stop_rename_request(context: StopRenameRequestContext):
     The key is the Message ID of the Force Reply message sent by the bot.and
     The value is the StopRenameRequestContext object.
     """
-    if cache := _stop_rename_requests.get_value():
+    if (cache := _stop_rename_requests.get_value()) is not None:
         force_reply_message_id = context.force_reply_message_id
         cache[force_reply_message_id] = context
         logger.bind(force_reply_message_id=force_reply_message_id).debug("Registered Stop Rename Request for message")
@@ -56,7 +56,7 @@ def get_stop_rename_request_context(
     OR the User ID that requested it - In this last case the context is searched on the local cache,
     supposing only one request exists per user, since the first result is acquired; if not found, return None.
     """
-    if not (cache := _stop_rename_requests.get_value()):
+    if (cache := _stop_rename_requests.get_value()) is None:
         return None
 
     result: Optional[StopRenameRequestContext] = None
