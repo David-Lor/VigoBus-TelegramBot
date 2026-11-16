@@ -9,14 +9,11 @@ import aiogram
 from . import test_message_handlers
 from vigobusbot.telegram_bot.services import request_handler
 from vigobusbot.telegram_bot.services.status_sender import start_typing, stop_typing
-from vigobusbot.telegram_bot.services.feedback_request_handler import get_feedback_request_context
-from vigobusbot.telegram_bot.services.feedback_request_handler import register_feedback_request
-from vigobusbot.telegram_bot.services.feedback_request_handler import handle_feedback_request_reply
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import get_stop_rename_request_context
 from vigobusbot.telegram_bot.services.stop_rename_request_handler import handle_stop_rename_request_reply
 from vigobusbot.telegram_bot.services.user_data_request_handler import extract_user_data, send_file
 from vigobusbot.telegram_bot.entities import Message
-from vigobusbot.telegram_bot.services.message_generators import SourceContext, FeedbackForceReply
+from vigobusbot.telegram_bot.services.message_generators import SourceContext
 from vigobusbot.telegram_bot.services.message_generators import generate_stop_message, generate_saved_stops_message
 from vigobusbot.telegram_bot.services.message_generators import generate_search_stops_message
 from vigobusbot.telegram_bot.services.sent_messages_persistence import persist_sent_stop_message
@@ -180,17 +177,11 @@ async def command_cancel(message: Message, *args, **kwargs):
     """
     user_id = chat_id = message.chat.id
     stop_rename_request_context = get_stop_rename_request_context(user_id=user_id)
-    feedback_request_context = get_feedback_request_context(user_id=user_id)
 
     if stop_rename_request_context:
         await message.bot.delete_message(
             chat_id=chat_id,
             message_id=stop_rename_request_context.force_reply_message_id
-        )
-    elif feedback_request_context:
-        await message.bot.delete_message(
-            chat_id=chat_id,
-            message_id=feedback_request_context.force_reply_message_id
         )
     else:
         await message.bot.send_message(
@@ -218,18 +209,6 @@ async def command_removename(message: Message, *args, **kwargs):
         )
 
 
-@request_handler("Command /feedback")
-async def command_feedback(message: Message, *args, **kwargs):
-    chat_id = user_id = message.chat.id
-
-    force_reply_message = await message.bot.send_message(
-        chat_id=chat_id,
-        reply_markup=FeedbackForceReply.create(),
-        text=get_messages().feedback.request
-    )
-    register_feedback_request(user_id=user_id, force_reply_message_id=force_reply_message.message_id)
-
-
 @request_handler("Non-Command Text message")
 async def global_message_handler(message: Message, *args, **kwargs):
     """Last Message Handler handles any text message that does not match any of the other message handlers.
@@ -243,9 +222,6 @@ async def global_message_handler(message: Message, *args, **kwargs):
                 force_reply_message_id=message.reply_to_message.message_id, pop=False
         ):
             return await handle_stop_rename_request_reply(message)
-
-        elif get_feedback_request_context(force_reply_message_id=message.reply_to_message.message_id, pop=False):
-            return await handle_feedback_request_reply(message)
 
         else:
             # if ForceReply message not registered, user might had replied any message, or the request expired
@@ -303,9 +279,6 @@ def register_handlers(dispatcher: aiogram.Dispatcher):
 
     # /deletedata_yes command
     dispatcher.register_message_handler(command_delete_data_confirmed, commands=("deletedata_yes", "borrar_todo_si"))
-
-    # /feedback command
-    dispatcher.register_message_handler(command_feedback, commands=("feedback", "comentarios"))
 
     # Test handlers
     if SystemSettings.get().test:
